@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: 'Lucidity Expand';
+    src: url('/fonts/LucidityExpand.woff2') format('woff2'); /* Adjust the path if needed */
+    font-weight: normal;
+    font-style: normal;
+  }
+
+/* Style the scrollbar */
+.scrollbar-custom::-webkit-scrollbar {
+  width: 10px; /* Adjust width of the scrollbar */
+}
+
+/* Style the track (background of the scrollbar) */
+.scrollbar-custom::-webkit-scrollbar-track {
+  background-color: #e0f7fa; /* Change track color */
+  border-radius: 10px;
+}
+
+/* Style the thumb (the draggable part of the scrollbar) */
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background-color: #4caf50; /* Change thumb color */
+  border-radius: 10px;
+  border: 2px solid #e0f7fa; /* Optional: adds a border around the thumb */
+}
+
+/* Optional: Hover effect on the scrollbar thumb */
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background-color: #388e3c; /* Darker thumb color on hover */
+}
+/* Bounce Animation */
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px); /* Adjust the bounce height */
+  }
+  60% {
+    transform: translateY(-5px); /* Slightly lower bounce */
+  }
+}
+
+/* Main Button Styles */
+.mainButton {
+  font-size: 20px; /* Base font size for smaller screens */
+  color: #f7f7f7;
+  margin-top: 20px; /* Smaller margin for smaller screens */
+  align-self: center;
+  width: 80%; /* Flexible width relative to the screen size */
+  max-width: 400px; /* Prevents button from growing too large */
+  height: auto; /* Allow height to adjust dynamically */
+  padding: 15px 20px; /* Padding for consistent spacing */
+  background-color: transparent;
+  border: 4px solid #f7f7f7;
+  border-radius: 10px;
+  transition: color 0.3s ease, transform 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* Add the animation */
+  animation: bounce 2s infinite;
+}
+
+/* Adjust font inside the button */
+.mainButton span {
+  position: relative;
+  font-size: 20px; /* Adjust for smaller screens */
+  font-family: 'Poppins', sans-serif;
+  font-weight: bold;
+  background-color: transparent;
+  z-index: 2;
+}
+
+/* Background hover effect */
+.mainButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  transition: left 0.3s ease;
+  z-index: 1;
+}
+
+.mainButton:hover::before {
+  left: 0;
+}
+
+.mainButton:hover {
+  color: #ffffff;
+  transform: scale(1.05);
+  animation: none; /* Stops bounce animation on hover */
+}
+
+/* Animation: bounce effect */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Responsive Styles */
+@media screen and (min-width: 768px) {
+  .mainButton {
+    font-size: 30px; /* Larger font size for tablets and desktops */
+    width: 300px; /* Adjust width for larger screens */
+    padding: 20px 30px; /* Larger padding for bigger buttons */
+  }
+
+  .mainButton span {
+    font-size: 30px;
+  }
+}

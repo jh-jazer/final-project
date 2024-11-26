@@ -1,0 +1,74 @@
+/* src/Notifications.css */
+
+.notifications-container {
+    padding: 20px;
+    text-align: center;
+  }
+  
+  h1 {
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .notifications-list {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+  }
+  
+  .notification-card {
+    background-color: #f4f6f8;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .notification-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .notification-type {
+    font-size: 14px;
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .notification-type.announcement {
+    background-color: #f39c12;
+    color: white;
+  }
+  
+  .notification-type.due-date {
+    background-color: #e74c3c;
+    color: white;
+  }
+  
+  .notification-type.message {
+    background-color: #3498db;
+    color: white;
+  }
+  
+  .notification-type.update {
+    background-color: #2ecc71;
+    color: white;
+  }
+  
+  h3 {
+    font-size: 18px;
+    color: #333;
+  }
+  
+  p {
+    font-size: 14px;
+    color: #555;
+  }
+  
+  small {
+    font-size: 12px;
+    color: #888;
+  }
+  

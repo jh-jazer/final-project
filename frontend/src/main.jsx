@@ -69,7 +69,11 @@ const router = createBrowserRouter([
   {
     path: "/comstudy",
     element: <ComputerStudies />,
-    children: [
+  },
+  {
+        path: "/createapplication",
+        element: <CreateApplication />,
+        children: [
       {
         index: true, // Default route for /studentdb
         path: "details",

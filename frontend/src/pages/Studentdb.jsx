@@ -10,10 +10,13 @@ import {
   FaCog,
   FaSignOutAlt,
 } from "react-icons/fa";
+import LogoutConfirmationModal from "./LogoutConfirmationModal"; // Import the modal
+
 
 const StudentDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const navigate = useNavigate(); // React Router's navigation hook for programmatic navigation
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
+  const navigate = useNavigate();
 
   const user = {
     name: "John Doe",
@@ -21,12 +24,18 @@ const StudentDashboard = () => {
     avatar: "https://via.placeholder.com/100",
   };
 
-  // Logout handler
+  // Handle logout confirmation
   const handleLogout = () => {
-    const confirmLogout = window.confirm("Are you sure you want to logout?");
-    if (confirmLogout) {
-      navigate("/login"); // Redirect to login page
-    }
+    setIsModalOpen(true); // Open the modal
+  };
+
+  const confirmLogout = () => {
+    setIsModalOpen(false); // Close the modal
+    navigate("/login"); // Redirect to the login page
+  };
+
+  const cancelLogout = () => {
+    setIsModalOpen(false); // Close the modal
   };
 
   return (
@@ -136,6 +145,14 @@ const StudentDashboard = () => {
       <main className="flex-1  overflow-y-auto h-full p-8">
         <Outlet /> {/* This renders the nested route components */}
       </main>
+
+      {/* Logout Confirmation Modal */}
+      <LogoutConfirmationModal
+        isOpen={isModalOpen}
+        onConfirm={confirmLogout}
+        onCancel={cancelLogout}
+      />
+      
     </div>
   );
 };

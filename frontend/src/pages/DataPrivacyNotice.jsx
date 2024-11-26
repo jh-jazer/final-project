@@ -83,15 +83,15 @@ const DataPrivacyNotice = () => {
           contents, and consent to the processing of your personal data in accordance with the said notice and
           applicable laws.
         </p>
-        <Link
-        to="/create">
-        {/* Action Button */}
+        {/* <Link
+        to="/">
+        Action Button
         <div className="flex justify-center mt-8">
           <button className="px-6 py-2 bg-[#C61A01] text-white font-bold rounded-lg hover:bg-[#C61A01]/90 focus:ring-2 focus:ring-[#C61A01] focus:outline-none">
             I Agree
           </button>
         </div>
-        </Link>
+        </Link> */}
       </div>
       </div>
     </div>

@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Logo from '../assets/university-logo.png';
 import StudentImage from '../assets/student.jpg';
 import TopNav from '../components/Topnav'; // Import the TopNav component
 import { Link } from 'react-router-dom';
 
 const Register = () => {
+  const [userType, setUserType] = useState('regular'); // Manage user type state
+
   return (
     <div>
       {/* Top Navigation Bar */}
@@ -12,11 +14,11 @@ const Register = () => {
 
       {/* Main Content */}
       <div
-        className="flex items-center  justify-center min-h-screen bg-fixed bg-cover bg-center pt-[70px]"
+        className="flex justify-center min-h-screen bg-fixed bg-cover bg-center py-[150px]"
         style={{ backgroundImage: `url(${StudentImage})` }}
       >
         {/* Register Card */}
-        <div className="w-full max-w-md p-8 bg-white bg-opacity-95 shadow-lg rounded-lg">
+        <div className="w-full max-w-lg p-8 bg-[#E8E8E8] bg-opacity-95 shadow-lg rounded-lg">
           {/* Header */}
           <div className="flex flex-col items-center">
             <img src={Logo} alt="University Logo" className="w-20 h-20 mb-4" />
@@ -25,83 +27,431 @@ const Register = () => {
 
           {/* Registration Form */}
           <form className="space-y-4">
-            {/* Name Input */}
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                Full Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
-                placeholder="Enter your full name"
-                required
-              />
-            </div>
+    
+      
 
-            {/* Email Input */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email Address
+            {/* Radio Buttons for User Type */}
+            <div className="flex flex-col items-center justify-center">
+            <p className="text-sm font-medium text-gray-700">User Type</p>
+            <div className="flex space-x-4 mt-2">
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="userType"
+                  value="student"
+                  className="mr-2"
+                  checked={userType === 'student'}
+                  onChange={(e) => setUserType(e.target.value)}
+                />
+                Student
               </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
-                placeholder="Enter your email"
-                required
-              />
-            </div>
-
-            {/* ID Input */}
-            <div>
-              <label htmlFor="id" className="block text-sm font-medium text-gray-700">
-                Student ID
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="userType"
+                  value="societyOfficer"
+                  className="mr-2"
+                  checked={userType === 'societyOfficer'}
+                  onChange={(e) => setUserType(e.target.value)}
+                />
+                Society Officer
               </label>
-              <input
-                type="text"
-                id="id"
-                name="id"
-                className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
-                placeholder="Enter your student ID"
-                required
-              />
-            </div>
-
-            {/* Password Input */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="userType"
+                  value="employee"
+                  className="mr-2"
+                  checked={userType === 'employee'}
+                  onChange={(e) => setUserType(e.target.value)}
+                />
+                Employee
               </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
-                placeholder="Create a password"
-                required
-              />
             </div>
+          </div>
 
-            {/* Confirm Password Input */}
+
+            {/* Conditionally Render Fields Based on User Type */}
+            {userType === 'student' && (
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                Confirm Password
-              </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
-                placeholder="Confirm your password"
-                required
-              />
-            </div>
+              {/* Given Name */}
+              <div>
+                <label htmlFor="givenName" className="block text-sm pt-3 font-medium text-gray-700">
+                  Given Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="givenName"
+                  name="givenName"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  placeholder="Enter your given name"
+                  required
+                />
+              </div>
 
+              {/* Middle Name */}
+              <div>
+                <label htmlFor="middleName" className="block text-sm pt-3 font-medium text-gray-700">
+                  Middle Name <span className="text-gray-500 text-sm">(if applicable)</span>
+                </label>
+                <input
+                  type="text"
+                  id="middleName"
+                  name="middleName"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  placeholder="Enter your middle name"
+                />
+              </div>
+
+              {/* Last Name */}
+              <div>
+                <label htmlFor="lastName" className="block text-sm pt-3 font-medium text-gray-700">
+                  Last Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  placeholder="Enter your last name"
+                  required
+                />
+              </div>
+
+              {/* Student ID */}
+              <div>
+                <label htmlFor="studentId" className="block text-sm pt-3 font-medium text-gray-700">
+                  Student ID <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="studentId"
+                  name="studentId"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  placeholder="Enter your student ID"
+                  required
+                />
+              </div>
+
+              {/* CvSU Email */}
+              <div>
+                <label htmlFor="cvsuEmail" className="block text-sm pt-3 font-medium text-gray-700">
+                  CvSU Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  id="cvsuEmail"
+                  name="cvsuEmail"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  placeholder="Enter your CvSU email"
+                  required
+                />
+              </div>
+
+              {/* Phone Number */}
+              <div>
+                <label htmlFor="phoneNumber" className="block text-sm pt-3 font-medium text-gray-700">
+                  Phone Number <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="tel"
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  placeholder="Enter your phone number"
+                  required
+                />
+              </div>
+
+              {/* Program */}
+              <div>
+                <label htmlFor="program" className="block text-sm pt-3 font-medium text-gray-700">
+                  Program <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="program"
+                  name="program"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  required
+                >
+                  <option value="">Select your program</option>
+                  <option value="program1">Program 1</option>
+                  <option value="program2">Program 2</option>
+                  <option value="program3">Program 3</option>
+                </select>
+              </div>
+
+              {/* Regular or Irregular */}
+              <div>
+                <label htmlFor="status" className="block text-sm pt-3 font-medium text-gray-700">
+                  Regular or Irregular <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="status"
+                  name="status"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  required
+                >
+                  <option value="">Select here</option>
+                  <option value="regular">Regular</option>
+                  <option value="irregular">Irregular</option>
+                </select>
+              </div>
+            </div>
+          )}
+
+            {userType === 'societyOfficer' && (
+            <div>
+              {/* Given Name */}
+              <div>
+                <label htmlFor="givenName" className="block text-sm pt-3 font-medium text-gray-700">
+                  Given Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="givenName"
+                  name="givenName"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  placeholder="Enter your given name"
+                  required
+                />
+              </div>
+
+              {/* Middle Name */}
+              <div>
+                <label htmlFor="middleName" className="block text-sm pt-3 font-medium text-gray-700">
+                  Middle Name <span className="text-gray-500 text-sm">(if applicable)</span>
+                </label>
+                <input
+                  type="text"
+                  id="middleName"
+                  name="middleName"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  placeholder="Enter your middle name"
+                />
+              </div>
+
+              {/* Last Name */}
+              <div>
+                <label htmlFor="lastName" className="block text-sm pt-3 font-medium text-gray-700">
+                  Last Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  placeholder="Enter your last name"
+                  required
+                />
+              </div>
+
+              
+              {/* Student ID */}
+              <div>
+                <label htmlFor="studentId" className="block text-sm pt-3 font-medium text-gray-700">
+                  Student ID <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="studentId"
+                  name="studentId"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  placeholder="Enter your student ID"
+                  required
+                />
+              </div>
+
+              {/* Personal Email */}
+              <div>
+                <label htmlFor="personalEmail" className="block text-sm pt-3 font-medium text-gray-700">
+                  Personal Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  id="personalEmail"
+                  name="personalEmail"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  placeholder="Enter your Personal Email"
+                  required
+                />
+              </div>
+
+              {/* Phone Number */}
+              <div>
+                <label htmlFor="phoneNumber" className="block text-sm pt-3 font-medium text-gray-700">
+                  Phone Number <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="tel"
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  placeholder="Enter your phone number"
+                  required
+                />
+              </div>
+
+              {/* Program */}
+              <div>
+                <label htmlFor="program" className="block text-sm pt-3 font-medium text-gray-700">
+                  Program <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="program"
+                  name="program"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  required
+                >
+                  <option value="">Select your program</option>
+                  <option value="bscs">Bachelor of Science in Computer Science </option>
+                  <option value="bsit">Bachelor of Science in Information Technology </option>
+                </select>
+              </div>
+
+              {/* Society Officer */}
+              <div>
+                <label htmlFor="societyOffice" className="block text-sm pt-3 font-medium text-gray-700">
+                  Society Office <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="societyOffice"
+                  name="societyOffice"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  required
+                >
+                  <option value="">Select your Society Office</option>
+                  <option value="president">President</option>
+                  <option value="vicePresident">Vice President</option>
+                  <option value="secretary">Secretary</option>
+                  <option value="treasurer">Treasurer</option>
+                  <option value="pro">Public Relations Officer</option>
+                  <option value="eventsCoordinator">Events Coordinator</option>
+                  <option value="membershipOfficer">Membership Officer</option>
+                  <option value="socialSecretary">Social Secretary</option>
+                  <option value="welfareOfficer">Welfare Officer</option>
+                  <option value="academicOfficer">Academic Officer</option>
+                </select>
+              </div>
+            </div>
+          )}
+
+            {userType === 'employee' && (
+            <div>
+              {/* Given Name */}
+              <div>
+                <label htmlFor="givenName" className="block text-sm pt-3 font-medium text-gray-700">
+                  Given Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="givenName"
+                  name="givenName"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  placeholder="Enter your given name"
+                  required
+                />
+              </div>
+
+              {/* Middle Name */}
+              <div>
+                <label htmlFor="middleName" className="block text-sm pt-3 font-medium text-gray-700">
+                  Middle Name <span className="text-gray-500 text-sm">(if applicable)</span>
+                </label>
+                <input
+                  type="text"
+                  id="middleName"
+                  name="middleName"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  placeholder="Enter your middle name"
+                />
+              </div>
+
+              {/* Last Name */}
+              <div>
+                <label htmlFor="lastName" className="block text-sm pt-3 font-medium text-gray-700">
+                  Last Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  placeholder="Enter your last name"
+                  required
+                />
+              </div>
+
+              {/* Last Name */}
+              <div>
+                <label htmlFor="employeeId" className="block text-sm pt-3 font-medium text-gray-700">
+                  Last Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="employeeId"
+                  name="EmployeeId"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  placeholder="Enter your Employee ID"
+                  required
+                />
+              </div>
+
+              {/* CVSU Email */}
+              <div>
+                <label htmlFor="cvsuEmail" className="block text-sm pt-3 font-medium text-gray-700">
+                  Personal Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  id="cvsuEmail"
+                  name="cvsuEmail"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  placeholder="Enter your CvSU Email"
+                  required
+                />
+              </div>
+
+              {/* Phone Number */}
+              <div>
+                <label htmlFor="phoneNumber" className="block text-sm pt-3 font-medium text-gray-700">
+                  Phone Number <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="tel"
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  placeholder="Enter your phone number"
+                  required
+                />
+              </div>
+
+              {/* Job */}
+              <div>
+                <label htmlFor="job" className="block text-sm pt-3 font-medium text-gray-700">
+                  Program <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="job"
+                  name="job"
+                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  required
+                >
+                  <option value="">Select your Role</option>
+                  <option value="enrollmentOfficer">EnrollmentOfficer</option>
+                  <option value="adviser">Adviser </option>
+                  <option value="registrar">Registrar </option>
+                  <option value="dcsHead">DCS Head </option>
+                  <option value="schoolHead">School Head </option>
+                  
+                </select>
+              </div>
+            </div>
+          )}
+
+            {/* Submit Button */}
             <Link to="/studentdb">
-              {/* Submit Button */}
               <button
                 type="submit"
                 className="w-full py-2 mt-6 text-white bg-[#C61A01] rounded-lg hover:bg-[#C61A01]/90 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"

@@ -72,7 +72,7 @@
 /* Adjust font inside the button */
 .mainButton span {
   position: relative;
-  font-size: 20px; /* Adjust for smaller screens */
+  font-size: 14px; /* Adjust for smaller screens */
   font-family: 'Poppins', sans-serif;
   font-weight: bold;
   background-color: transparent;
@@ -84,7 +84,6 @@
   content: '';
   position: absolute;
   top: 0;
-  left: -100%;
   width: 100%;
   height: 100%;
   transition: left 0.3s ease;

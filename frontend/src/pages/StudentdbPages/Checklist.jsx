@@ -252,7 +252,8 @@ const Checklist = () => {
           </button>
         </div>
 
-
+       {/* Table for Courses */}
+       <div className="overflow-x-auto max-w-full">
         <table className="min-w-full table-auto border-collapse">
           <thead>
             <tr className="bg-gray-200">
@@ -275,6 +276,7 @@ const Checklist = () => {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

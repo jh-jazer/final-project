@@ -10,9 +10,9 @@ const ContactSection = () => {
           <div>
             <h3 className="text-lg font-semibold mb-2">Government Links</h3>
             <ul className="space-y-2">
-              <li>
+            <li>
                 <a
-                  href="#"
+                  href="https://www.gov.ph/"
                   className="hover:underline hover:text-gray-600"
                 >
                   Government PH
@@ -20,7 +20,7 @@ const ContactSection = () => {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="https://ched.gov.ph/"
                   className="hover:underline hover:text-gray-600"
                 >
                   CHED
@@ -28,7 +28,7 @@ const ContactSection = () => {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="https://www.dost.gov.ph/"
                   className="hover:underline hover:text-gray-600"
                 >
                   DOST
@@ -36,7 +36,7 @@ const ContactSection = () => {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="https://cavite.gov.ph/"
                   className="hover:underline hover:text-gray-600"
                 >
                   Cavite PH
@@ -44,10 +44,10 @@ const ContactSection = () => {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="https://bacoor.gov.ph/"
                   className="hover:underline hover:text-gray-600"
                 >
-                  Imus City
+                  Bacoor City
                 </a>
               </li>
             </ul>
@@ -59,7 +59,7 @@ const ContactSection = () => {
             <ul className="space-y-2">
               <li>
                 <a
-                  href="#"
+                  href="/apply"
                   className="hover:underline hover:text-gray-600"
                 >
                   Admission Procedures
@@ -67,7 +67,7 @@ const ContactSection = () => {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="acadprog"
                   className="hover:underline hover:text-gray-600"
                 >
                   Academic Programs
@@ -75,7 +75,7 @@ const ContactSection = () => {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="newsupdates"
                   className="hover:underline hover:text-gray-600"
                 >
                   News and Updates
@@ -83,7 +83,7 @@ const ContactSection = () => {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="careers"
                   className="hover:underline hover:text-gray-600"
                 >
                   Careers @ CvSU
@@ -91,7 +91,7 @@ const ContactSection = () => {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="forms"
                   className="hover:underline hover:text-gray-600"
                 >
                   Downloadable Forms
@@ -102,15 +102,9 @@ const ContactSection = () => {
 
           {/* Contact Information */}
           <div>
-            <h3 className="text-lg font-semibold mb-2">Contact Information</h3>
+          <h3 className="text-lg font-semibold mb-2">Contact Information</h3>
             <p className="text-sm mb-2">
-              Cavite Civic Center, Palico IV, Imus City, Cavite 4103
-            </p>
-            <p className="text-sm mb-2">
-              <strong>Admin:</strong> (046) 471-6607
-            </p>
-            <p className="text-sm">
-              <strong>Registrar:</strong> (046) 436-6584
+              Soldiers Hills IV, Molino VI,City of Bacoor, Cavite
             </p>
           </div>
         </div>

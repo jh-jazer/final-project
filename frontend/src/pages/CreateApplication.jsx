@@ -3,13 +3,6 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import {
   FaBars,
   FaTimes,
-  FaClipboardList,
-  FaUser,
-  FaEnvelope,
-  FaUsers,
-  FaGraduationCap,
-  FaFileAlt,
-  FaCalendarAlt,
   FaSignOutAlt,
 } from "react-icons/fa";
 
@@ -19,7 +12,8 @@ const AdmissionsPage = () => {
 
   const user = {
     name: "Jane Applicant",
-    email: "jane.applicant@example.com",
+    preferredProgram: "Computer Science",
+    applicantType: "Transfer",
     avatar: "https://via.placeholder.com/100",
   };
 
@@ -51,7 +45,8 @@ const AdmissionsPage = () => {
           >
             {user.name}
           </h2>
-          <p className="text-sm text-gray-400">{user.email}</p>
+          <p className="text-sm text-gray-400">{user.preferredProgram}</p>
+          <p className="text-sm text-gray-400">{user.applicantType} Applicant</p>
         </div>
         <nav className="flex-1 mt-4">
           <ul className="space-y-2">
@@ -61,7 +56,7 @@ const AdmissionsPage = () => {
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >
-                <FaClipboardList />
+                <span className="text-xl font-semibold">1.</span>
                 <span>Application Details</span>
               </Link>
             </li>
@@ -71,18 +66,8 @@ const AdmissionsPage = () => {
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >
-                <FaUser />
+                <span className="text-xl font-semibold">2.</span>
                 <span>Personal Info</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="contact"
-                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaEnvelope />
-                <span>Contact Details</span>
               </Link>
             </li>
             <li>
@@ -91,7 +76,7 @@ const AdmissionsPage = () => {
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >
-                <FaUsers />
+                <span className="text-xl font-semibold">3.</span>
                 <span>Family Profile</span>
               </Link>
             </li>
@@ -101,7 +86,7 @@ const AdmissionsPage = () => {
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >
-                <FaGraduationCap />
+                <span className="text-xl font-semibold">4.</span>
                 <span>Educational Info</span>
               </Link>
             </li>
@@ -111,7 +96,7 @@ const AdmissionsPage = () => {
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >
-                <FaFileAlt />
+                <span className="text-xl font-semibold">5.</span>
                 <span>Upload Requirements</span>
               </Link>
             </li>
@@ -121,10 +106,12 @@ const AdmissionsPage = () => {
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >
-                <FaCalendarAlt />
+                <span className="text-xl font-semibold">6.</span>
                 <span>Schedule Appointment</span>
               </Link>
             </li>
+            {/* Thin Horizontal Line */}
+            <hr className="my-11 border-t-2 border-gray-700" />
             <li>
               <button
                 onClick={handleLogout}

@@ -220,7 +220,7 @@ const Checklist = () => {
   return (
     <div className="min-h-screen bg-gray-100  p-8">
       <div className="bg-white shadow-md rounded-lg p-6">
-        <h1 className="text-2xl font-bold text-green-700 mb-4">
+        <h1 className="text-3xl font-extrabold text-green-700 mb-4">
           {course === 'CS' ? 'Computer Science' : 'Information Technology'} Student Checklist
         </h1>
 

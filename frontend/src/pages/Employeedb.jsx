@@ -12,7 +12,6 @@ import {
 } from "react-icons/fa";
 import LogoutConfirmationModal from "./LogoutConfirmationModal"; // Import the modal
 
-
 const AdminDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
@@ -20,7 +19,7 @@ const AdminDashboard = () => {
 
   const user = {
     name: "Admin Doe",
-    email: "johndoe@example.com",
+    role: "Enrollment Officer", // Employee type (Role/Position)
     avatar: "https://via.placeholder.com/100",
   };
 
@@ -46,33 +45,29 @@ const AdminDashboard = () => {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300 lg:relative lg:translate-x-0`}
       >
-        
         <div className="p-6 flex flex-col items-center border-b border-gray-700">
-          <Link
-          to='adminHome'>
-          <img
-            src={user.avatar}
-            alt="Profile"
-            className="rounded-full w-20 h-20 mb-3 border-4 border-white cursor-pointer"
-            onClick={() => setIsSidebarOpen(false)}
-          />
+          <Link to="/employeedb">
+            <img
+              src={user.avatar}
+              alt="Profile"
+              className="rounded-full w-20 h-20 mb-3 border-4 border-white cursor-pointer"
+              onClick={() => setIsSidebarOpen(false)}
+            />
           </Link>
-          
+
           <h2
             className="text-xl font-semibold cursor-pointer"
             onClick={() => setIsSidebarOpen(false)}
           >
-            
             {user.name}
-            
           </h2>
-          <p className="text-sm text-gray-400">{user.email}</p>
+          <p className="text-sm text-gray-400">{user.role}</p> {/* Display employee type */}
         </div>
         <nav className="flex-1 mt-4">
           <ul className="space-y-2">
             <li>
               <Link
-                to="adminProfile"
+                to="employProfile"
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >
@@ -82,12 +77,44 @@ const AdminDashboard = () => {
             </li>
             <li>
               <Link
+                to="employSettings"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaCog />
+                <span>Settings</span>
+              </Link>
+            </li>
+            {/* Thin Horizontal Line */}
+            <hr className="my-6 border-t-2 border-gray-700" />
+            <li>
+              <Link
+                to="EmployAcads"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaUser />
+                <span>Academic Records</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="EmployStuds"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaUser />
+                <span>Student Records</span>
+              </Link>
+            </li>
+            <li>
+              <Link
                 to="userManage"
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <FaBook />
-                <span>User Management</span>
+                <span>Manage Accounts</span>
               </Link>
             </li>
             <li>
@@ -97,29 +124,11 @@ const AdminDashboard = () => {
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <FaClipboardList />
-                <span>Applications</span>
+                <span>Manage Applications</span>
               </Link>
             </li>
-            <li>
-              <Link
-                to="adminAnnounce"
-                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaBell />
-                <span>Announcements</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="adminSettings"
-                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaCog />
-                <span>Settings</span>
-              </Link>
-            </li>
+            {/* Thin Horizontal Line */}
+            <hr className="my-6 border-t-2 border-gray-700" />
             <li>
               <button
                 onClick={handleLogout}
@@ -142,7 +151,7 @@ const AdminDashboard = () => {
       </button>
 
       {/* Main Content */}
-      <main className="flex-1  overflow-y-auto h-full p-8">
+      <main className="flex-1 overflow-y-auto h-full p-8">
         <Outlet /> {/* This renders the nested route components */}
       </main>
 
@@ -152,7 +161,6 @@ const AdminDashboard = () => {
         onConfirm={confirmLogout}
         onCancel={cancelLogout}
       />
-      
     </div>
   );
 };

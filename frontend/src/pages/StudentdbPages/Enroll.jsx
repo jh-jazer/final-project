@@ -1,158 +1,97 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
 const Enroll = () => {
-  const [formData, setFormData] = useState({
-    course: "",
-    section: "",
-  });
+  const [gradesChecked, setGradesChecked] = useState(false);
+  const [feeChecked, setFeeChecked] = useState(false);
 
-  const [requirements, setRequirements] = useState({
-    birthCertificate: false,
-    goodMoral: false,
-    transcriptOfRecords: false,
-    idPhoto: false,
-  });
-
-  const [message, setMessage] = useState("");
-  const [irregularMessage, setIrregularMessage] = useState("");
-
-  const courses = ["Computer Science", "Information Technology", "Engineering", "Education", "Nursing"];
-  const sections = ["Section A", "Section B", "Section C"];
-
-  const handleRequirementChange = (e) => {
-    const { name, checked } = e.target;
-    setRequirements({
-      ...requirements,
-      [name]: checked,
-    });
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const allRequirementsMet = Object.values(requirements).every((req) => req);
-
-  const handleEnroll = (e) => {
-    e.preventDefault();
-    if (allRequirementsMet && formData.course && formData.section) {
-      setMessage(`You have successfully enrolled in ${formData.course} (${formData.section}).`);
-      setFormData({
-        course: "",
-        section: "",
-      });
-      setRequirements({
-        birthCertificate: false,
-        goodMoral: false,
-        transcriptOfRecords: false,
-        idPhoto: false,
-      });
+  const handleEnroll = () => {
+    if (!gradesChecked || !feeChecked) {
+      alert('Please complete all requirements before enrolling.');
     } else {
-      setMessage("Please complete all requirements and select a course/section.");
+      alert('Enrollment successful!');
     }
   };
 
-  const handleIrregularRequest = () => {
-    setIrregularMessage("Your request to be an irregular student has been sent for review.");
+  const handleIrregularChange = () => {
+    alert('Changed to irregular status.');
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white shadow-md rounded-lg p-6">
-      <h1 className="text-2xl font-bold mb-4 text-center">Enroll in a Course</h1>
-
-      {message && (
-        <div
-          className={`mb-4 p-3 rounded ${
-            message.includes("successfully") ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-          }`}
-        >
-          {message}
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="bg-white max-w-lg w-full p-8 shadow-lg rounded-lg">
+        {/* Header Section */}
+        <div className="text-center">
+          <h1 className="text-3xl font-extrabold text-green-900 mb-4">Enrollment</h1>
+          <p className="text-gray-600 text-sm">
+            Welcome to the enrollment system. Please make sure to fulfill all the requirements below to complete your
+            enrollment. You may also choose to switch to irregular status if necessary.
+          </p>
         </div>
-      )}
 
-      {irregularMessage && (
-        <div className="mb-4 p-3 rounded bg-blue-100 text-blue-700">
-          {irregularMessage}
-        </div>
-      )}
+        <hr className="my-6 border-gray-300" />
 
-      <form className="space-y-4">
+        {/* Requirements Section */}
         <div>
-          <label className="block text-gray-700 font-medium mb-2">Select Course</label>
-          <select
-            name="course"
-            value={formData.course}
-            onChange={handleInputChange}
-            className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-          >
-            <option value="">-- Select a Course --</option>
-            {courses.map((course, index) => (
-              <option key={index} value={course}>
-                {course}
-              </option>
-            ))}
-          </select>
-        </div>
+          <h2 className="text-lg font-semibold text-green-900 mb-4">Requirements</h2>
 
-        <div>
-          <label className="block text-gray-700 font-medium mb-2">Select Section</label>
-          <select
-            name="section"
-            value={formData.section}
-            onChange={handleInputChange}
-            className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-          >
-            <option value="">-- Select a Section --</option>
-            {sections.map((section, index) => (
-              <option key={index} value={section}>
-                {section}
-              </option>
-            ))}
-          </select>
-        </div>
+          {/* Grades Requirement */}
+          <div className="flex items-center mb-4">
+            <input
+              type="checkbox"
+              id="gradesCheckbox"
+              checked={gradesChecked}
+              onChange={() => setGradesChecked(!gradesChecked)}
+              className="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+            />
+            <label
+              htmlFor="gradesCheckbox"
+              className="ml-3 text-gray-700 cursor-pointer select-none"
+            >
+              Grades: There must be no failing grades.
+            </label>
+          </div>
 
-        <div>
-          <h2 className="text-lg font-semibold mb-2">Requirements</h2>
-          <div className="space-y-2">
-            {Object.keys(requirements).map((requirement, index) => (
-              <label key={index} className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  name={requirement}
-                  checked={requirements[requirement]}
-                  onChange={handleRequirementChange}
-                  className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                />
-                <span className="capitalize">{requirement.replace(/([A-Z])/g, " $1")}</span>
-              </label>
-            ))}
+          {/* Society Fee Requirement */}
+          <div className="flex items-center mb-6">
+            <input
+              type="checkbox"
+              id="feeCheckbox"
+              checked={feeChecked}
+              onChange={() => setFeeChecked(!feeChecked)}
+              className="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+            />
+            <label
+              htmlFor="feeCheckbox"
+              className="ml-3 text-gray-700 cursor-pointer select-none"
+            >
+              Society Fee: You must pay an amount for the society fee.
+            </label>
           </div>
         </div>
 
-        <div className="flex items-center justify-between space-x-4">
+        <hr className="my-6 border-gray-300" />
+
+        {/* Action Buttons */}
+        <div className="flex justify-center space-x-4">
           <button
-            type="submit"
             onClick={handleEnroll}
-            disabled={!allRequirementsMet || !formData.course || !formData.section}
-            className={`w-full bg-green-600 text-white py-2 px-4 rounded-md shadow hover:bg-green-700 ${
-              !allRequirementsMet || !formData.course || !formData.section ? "opacity-50 cursor-not-allowed" : ""
+            disabled={!gradesChecked || !feeChecked}
+            className={`px-6 py-2 text-white rounded-lg ${
+              gradesChecked && feeChecked
+                ? 'bg-green-600 hover:bg-green-700'
+                : 'bg-green-400 cursor-not-allowed'
             }`}
           >
             Enroll
           </button>
           <button
-            type="button"
-            onClick={handleIrregularRequest}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md shadow hover:bg-blue-700"
+            onClick={handleIrregularChange}
+            className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg"
           >
-            Request Irregular
+            Change to Irregular
           </button>
         </div>
-      </form>
+      </div>
     </div>
   );
 };

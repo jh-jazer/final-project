@@ -15,13 +15,14 @@ import Enroll from "./pages/StudentdbPages/Enroll.jsx";
 import Home from "./pages/StudentdbPages/Home.jsx";
 import Settings from "./pages/StudentdbPages/Settings.jsx";
 
-import Admindb from './pages/Admindb.jsx';
-import AdminProfile from './pages/AdmindbPages/AdminProfile.jsx';
-import UserManage from "./pages/AdmindbPages/UserManage.jsx";
-import ApplyManage from "./pages/AdmindbPages/ApplyManage.jsx";
-import AdminHome from "./pages/AdmindbPages/AdminHome.jsx";
-import AdminAnnounce from "./pages/AdmindbPages/AdminAnnounce.jsx";
-import AdminSettings from "./pages/AdmindbPages/AdminSettings.jsx";
+import Employeedb from './pages/Employeedb.jsx';
+import EmployProfile from './pages/EmployeedbPages/EmployProfile.jsx';
+import UserManage from "./pages/EmployeedbPages/UserManage.jsx";
+import ApplyManage from "./pages/EmployeedbPages/EmployManage.jsx";
+import EmployAcads from "./pages/EmployeedbPages/EmployAcads.jsx";
+import EmployStuds from "./pages/EmployeedbPages/EmployStuds.jsx";
+import EmployHome from "./pages/EmployeedbPages/EmployHome.jsx";
+import EmploySettings from "./pages/EmployeedbPages/EmploySettings.jsx";
 
 import CreateApplication from "./pages/CreateApplication.jsx";
 import Details from './pages/CreateAppPages/Details.jsx';
@@ -138,7 +139,6 @@ const router = createBrowserRouter([
     children: [
       {
         index: true, // Default route for /studentdb
-        path: "home",
         element: <Home />, // Render the Home component by default
       },
       {
@@ -161,17 +161,24 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/admindb",
-    element: <Admindb />,
+    path: "/employeedb",
+    element: <Employeedb />,
     children: [
       {
         index: true, // Default route for /studentdb
-        path: "adminHome",
-        element: <AdminHome />, // Render the Home component by default
+        element: <EmployHome />, // Render the Home component by default
       },
       {
-        path: "adminProfile",
-        element: <AdminProfile />, // Component to render when /studentdb/courses is visited
+        path: "employProfile",
+        element: <EmployProfile />, // Component to render when /studentdb/courses is visited
+      },
+      {
+        path: "employStuds",
+        element: <EmployStuds />, // Component to render when /studentdb/courses is visited
+      },
+      {
+        path: "employAcads",
+        element: <EmployAcads />, // Component to render when /studentdb/courses is visited
       },
       {
         path: "userManage",
@@ -182,12 +189,8 @@ const router = createBrowserRouter([
         element: <ApplyManage />, // Component to render when /studentdb/courses is visited
       },
       {
-        path: "adminAnnounce",
-        element: <AdminAnnounce />, // Component for /studentdb/notifications
-      },
-      {
-        path: "adminSettings",
-        element: <AdminSettings />, // Component for /studentdb/settings
+        path: "employSettings",
+        element: <EmploySettings />, // Component for /studentdb/settings
       },
     ],
   },

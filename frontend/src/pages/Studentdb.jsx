@@ -12,7 +12,6 @@ import {
 } from "react-icons/fa";
 import LogoutConfirmationModal from "./LogoutConfirmationModal"; // Import the modal
 
-
 const StudentDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
@@ -20,7 +19,8 @@ const StudentDashboard = () => {
 
   const user = {
     name: "John Doe",
-    email: "johndoe@example.com",
+    course: "BSCS", // Add course information
+    status: "Regular", // Add status information (Regular or Irregular)
     avatar: "https://via.placeholder.com/100",
   };
 
@@ -46,27 +46,25 @@ const StudentDashboard = () => {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300 lg:relative lg:translate-x-0`}
       >
-        
         <div className="p-6 flex flex-col items-center border-b border-gray-700">
-          <Link
-          to='home'>
-          <img
-            src={user.avatar}
-            alt="Profile"
-            className="rounded-full w-20 h-20 mb-3 border-4 border-white cursor-pointer"
-            onClick={() => setIsSidebarOpen(false)}
-          />
+          <Link to="/studentdb">
+            <img
+              src={user.avatar}
+              alt="Profile"
+              className="rounded-full w-20 h-20 mb-3 border-4 border-white cursor-pointer"
+              onClick={() => setIsSidebarOpen(false)}
+            />
           </Link>
           
           <h2
             className="text-xl font-semibold cursor-pointer"
             onClick={() => setIsSidebarOpen(false)}
           >
-            
             {user.name}
-            
           </h2>
-          <p className="text-sm text-gray-400">{user.email}</p>
+          <p className="text-sm text-gray-400">
+            {user.course} | {user.status} {/* Display course and status */}
+          </p>
         </div>
         <nav className="flex-1 mt-4">
           <ul className="space-y-2">
@@ -132,7 +130,7 @@ const StudentDashboard = () => {
       </button>
 
       {/* Main Content */}
-      <main className="flex-1  overflow-y-auto h-full p-8">
+      <main className="flex-1 overflow-y-auto h-full p-8">
         <Outlet /> {/* This renders the nested route components */}
       </main>
 
@@ -142,7 +140,6 @@ const StudentDashboard = () => {
         onConfirm={confirmLogout}
         onCancel={cancelLogout}
       />
-      
     </div>
   );
 };

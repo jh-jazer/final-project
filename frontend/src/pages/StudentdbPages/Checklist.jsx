@@ -115,23 +115,103 @@ const Checklist = () => {
     {
       label: 'First Year, First Semester',
       courses: [
-        { code: 'ITGN 01', name: 'Introduction to IT', prerequisite: 'None', grade: 'N/A', instructor: 'TBA' },
-        { code: 'ITGN 02', name: 'Mathematics for IT', prerequisite: 'None', grade: 'N/A', instructor: 'TBA' },
-        { code: 'ITGN 03', name: 'Networking Fundamentals', prerequisite: 'None', grade: 'N/A', instructor: 'TBA' },
-        { code: 'ITP 01', name: 'IT Programming Basics', prerequisite: 'None', grade: 'N/A', instructor: 'TBA' },
-        // Add more IT courses as needed
+        { code: 'GNED 02', name: 'Ethics', prerequisite: 'None', grade: 'N/A', instructor: 'TBA' },
+        { code: 'GNED 05', name: 'Purposive Communication', prerequisite: 'None', grade: 'N/A', instructor: 'TBA' },
+        { code: 'GNED 11', name: 'Kontekstwalisadong Komunikasyon sa Filipino', prerequisite: 'None', grade: 'N/A', instructor: 'TBA' },
+        { code: 'COSC 50', name: 'Discrete Structures', prerequisite: 'None', grade: 'N/A', instructor: 'TBA' },
+        { code: 'DCIT 21', name: 'Introduction to Computing', prerequisite: 'None', grade: 'N/A', instructor: 'TBA' },
+        { code: 'DCIT 22', name: 'Computer Programming I', prerequisite: 'None', grade: 'N/A', instructor: 'TBA' },
+        { code: 'FITT 1', name: 'Movement Enhancement', prerequisite: 'None', grade: 'N/A', instructor: 'TBA' },
+        { code: 'NSTP 1', name: 'National Service Training Program 1', prerequisite: 'None', grade: 'N/A', instructor: 'TBA' },
+        { code: 'ORNT 1', name: 'Institutional Orientation', prerequisite: 'None', grade: 'N/A', instructor: 'TBA' },
       ],
     },
     {
       label: 'First Year, Second Semester',
       courses: [
-        { code: 'ITGN 04', name: 'Introduction to Cyber Security', prerequisite: 'None', grade: 'N/A', instructor: 'TBA' },
-        { code: 'ITGN 05', name: 'Database Management Systems', prerequisite: 'ITGN 02', grade: 'N/A', instructor: 'TBA' },
-        // Add more IT courses as needed
+        { code: 'GNED 01', name: 'Art Appreciation', prerequisite: 'None', grade: 'N/A', instructor: 'TBA' },
+        { code: 'GNED 06', name: 'Science, Technology, and Society', prerequisite: 'None', grade: 'N/A', instructor: 'TBA' },
+        { code: 'GNED 12', name: 'Dalumat Ng/Sa Filipino', prerequisite: 'GNED 10', grade: 'N/A', instructor: 'TBA' },
+        { code: 'GNED 03', name: 'Mathematics in the Modern World', prerequisite: 'None', grade: 'N/A', instructor: 'TBA' },
+        { code: 'DCIT 23', name: 'Computer Programming 2', prerequisite: 'DCIT 22', grade: 'N/A', instructor: 'TBA' },
+        { code: 'ITEC 50', name: 'Web Systems and Technologies 1', prerequisite: 'DCIT 21', grade: 'N/A', instructor: 'TBA' },
+        { code: 'FITT 2', name: 'Fitness Exercise', prerequisite: 'FITT 1', grade: 'N/A', instructor: 'TBA' },
+        { code: 'NSTP 2', name: 'National Service Training Program 2', prerequisite: 'NSTP 1', grade: 'N/A', instructor: 'TBA' },
       ],
     },
-    // Add more semesters for IT if needed
+    {
+      label: 'Second Year, First Semester',
+      courses: [
+        { code: 'GNED 04', name: 'Mga Babasahin Hinggil sa Kasaysayan ng Pilipinas', prerequisite: 'None', grade: 'N/A', instructor: 'TBA' },
+        { code: 'GNED 07', name: 'The Contemporary World', prerequisite: 'None', grade: 'N/A', instructor: 'TBA' },
+        { code: 'GNED 10', name: 'Gender and Society', prerequisite: 'None', grade: 'N/A', instructor: 'TBA' },
+        { code: 'GNED 14', name: 'Panitikang Panlipunan', prerequisite: 'GNED 10', grade: 'N/A', instructor: 'TBA' },
+        { code: 'ITEC 55', name: 'Platform Technologies', prerequisite: 'DCIT 23', grade: 'N/A', instructor: 'TBA' },
+        { code: 'DCIT 24', name: 'Information Management', prerequisite: 'DCIT 23', grade: 'N/A', instructor: 'TBA' },
+        { code: 'DCIT 50', name: 'Object-Oriented Programming', prerequisite: 'DCIT 23', grade: 'N/A', instructor: 'TBA' },
+        { code: 'FITT 3', name: 'Physical Activities towards Health and Fitness 1', prerequisite: 'None', grade: 'N/A', instructor: 'TBA' },
+      ],
+    },
+    {
+      label: 'Second Year, Second Semester',
+      courses: [
+        { code: 'GNED 08', name: 'Understanding the Self', prerequisite: 'None', grade: 'N/A', instructor: 'TBA' },
+        { code: 'DCIT 25', name: 'Data Structures and Algorithms', prerequisite: 'DCIT 50', grade: 'N/A', instructor: 'TBA' },
+        { code: 'ITEC 60', name: 'Integrated Programming and Technologies 1', prerequisite: 'DCIT 50, ITEC 55', grade: 'N/A', instructor: 'TBA' },
+        { code: 'ITEC 65', name: 'Open Source Technologies', prerequisite: 'Second Year Standing', grade: 'N/A', instructor: 'TBA' },
+        { code: 'DCIT 55', name: 'Advanced Database System', prerequisite: 'DCIT 24', grade: 'N/A', instructor: 'TBA' },
+        { code: 'ITEC 70', name: 'Multimedia Systems', prerequisite: 'Second Year Standing', grade: 'N/A', instructor: 'TBA' },
+        { code: 'FITT 4', name: 'Physical Activities towards Health and Fitness 2', prerequisite: '', grade: 'N/A', instructor: 'TBA' },
+      ],
+    },
+    {
+      label: "Second Year, Mid-Year",
+      courses: [
+        { code: "STAT 2", name: " Applied Statistics", prerequisite: "Second Year Standing", grade: 'N/A', instructor: 'TBA' },
+        { code: "ITEC 75", name: " System Integration and Architecture 1", prerequisite: "ITEC 60", grade: 'N/A', instructor: 'TBA' },
+      ]
+    },
+    {
+      label: 'Third Year, First Semester',
+      courses: [
+        { code: 'ITEC 80', name: 'Introduction to Human Computer Interaction', prerequisite: 'Third Year Standing', grade: 'N/A', instructor: 'TBA' },
+        { code: 'ITEC 85', name: 'Information Assurance and Security 1', prerequisite: 'ITEC 75', grade: 'N/A', instructor: 'TBA' },
+        { code: 'ITEC 90', name: 'Network Fundamentals', prerequisite: 'ITEC 55', grade: '', instructor: 'TBA' },
+        { code: 'INSY 55 ', name: 'System Analysis and Design', prerequisite: 'Third Year Standing', grade: 'N/A', instructor: 'TBA' },
+        { code: 'DCIT 26', name: 'Applications Development and Emerging Technologies', prerequisite: 'DCIT 55', grade: 'N/A', instructor: 'TBA' },
+        { code: 'DCIT 80', name: 'Methods of Research', prerequisite: 'Third Year Standing', grade: 'N/A', instructor: 'TBA' },
+      ],
+    },
+    {
+      label: 'Third Year, Second Semester',
+      courses: [
+        { code: 'GNED 09', name: 'Rizal; Life, Works and Writings', prerequisite: 'GNED 4', grade: 'N/A', instructor: 'TBA' },
+        { code: 'ITEC 95', name: 'Quantitative Methods (Modeling & Simulation', prerequisite: 'COSC 50, STAT 2', grade: 'N/A', instructor: 'TBA' },
+        { code: 'ITEC 101', name: 'IT ELECTIVE 1 (Human Computer Interaction 2)', prerequisite: 'ITEC 60', grade: 'N/A', instructor: 'TBA' },
+        { code: 'ITEC 106', name: 'IT ELECTIVE 2 (Web System and Technologies)', prerequisite: 'ITEC 50', grade: 'N/A', instructor: 'TBA' },
+        { code: 'ITEC 100', name: 'Information Assurance and Security 2', prerequisite: 'ITEC 85', grade: 'N/A', instructor: 'TBA' },
+        { code: 'ITEC 105', name: 'Network Management', prerequisite: 'ITEC 90', grade: 'N/A', instructor: 'TBA' },
+        { code: 'ITEC 200A', name: 'Capstone Project and Research 1', prerequisite: 'DCIT 80, DCIT 26, ITEC 85, 70% total units taken', grade: 'N/A', instructor: 'TBA' },
+      ],
+    },
+    {
+      label: 'Fourth Year, First Semester',
+      courses: [
+        { code: 'DCIT 65', name: 'Social and Professional Issues', prerequisite: 'Third Year Standing', grade: 'N/A', instructor: 'TBA' },
+        { code: 'ITEC 111', name: 'Elective 3 (Integrated Programming and Technologies 2)', prerequisite: 'ITEC 60', grade: 'N/A', instructor: 'TBA' },
+        { code: 'ITEC 116', name: 'Elective 4 (Systems Integration and Architecture 2)', prerequisite: 'ITEC 75', grade: 'N/A', instructor: 'TBA' },
+        { code: 'ITEC 110', name: 'System Administration and Maintenance', prerequisite: 'ITEC 100', grade: 'N/A', instructor: 'TBA' },
+        { code: 'ITEC 200B', name: 'Capstone Project and Research 2', prerequisite: 'ITEC 200A', grade: 'N/A', instructor: 'TBA' },
+      ],
+    },
+    {
+      label: 'Fourth Year, Second Semester',
+      courses: [
+        { code: 'ITEC 199', name: 'Practicum (minimum 480 hours)', prerequisite: 'DCIT 80, DCIT 26, ITEC 85, 70% total units taken', grade: 'N/A', instructor: 'TBA' },
+      ],
+    },
   ];
+  
 
   const currentSemester = course === 'CS' ? csSemesters[currentIndex] : itSemesters[currentIndex];
 

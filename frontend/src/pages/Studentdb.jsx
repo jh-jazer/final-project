@@ -82,12 +82,12 @@ const StudentDashboard = () => {
             </li>
             <li>
               <Link
-                to="courses"
+                to="checklist"
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <FaBook />
-                <span>Courses</span>
+                <span>Checklist</span>
               </Link>
             </li>
             <li>
@@ -98,16 +98,6 @@ const StudentDashboard = () => {
               >
                 <FaClipboardList />
                 <span>Enroll</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="notifications"
-                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaBell />
-                <span>Notifications</span>
               </Link>
             </li>
             <li>

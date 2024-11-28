@@ -10,11 +10,18 @@ import Create from './pages/Create.jsx';
 
 import Studentdb from './pages/Studentdb.jsx';
 import Profile from './pages/StudentdbPages/Profile.jsx';
-import Courses from "./pages/StudentdbPages/Courses.jsx";
+import Checklist from "./pages/StudentdbPages/Checklist.jsx";
 import Enroll from "./pages/StudentdbPages/Enroll.jsx";
 import Home from "./pages/StudentdbPages/Home.jsx";
-import Notifications from "./pages/StudentdbPages/Notifications.jsx";
 import Settings from "./pages/StudentdbPages/Settings.jsx";
+
+import Admindb from './pages/Admindb.jsx';
+import AdminProfile from './pages/AdmindbPages/AdminProfile.jsx';
+import UserManage from "./pages/AdmindbPages/UserManage.jsx";
+import ApplyManage from "./pages/AdmindbPages/ApplyManage.jsx";
+import AdminHome from "./pages/AdmindbPages/AdminHome.jsx";
+import AdminAnnounce from "./pages/AdmindbPages/AdminAnnounce.jsx";
+import AdminSettings from "./pages/AdmindbPages/AdminSettings.jsx";
 
 import CreateApplication from "./pages/CreateApplication.jsx";
 import Details from './pages/CreateAppPages/Details.jsx';
@@ -119,20 +126,48 @@ const router = createBrowserRouter([
         element: <Profile />, // Component to render when /studentdb/courses is visited
       },
       {
-        path: "courses",
-        element: <Courses />, // Component to render when /studentdb/courses is visited
+        path: "checklist",
+        element: <Checklist />, // Component to render when /studentdb/courses is visited
       },
       {
         path: "enroll",
         element: <Enroll />, // Component to render when /studentdb/courses is visited
       },
-      {
-        path: "notifications",
-        element: <Notifications />, // Component for /studentdb/notifications
-      },
+    
       {
         path: "settings",
         element: <Settings />, // Component for /studentdb/settings
+      },
+    ],
+  },
+  {
+    path: "/admindb",
+    element: <Admindb />,
+    children: [
+      {
+        index: true, // Default route for /studentdb
+        path: "adminHome",
+        element: <AdminHome />, // Render the Home component by default
+      },
+      {
+        path: "adminProfile",
+        element: <AdminProfile />, // Component to render when /studentdb/courses is visited
+      },
+      {
+        path: "userManage",
+        element: <UserManage />, // Component to render when /studentdb/courses is visited
+      },
+      {
+        path: "applyManage",
+        element: <ApplyManage />, // Component to render when /studentdb/courses is visited
+      },
+      {
+        path: "adminAnnounce",
+        element: <AdminAnnounce />, // Component for /studentdb/notifications
+      },
+      {
+        path: "adminSettings",
+        element: <AdminSettings />, // Component for /studentdb/settings
       },
     ],
   },

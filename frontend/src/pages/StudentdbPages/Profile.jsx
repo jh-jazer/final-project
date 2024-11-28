@@ -24,107 +24,73 @@ const Profile = () => {
   });
 
   return (
-    <div className="profile-container">
-      <form className="profile-form">
+    <div className="w-full min-h-screen bg-white p-8 pt-12 shadow-xl rounded-lg flex flex-col justify-between">
+      {/* Header Section */}
+      <div>
+        <div className="text-center my-10 pb-10">
+          <h1 className="text-3xl font-extrabold text-[#001800]">
+            Personal Information
+          </h1>
+          <h2 className="text-lg text-gray-600">
+            Your information is displayed here.
+          </h2>
+        </div>
+
         {/* Personal Information Section */}
-        <div className="section">
-          <h2 className="section-title">Personal Information*</h2>
-          <div className="form-grid">
-            
-            <div className="form-group">
-              <label>Given Name*</label>
-              <input type="text" name="givenName" value={formData.givenName} readOnly />
-            </div>
-            <div className="form-group">
-              <label>Middle Name (Not Applicable)</label>
-              <input type="text" name="middleName" value={formData.middleName} readOnly />
-            </div>
-            <div className="form-group">
-              <label>Family Name*</label>
-              <input type="text" name="familyName" value={formData.familyName} readOnly />
-            </div>
-            <div className="form-group">
-              <label>Suffix (Optional)</label>
-              <input type="text" name="suffix" value={formData.suffix} readOnly />
-            </div>
-            <div className="form-group">
-              <label>Sex </label>
-              <select name="sexAtBirth" value={formData.sexAtBirth} disabled>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Date of birth</label>
-              <input type="date" name="dateOfBirth" value={formData.dateOfBirth} readOnly />
-            </div>
-            <div className="form-group">
-              <label>Contact Number</label>
-              <input type="text" name="contactNumber" value={formData.contactNumber} readOnly />
-            </div>
-            <div className="form-group">
-              <label>Civil Status</label>
-              <select name="civilStatus" value={formData.civilStatus} disabled>
-                <option value="Single">Single</option>
-                <option value="Married">Married</option>
-                <option value="Divorced">Divorced</option>
-                <option value="Widowed">Widowed</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Religion</label>
-              <input type="text" name="religion" value={formData.religion} readOnly />
-            </div>
+        <div>
+             <h4 className="text-2xl font-extrabold text-[#001800] mb-6 text-left pl-11 pb-5">
+            Basic Information
+          </h4>
           </div>
+        <div className="form-grid">
+         
+       
+          {[
+            { label: 'Given Name', value: formData.givenName || 'Not provided' },
+            { label: 'Middle Name', value: formData.middleName || 'Not provided' },
+            { label: 'Last Name', value: formData.familyName || 'Not provided' },
+            { label: 'Suffix', value: formData.suffix || 'Not provided' },
+            { label: 'Sex at Birth', value: formData.sexAtBirth },
+            { label: 'Date of Birth', value: formData.dateOfBirth },
+            { label: 'Civil Status', value: formData.civilStatus },
+            { label: 'Religion', value: formData.religion },
+            { label: 'Nationality', value: formData.nationality },
+            { label: 'Contact Number', value: formData.contactNumber },
+          ].map((field, index) => (
+            <div key={index} className="mb-6 mx-11">
+              <label className="text-gray-600 text-lg font-semibold mb-2">
+                {field.label}
+              </label>
+              <p className="text-[#081708] text-lg">{field.value}</p>
+            </div>
+          ))}
         </div>
 
         {/* Residential Address Section */}
-        <div className="section">
-          <h2 className="section-title">Residential Address*</h2>
+        <div className="mt-10">
+          <h4 className="text-2xl font-extrabold text-[#001800] mb-6 text-left pl-11 pb-5">
+            Residential Address
+          </h4>
           <div className="form-grid">
-            <div className="form-group">
-              <label>House Number*</label>
-              <input type="text" name="houseNumber" value={formData.houseNumber} readOnly />
-            </div>
-            <div className="form-group">
-              <label>Street/Subdivision Address*</label>
-              <input type="text" name="streetAddress" value={formData.streetAddress} readOnly />
-            </div>
-            <div className="form-group">
-              <label>Province</label>
-              <select name="province" value={formData.province} disabled>
-                <option value="Metro Manila">Metro Manila</option>
-                {/* Add more provinces as needed */}
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Municipality</label>
-              <select name="municipality" value={formData.municipality} disabled>
-                <option value="City of Las Piñas">City of Las Piñas</option>
-                {/* Add more municipalities as needed */}
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Barangay</label>
-              <select name="barangay" value={formData.barangay} disabled>
-                <option value="Pamplona Tres">Pamplona Tres</option>
-                {/* Add more barangays as needed */}
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Zip Code</label>
-              <input type="text" name="zipCode" value={formData.zipCode} readOnly />
-            </div>
-            <div className="form-group">
-              <label>Region</label>
-              <select name="region" value={formData.region} disabled>
-                <option value="National Capital Region (NCR)">National Capital Region (NCR)</option>
-                {/* Add more regions as needed */}
-              </select>
-            </div>
+            {[
+              { label: 'House Number', value: formData.houseNumber },
+              { label: 'Street/Subdivision Address', value: formData.streetAddress },
+              { label: 'Region', value: formData.region },
+              { label: 'Province', value: formData.province },
+              { label: 'Municipality', value: formData.municipality },
+              { label: 'Barangay', value: formData.barangay },
+              { label: 'ZIP Code', value: formData.zipCode },
+            ].map((field, index) => (
+              <div key={index} className="mb-6 mx-11">
+                <label className="text-gray-600 text-lg font-semibold mb-2">
+                  {field.label}
+                </label>
+                <p className="text-[#081708] text-lg">{field.value}</p>
+              </div>
+            ))}
           </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 };

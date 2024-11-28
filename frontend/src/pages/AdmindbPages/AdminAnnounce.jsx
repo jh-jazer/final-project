@@ -96,6 +96,41 @@ const Settings = () => {
           </div>
           <button className="btn" onClick={handlePasswordChange}>Change Password</button>
         </section>
+
+        {/* Notification Preferences Section */}
+        <section className="section">
+          <h2>Notification Preferences</h2>
+          <div className="form-group">
+            <label htmlFor="notifications">Receive Notifications</label>
+            <input
+              type="checkbox"
+              name="notifications"
+              id="notifications"
+              checked={formData.notifications}
+              onChange={handleChange}
+            />
+          </div>
+        </section>
+
+        {/* Account Preferences Section */}
+        <section className="section">
+          <h2>Account Preferences</h2>
+          <div className="form-group">
+            <label htmlFor="darkMode">Enable Dark Mode</label>
+            <input
+              type="checkbox"
+              name="darkMode"
+              id="darkMode"
+              checked={formData.darkMode}
+              onChange={handleChange}
+            />
+          </div>
+        </section>
+
+        {/* Submit Button */}
+        <button type="submit" className="btn">
+          Save Changes
+        </button>
       </form>
     </div>
   );

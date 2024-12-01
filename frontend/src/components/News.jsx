@@ -1,53 +1,68 @@
 import React from 'react';
-import NewBldg from '../assets/newbldg.png'; // Path to the background image
+import { Link } from 'react-router-dom';
+import NewBldg from '../assets/newbldg.png';
+import CsIcon from '../assets/csicon.png'; // Replace with the actual file name if different
+import ItIcon from '../assets/iticon.png'; // Replace with the actual file name if different
 
-const NewsUpdates = () => {
+const Hero = () => {
   return (
-    <div 
-      className="w-full h-screen sm:h-[calc(100vh+100px)] md:h-screen flex items-center justify-center bg-cover bg-center z-20"
-      style={{ backgroundImage: `url(${NewBldg})` }}
-    >
-      <div className="w-full h-full bg-[#081708]/80 flex items-center justify-center z-10">
-        <div className="w-full max-w-6xl bg-opacity-90 p-8 rounded-lg">
-          {/* Title */}
-          <h2 className="text-[40px] font-bold text-center text-[#c5ffdf] mb-6">
-            NEWS AND UPDATES
-          </h2>
+    <div id="main">
+      <div className="relative w-full h-screen">
+        {/* Background Image */}
+        <img
+          className="w-full h-full object-cover"
+          src={NewBldg}
+          alt="NewBldg"
+        />
 
-          {/* Three Column Grid Layout for News Items */}
-          <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 px-4 sm:px-12">
-            <div className="transition-transform transform hover:scale-105 hover:shadow-xl p-6 bg-[#ffffff] rounded-lg shadow-md">
-              <h3 className="text-xl font-semibold text-[#C61A01]">Spring 2024 Enrollment Deadline</h3>
-              <p className="text-gray-600 mt-2">
-                Don't miss out! The Spring 2024 enrollment deadline is January 5th. Make sure to register for your classes before then.
-              </p>
-            </div>
+        {/* Overlay Content */}
+        <div className="absolute inset-0 bg-[#081708]/80 flex items-center justify-center z-10">
+        
+          <div className="text-center text-white  px-4 sm:px-8">
 
-            <div className="transition-transform transform hover:scale-105 hover:shadow-xl p-6 bg-[#ffffff] rounded-lg shadow-md">
-              <h3 className="text-xl font-semibold text-[#C61A01]">System Maintenance Notice</h3>
-              <p className="text-gray-600 mt-2">
-                Please be aware that the system will undergo scheduled maintenance on December 20th, from 10 PM to 2 AM. During this time, the portal will be unavailable.
-              </p>
-            </div>
+          <h2 className="text-3xl sm:text-4xl  font-bold text-[#c5ffdf]">
+          NEWS AND UPDATES
+        </h2>
+            {/* Images as Clickable Links */}
+            <div className="flex justify-center space-x-6">
+              {/* CS Icon */}
+              <Link to="https://www.facebook.com/groups/324730584394303/user/61568578322272">
+                <img
+                  src={CsIcon}
+                  alt="CS Icon"
+                  className="block mx-auto floating mb-[10%] md:mr-[50%] md:mb-[10%]  lg:mb-[15%] mt-[10%] z-[-1] md:w-[226px] w-[40%]  cursor-pointer transform hover:scale-110 transition duration-300 hover:shadow-lg"
+                />
+              </Link>
 
-            <div className="hidden sm:block transition-transform transform hover:scale-105 hover:shadow-xl p-6 bg-[#ffffff] rounded-lg shadow-md">
-              <h3 className="text-xl font-semibold text-[#C61A01]">New Course Offerings for Fall 2024</h3>
-              <p className="text-gray-600 mt-2">
-                We are excited to announce new courses for the Fall 2024 semester. Check out the updated course catalog for more information!
-              </p>
+              <Link to="https://www.facebook.com/groups/168315170024668">
+                <img
+                  src={ItIcon}
+                  alt="IT Icon"
+                  className="block mx-auto floating mb-[10%] md:mr-[50%] md:mb-[10%]  lg:mb-[15%] mt-[10%] z-[-1] md:w-[226px] w-[40%] cursor-pointer transform hover:scale-110 transition duration-300 hover:shadow-lg"
+                />
+              </Link>
+
+              
+            </div >
+            <div>
+              <p className="text-base sm:text-lg px-2 sm:px-6 text-[#c5ffdf]">
+              Stay updated with the latest news and events from the IT and CS Societies!
+            </p>
             </div>
+            
           </div>
+        </div>
 
-          {/* View More Link */}
-          <div className="text-center mt-8">
-            <a href="/news" className="text-[#c5ffdf] hover:underline">
-              View All News and Updates
-            </a>
-          </div>
+        {/* White Rectangle at the Bottom */}
+        <div className="absolute bottom-0 w-full bg-[#E8E8E8] h-16 sm:h-24 flex items-center justify-center z-20">
+        <p className="text-xs sm:text-lg text-[#033D04] font-semibold text-center px-4">
+  "Or check out the CSG page <span className="underline text-blue-600 hover:text-blue-800 cursor-pointer">here</span>"
+</p>
+
         </div>
       </div>
     </div>
   );
 };
 
-export default NewsUpdates;
+export default Hero;

@@ -61,7 +61,7 @@ const Sidenav = ({ homeRef, aboutRef, newsRef, contactRef }) => {
           {/* Dropdown Menus */}
           {[
             { label: 'About Us', options: [{label: 'University History', path:'university'}, {label:'Department of Computer Studies',path:'comstudy'}, {label:'Mission and Vision',path:'missionvision'}] },
-            { label: 'Admission', options: [{ label: 'Admission Procedures', path: '/apply' }, { label: 'Admission Page', path: '/apply' }] },
+            { label: 'Admission', options: [{ label: 'Admission Procedures', path: '/procedures' }, { label: 'Admission Page', path: '/apply' }] },
             { label: 'CvSU Portal', options: [{ label: 'Login', path: '/login' }, { label: 'Register', path: '/register' }], },
           ].map((menu) => (
             <div key={menu.label} className="relative">
@@ -80,7 +80,7 @@ const Sidenav = ({ homeRef, aboutRef, newsRef, contactRef }) => {
                 </span>
               </button>
               {activeDropdown === menu.label && (
-                <div className="absolute left-0 mt-2 bg-white shadow-md rounded-lg z-50">
+                <div className="absolute left-0 mt-2 bg-white shadow-md w-[180px] rounded-lg z-50">
                    {menu.options.map((option) => (
                       // Check if option has a path, then render Link
                       <Link
@@ -111,9 +111,10 @@ const Sidenav = ({ homeRef, aboutRef, newsRef, contactRef }) => {
   <div className="fixed top-0 left-0 w-full h-screen bg-white/90 z-40 flex flex-col items-center justify-center pt-10">
     {/* Dropdown Menus */}
     {[ 
-      { label: 'About Us', options: ['University History', 'Department of Computer Studies', 'Mission and Vision'] },
-      { label: 'Admission', options: [{ label: 'Admission Procedures', path: '/apply' }, { label: 'Admission Page', path: '/apply' }] },
-      { label: 'CvSU Portal', options: [{ label: 'Login', path: '/login' }, { label: 'Register', path: '/register' }], }
+      { label: 'About Us', options: [{label: 'University History', path:'university'}, {label:'Department of Computer Studies',path:'comstudy'}, {label:'Mission and Vision',path:'missionvision'}] },
+      { label: 'Admission', options: [{ label: 'Admission Procedures', path: '/procedures' }, { label: 'Admission Page', path: '/apply' }] },
+      { label: 'CvSU Portal', options: [{ label: 'Login', path: '/login' }, { label: 'Register', path: '/register' }], },
+  
     ].map((menu) => (
       <div key={menu.label} className="relative w-full px-6 py-3 mb-6">
         <button

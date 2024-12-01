@@ -38,11 +38,15 @@ import UniversityHistory from './pages/AboutUsPages/UniversityHistory.jsx';
 import ComputerStudies from './pages/AboutUsPages/ComputerStudies.jsx';
 import MissionVision from './pages/AboutUsPages/MissionVision.jsx';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import AcademicProg from './pages/Quicklinkspages/AcademicProg.jsx';
 import Careers from './pages/Quicklinkspages/Careers.jsx';
 import NewsUpdates from './components/News.jsx';
 import Forms from './pages/Quicklinkspages/Forms.jsx';
 
+import ApplyProcedures from './pages/Quicklinkspages/ApplyProcedures.jsx';
+import FreshmenPro from './pages/ProceduresPages/FreshmenPro.jsx';
+import GraduatePro from './pages/ProceduresPages/GraduatePro.jsx';
+import ReturneePro from './pages/ProceduresPages/ReturneePro.jsx';
+import TransfereePro from './pages/ProceduresPages/TransfereePro.jsx';
 
 const router = createBrowserRouter([
   {
@@ -78,9 +82,26 @@ const router = createBrowserRouter([
     element: <MissionVision />,
   },
   {
-    path: "acadprog",
-    element: <AcademicProg />,
+    path: "procedures",
+    element: <ApplyProcedures />,
   },
+  {
+    path: "freshmen",
+    element: <FreshmenPro />,
+  },
+  {
+    path: "transferee",
+    element: <TransfereePro />,
+  },
+  {
+    path: "graduatee",
+    element: <GraduatePro />,
+  },
+  {
+    path: "returnee",
+    element: <ReturneePro />,
+  },
+  
   {
     path: "careers",
     element: <Careers />,

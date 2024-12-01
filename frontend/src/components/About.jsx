@@ -79,7 +79,7 @@ const About = () => {
                       </p>
                       <Link
                         to={panel.link}
-                        className="mainButton px-4 py-2 text-sm sm:text-base bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700 transition"
+                        className="mainButton font-extrabold px-4 py-2 text-sm sm:text-base bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700 transition"
                       >
                         {panel.buttonText}
                       </Link>

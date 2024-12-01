@@ -17,7 +17,7 @@ const MissionVisionPage = () => {
 
         {/* Header text */}
         <div className="container mx-auto text-center relative z-10">
-          <h1 className="text-5xl pt-[170px] text-white text-left font-bold">Mission and Vision</h1>
+          <h1 className="text-5xl pt-[10%] text-white text-left font-bold">Mission and Vision</h1>
         </div>
       </header>
 

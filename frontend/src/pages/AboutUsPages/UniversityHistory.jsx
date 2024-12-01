@@ -18,7 +18,7 @@ const HistoryPage = () => {
         
         {/* Header text */}
         <div className="container mx-auto text-center relative z-10">
-          <h1 className="text-5xl pt-[170px] text-white text-left font-bold">History of Cavite State University</h1>
+          <h1 className="text-5xl pt-[10%] text-white text-left font-bold">History of Cavite State University</h1>
         </div>
       </header>
 

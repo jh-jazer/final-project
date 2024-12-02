@@ -14,10 +14,9 @@ const AdmissionsPage = () => {
   const { applicantType, preferredProgram } = useAppContext();
 
   const user = {
-    name: "Jane Applicant",
+    applicantId: "TCS12345",
     preferredProgram: "Computer Science",
     applicantType: "Transfer",
-    avatar: "https://via.placeholder.com/100",
   };
 
   const fullNames = {
@@ -48,7 +47,7 @@ const AdmissionsPage = () => {
   };
 
   return (
-    <div className="h-screen flex overflow-hidden bg-gray-100">
+    <div className="h-screen flex overflow-auto bg-gray-100">
       {/* Sidebar */}
       <aside
         className={`w-64 bg-[#001800] text-white flex flex-col fixed top-0 left-0 h-full z-50 transform ${
@@ -56,20 +55,15 @@ const AdmissionsPage = () => {
         } transition-transform duration-300 lg:relative lg:translate-x-0`}
       >
         <div className="p-6 flex flex-col items-center border-b border-gray-700">
-          <img
-            src={user.avatar}
-            alt="Profile"
-            className="rounded-full w-20 h-20 mb-3 border-4 border-white cursor-pointer"
-            onClick={() => setIsSidebarOpen(false)}
-          />
+         
           <h2
-            className="text-xl font-semibold cursor-pointer"
+            className="text-xl font-semibold pt-8 cursor-pointer"
             onClick={() => setIsSidebarOpen(false)}
           >
-            {user.name}
+            {user.applicantId}
           </h2>
-          <p className="text-sm text-gray-400">{preferredProgram || "Not provided"}</p>
-          <p className="text-sm text-gray-400"> {fullNames[applicantType] || applicantType || "Not provided"}</p>
+          <p className="text-sm text-center text-gray-400">{preferredProgram || "Not provided"}</p>
+          <p className="text-sm text-center text-gray-400"> {fullNames[applicantType] || applicantType || "Not provided"}</p>
         </div>
         <nav className="flex-1 mt-4">
           <ul className="space-y-2">

@@ -86,6 +86,14 @@ const Details = () => {
 
   {/* Next Button */}
   <div className="flex justify-end gap-5 mb-5 mx-5">
+      {/* Cancel Application Button */}
+  <Link to="/create" className="w-full flex text-left ">
+    <button
+      className="px-6 py-2 bg-red-500 text-white font-bold rounded-lg hover:bg-red-700 focus:outline-none"
+    >
+      Cancel Application
+    </button>
+  </Link>
     <button
       className="px-6 py-2 bg-[#345e34] text-white font-bold rounded-lg hover:bg-green-900 focus:outline-none disabled:bg-gray-400"
       disabled={isButtonDisabled}

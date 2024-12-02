@@ -27,7 +27,6 @@ import EmploySettings from "./pages/EmployeedbPages/EmploySettings.jsx";
 import CreateApplication from "./pages/CreateApplication.jsx";
 import Details from './pages/CreateAppPages/Details.jsx';
 import Personal from './pages/CreateAppPages/Personal.jsx';
-import Contact from './pages/CreateAppPages/Contact.jsx';
 import Family from './pages/CreateAppPages/Family.jsx';
 import Education from './pages/CreateAppPages/Education.jsx';
 import Requirement from './pages/CreateAppPages/Requirement.jsx';
@@ -130,10 +129,6 @@ const router = createBrowserRouter([
       {
         path: "personal",
         element: <Personal />, // Component to render when /studentdb/courses is visited
-      },
-      {
-        path: "contact",
-        element: <Contact />, // Component to render when /studentdb/courses is visited
       },
       {
         path: "family",

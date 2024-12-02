@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import AdmissionNav from "../components/AdmissionNav";
 import { useAppContext } from "../contexts/AppContext";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import Laya from "../assets/laya.png";
+import TopNav from './../components/Topnav';
 
 const Create = () => {
   const {
@@ -92,10 +92,12 @@ const Create = () => {
         backgroundPosition: "center",
       }}
     >
-      <AdmissionNav user={null} />
-      <div className="top-0 left-0 w-full h-full bg-[#081708]/80 flex fixed items-center justify-center z-10"></div>
-      <div className="w-full max-w-3xl bg-white p-8 shadow-lg rounded-lg z-30">
-        <div className="flex justify-center items-center mb-6">
+      <div>
+        <TopNav/>
+      </div>
+      <div className="top-0 left-0 w-full h-full  bg-[#081708]/80 flex fixed items-center justify-center z-10"></div>
+      <div className="w-full max-w-3xl bg-white mt-[5%] p-8 shadow-lg rounded-lg z-30">
+        <div className="flex justify-center  items-center mb-6">
           <div>
             <h1 className="text-3xl font-extrabold text-[#C61A01] text-center mb-2">
               Admission Application

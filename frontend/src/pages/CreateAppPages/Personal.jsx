@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 
 const Personal = () => {
   const [formData, setFormData] = useState({
@@ -7,11 +7,11 @@ const Personal = () => {
     familyName: '',
     middleName: '',
     suffix: '',
-    sex: 'male',
+    sex: '',
     dob: '',
     contactNumber: '',
-    civilStatus: 'single',
-    religion: 'Roman Catholic',
+    civilStatus: '',
+    religion: '',
     phoneNumber: '',
     email: '',
     emergencyContactName: '',
@@ -24,136 +24,108 @@ const Personal = () => {
     country: '',
   });
 
-  const [errors, setErrors] = useState({
-    givenName: '',
-    familyName: '',
-    dob: '',
-    contactNumber: '',
-    phoneNumber: '',
-    email: '',
-    emergencyContactName: '',
-    emergencyContactNumber: '',
-    addressLine1: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    country: '',
-  });
+  const [successMessage, setSuccessMessage] = useState(""); 
+  const [errors, setErrors] = useState({});
+  const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true); // Tracks if 'Next' button is disabled after form update
+  const [formUpdated, setFormUpdated] = useState(false); // Tracks if the form has been successfully updated
+  const divRef = useRef(null);
 
-  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-  const navigate = useNavigate();
 
-  // Validate the form fields
+
+  // Effect to enable or disable the button based on form completion
+  useEffect(() => {
+    const isFormValid = validate(); // Checks if the form is valid based on `validate` function
+    setIsNextButtonDisabled(!(isFormValid && formUpdated)); // Enables "Next" only if valid and updated
+  }, [formData, formUpdated]);
+  
+
   const validate = () => {
-    let validationErrors = {};
-    let isValid = true;
+    const validationErrors = {};
+    const regex = {
+      contactNumber: /^\d{11}$/,
+      email: /\S+@\S+\.\S+/,
+      emergencyContactNumber: /^\d{10,15}$/
+    };
 
-    if (!formData.givenName) {
-      validationErrors.givenName = "Given Name is required.";
-      isValid = false;
-    }
-
-    if (!formData.familyName) {
-      validationErrors.familyName = "Family Name is required.";
-      isValid = false;
-    }
-
-    if (!formData.dob) {
-      validationErrors.dob = "Date of Birth is required.";
-      isValid = false;
-    }
-
-    if (!formData.contactNumber) {
-      validationErrors.contactNumber = "Contact Number is required.";
-      isValid = false;
-    } else if (!/^\d{11}$/.test(formData.contactNumber)) {
+    if (!formData.givenName) validationErrors.givenName = "Given Name is required.";
+    if (!formData.familyName) validationErrors.familyName = "Family Name is required.";
+    if (!formData.dob) validationErrors.dob = "Date of Birth is required.";
+    if (!formData.contactNumber || !regex.contactNumber.test(formData.contactNumber))
       validationErrors.contactNumber = "Contact Number must be 11 digits.";
-      isValid = false;
-    }
-
-    if (!formData.email) {
-      validationErrors.email = "Email is required.";
-      isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      validationErrors.email = "Email is invalid.";
-      isValid = false;
-    }
-
-    if (!formData.emergencyContactName) {
-      validationErrors.emergencyContactName = "Emergency Contact Name is required.";
-      isValid = false;
-    }
-
-    if (!formData.emergencyContactNumber) {
-      validationErrors.emergencyContactNumber = "Emergency Contact Number is required.";
-      isValid = false;
-    } else if (!/^\d{10,15}$/.test(formData.emergencyContactNumber)) {
+    if (!formData.email || !regex.email.test(formData.email)) validationErrors.email = "Email is invalid.";
+    if (!formData.emergencyContactName) validationErrors.emergencyContactName = "Emergency Contact Name is required.";
+    if (!formData.emergencyContactNumber || !regex.emergencyContactNumber.test(formData.emergencyContactNumber))
       validationErrors.emergencyContactNumber = "Emergency Contact Number must be between 10 and 15 digits.";
-      isValid = false;
-    }
-
-    if (!formData.addressLine1) {
-      validationErrors.addressLine1 = "Address Line 1 is required.";
-      isValid = false;
-    }
-
-    if (!formData.city) {
-      validationErrors.city = "City is required.";
-      isValid = false;
-    }
-
-    if (!formData.state) {
-      validationErrors.state = "State/Province/Region is required.";
-      isValid = false;
-    }
-
-    if (!formData.zipCode) {
-      validationErrors.zipCode = "Zip Code is required.";
-      isValid = false;
-    }
-
-    if (!formData.country) {
-      validationErrors.country = "Country is required.";
-      isValid = false;
-    }
+    if (!formData.addressLine1) validationErrors.addressLine1 = "Address Line 1 is required.";
+    if (!formData.city) validationErrors.city = "City is required.";
+    if (!formData.state) validationErrors.state = "State/Province/Region is required.";
+    if (!formData.zipCode) validationErrors.zipCode = "Zip Code is required.";
+    if (!formData.country) validationErrors.country = "Country is required.";
 
     setErrors(validationErrors);
-    return isValid;
+    return Object.keys(validationErrors).length === 0;
   };
 
-  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => {
-      const updatedFormData = { ...prevData, [name]: value };
-      
-      // Enable the Next button only when required fields are filled
-      setIsButtonDisabled(
-        !updatedFormData.givenName || !updatedFormData.familyName || !updatedFormData.dob || !updatedFormData.contactNumber || !updatedFormData.email || !updatedFormData.emergencyContactName || !updatedFormData.emergencyContactNumber ||
-        !updatedFormData.addressLine1 || !updatedFormData.city || !updatedFormData.state || !updatedFormData.zipCode || !updatedFormData.country
-      );
-
-      return updatedFormData;
-    });
+    setFormData(prevData => ({ ...prevData, [name]: value }));
   };
 
-  // Handle form submission and navigate to the next page if valid
-  const handleSubmit = (e) => {
-    e.preventDefault();
+    const handleSubmit = (e) => {
+    e.preventDefault(); 
 
-    if (validate()) {
-      navigate('/createapplication/family');
+    // First, validate the form before submission
+    const isValid = validate();
+    
+    if (isValid) {
+        // If valid, process the form submission
+        console.log("Personal Information Submitted:", formData);
+        setFormUpdated(true);
+        
+        // Then show the success message after navigation
+        divRef.current.scrollIntoView({ behavior: "smooth" });
+        setSuccessMessage("Application updated successfully!"); 
+        setTimeout(() => setSuccessMessage(""), 3000); // Hide message after 3 seconds
     } else {
-      console.log("Form contains errors, submission blocked.");
+        divRef.current.scrollIntoView({ behavior: "smooth" });
+        // If invalid, clear success message and notify the user
+        setSuccessMessage("there is something wrong"); // Clear success message if validation fails
     }
-  };
+};
 
   return (
-    <div className="w-full min-h-screen bg-white p-8 pt-12 shadow-xl rounded-lg flex flex-col">
+    <div 
+    ref={divRef}
+    className="w-full min-h-screen bg-white p-8 pt-12 shadow-xl rounded-lg flex flex-col"
+    >
+      {successMessage && (
+        <div 
+        
+        className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+          {successMessage}
+        </div>
+      )}
+
       {/* Header Section */}
-      <div className="text-center my-10">
+      <div className="relative text-center my-10">
+        <Link to="/createapplication/personal" className="absolute left-0 top-1/2 transform -translate-y-1/2">
+          <button className="text-[#345e34] hover:text-green-900">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        </Link>
         <h1 className="text-3xl font-extrabold text-[#001800]">Personal Information</h1>
-        <h2 className="text-lg text-gray-600">Please fill out your Personal Information.</h2>
+        <Link to="/createapplication/education" className="absolute right-0 top-1/2 transform -translate-y-1/2">
+          <button
+            className={`text-[#345e34] hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+            disabled={isNextButtonDisabled}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </Link>
       </div>
 
           <div>
@@ -207,7 +179,6 @@ const Personal = () => {
             name="middleName"
             type="text"
             className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
-            placeholder="N/A"
             value={formData.middleName}
             onChange={handleChange}
           />
@@ -223,7 +194,6 @@ const Personal = () => {
             name="suffix"
             type="text"
             className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
-            placeholder="Jr."
             value={formData.suffix}
             onChange={handleChange}
           />
@@ -286,7 +256,10 @@ const Personal = () => {
           </label>
           <select
             id="religion"
+            name="religion"
             className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
+            value={formData.religion}
+            onChange={handleChange}
           >
             <option value="" disabled selected>
               Select your religion
@@ -498,26 +471,22 @@ const Personal = () => {
           </div>
     
 
-      {/* Action Buttons */}
-      
-      <div className="flex justify-end gap-5 mb-5 mx-5">
-      <Link to="/createapplication">
+          {/* Action Buttons */}
+          
+          <div className="flex justify-end gap-5 mb-5 mx-5">
+          <div className="text-left">
         <button
-          className="px-6 py-2 bg-[#345e34] text-white font-bold rounded-lg hover:bg-green-900 focus:outline-none disabled:bg-gray-400"
-        >
-          Prev
-        </button>
-        </Link>
-
-        <Link to="/createapplication/contact">
-          <button
-            className="px-6 py-2 bg-[#345e34] text-white font-bold rounded-lg hover:bg-green-900 focus:outline-none disabled:bg-gray-400"
-            disabled={isButtonDisabled}
-            onClick={handleSubmit}
+          className="px-6 py-2 bg-green-500 text-white font-bold rounded-lg hover:bg-red-700 focus:outline-none"
+          onClick={(e) => {
+            // You can call the handleSubmit function or directly trigger scroll-to-top here.
+            handleSubmit(e); // If you want to run the handleSubmit logic
+            
+          }}
+        
           >
-            Next
-          </button>
-        </Link>
+          Update Application
+        </button>
+        </div>
       </div>
     </div>
   );

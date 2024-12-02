@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 
 const Family = () => {
-  const navigate = useNavigate();
+  const [successMessage, setSuccessMessage] = useState(""); 
+  const [errors, setErrors] = useState({});
+  const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true); // Tracks if 'Next' button is disabled after form update
+  const [formUpdated, setFormUpdated] = useState(false); // Tracks if the form has been successfully updated
+  const divRef = useRef(null);
 
   // State to manage form data
   const [formData, setFormData] = useState({
@@ -21,23 +25,13 @@ const Family = () => {
     isMotherNotApplicable: false,
   });
 
-  // State for handling form validation errors
-  const [errors, setErrors] = useState({});
-
-  // State to track the disabled status of the button
-  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
   // UseEffect to track form data changes and enable/disable submit button
-  useEffect(() => {
-    const hasRequiredFields =
-      (formData.fatherName && formData.fatherOccupation && formData.fatherContact) ||
-      (formData.motherName && formData.motherOccupation && formData.motherContact) ||
-      (formData.guardianName && formData.guardianOccupation && formData.guardianContact) ||
-      formData.numberOfSiblings ||
-      formData.familyIncome;
-
-    setIsButtonDisabled(!hasRequiredFields);
-  }, [formData]);
+   // Effect to enable or disable the button based on form completion
+   useEffect(() => {
+    const isFormValid = validate(); // Checks if the form is valid based on `validate` function
+    setIsNextButtonDisabled(!(isFormValid && formUpdated)); // Enables "Next" only if valid and updated
+  }, [formData, formUpdated]);
 
   // Input field change handler
   const handleInputChange = (e) => {
@@ -47,6 +41,12 @@ const Family = () => {
       [name]: type === 'checkbox' ? checked : value,
     }));
   };
+
+
+  useEffect(() => {
+    const isFormValid = validate(); // Checks if the form is valid based on `validate` function
+    setIsNextButtonDisabled(!(isFormValid && formUpdated)); // Enables "Next" only if valid and updated
+  }, [formData, formUpdated]);
 
   // Form validation function
   const validate = () => {
@@ -118,22 +118,63 @@ const Family = () => {
     return isValid;
   };
 
-  // Handle form submission
+  
+
   const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validate()) {
-      navigate('/createapplication/education');
+    e.preventDefault(); 
+
+    // First, validate the form before submission
+    const isValid = validate();
+    
+    if (isValid) {
+        // If valid, process the form submission
+        console.log("Personal Information Submitted:", formData);
+        setFormUpdated(true);
+        
+        // Then show the success message after navigation
+        divRef.current.scrollIntoView({ behavior: "smooth" });
+        setSuccessMessage("Application updated successfully!"); 
+        setTimeout(() => setSuccessMessage(""), 3000); // Hide message after 3 seconds
     } else {
-      console.log("Form contains errors, submission blocked.");
+        divRef.current.scrollIntoView({ behavior: "smooth" });
+        // If invalid, clear success message and notify the user
+        setSuccessMessage("there is something wrong"); // Clear success message if validation fails
     }
-  };
+};
 
   return (
-    <div className="w-full min-h-screen bg-white p-8 pt-12 shadow-xl rounded-lg flex flex-col justify-between">
+    <div 
+    ref={divRef}
+    className="w-full min-h-screen bg-white p-8 pt-12 shadow-xl rounded-lg flex flex-col"
+    >
+      {successMessage && (
+        <div 
+        
+        className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+          {successMessage}
+        </div>
+      )}
+
       {/* Header Section */}
-      <div className="text-center my-10">
+      <div className="relative text-center my-10">
+        <Link to="/createapplication" className="absolute left-0 top-1/2 transform -translate-y-1/2">
+          <button className="text-[#345e34] hover:text-green-900">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        </Link>
         <h1 className="text-3xl font-extrabold text-[#001800]">Family Information</h1>
-        <h2 className="text-lg text-gray-600">Please fill out your Family Information.</h2>
+        <Link to="/createapplication/family" className="absolute right-0 top-1/2 transform -translate-y-1/2">
+          <button
+            className={`text-[#345e34] hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+            disabled={isNextButtonDisabled}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </Link>
       </div>
 
 
@@ -141,7 +182,7 @@ const Family = () => {
       <form onSubmit={handleSubmit}>
         {/* Father's Information */}
         <div className="mx-11 mb-6">
-          <h2 className="text-2xl font-bold text-gray-700 flex justify-between items-center">
+          <h5 className="text-2xl font-extrabold text-[#001800] mb-6 text-left ">
             Father's Information
             <label htmlFor="isFatherNotApplicable" className="flex items-center text-lg cursor-pointer">
               <input
@@ -154,7 +195,7 @@ const Family = () => {
               />
               Not Applicable
             </label>
-          </h2>
+          </h5>
           <div className="form-group text-lg font-sans text-gray-600">
             <label htmlFor="fatherName" className='text-gray-600 text-lg font-semibold'>Father's Name*</label>
             <input
@@ -201,7 +242,7 @@ const Family = () => {
 
         {/* Mother's Information */}
         <div className="mx-11 mb-6">
-          <h2 className="text-2xl font-bold text-gray-700 flex justify-between items-center">
+          <h5 className="text-2xl font-extrabold text-[#001800] mb-6 text-left pt-7">
             Mother's Information
             <label htmlFor="isMotherNotApplicable" className="flex items-center text-lg cursor-pointer">
               <input
@@ -214,7 +255,7 @@ const Family = () => {
               />
               Not Applicable
             </label>
-          </h2>
+          </h5>
           <div className="form-group text-lg font-sans text-gray-600">
             <label htmlFor="motherName" className='text-gray-600 text-lg font-semibold'>Mother's Name*</label>
             <input
@@ -261,7 +302,7 @@ const Family = () => {
 
         {/* Guardian's Information */}
         <div className="mx-11 mb-6">
-          <h2 className="text-2xl font-bold text-gray-700">Guardian's Information</h2>
+          <h5 className="text-2xl font-extrabold text-[#001800] mb-6 text-left pt-7">Guardian's Information</h5>
           <div className="form-group text-lg font-sans text-gray-600">
             <label htmlFor="guardianName" className="text-gray-600 text-lg font-semibold">Guardian's Name*</label>
             <input
@@ -339,30 +380,24 @@ const Family = () => {
             </select>
             {errors.familyIncome && <p className="text-red-500 text-sm">{errors.familyIncome}</p>}
           </div>
-        
-
-
-            {/* Submit Button */}
-                <div className="flex justify-end gap-5 mb-5 mx-5">
-              <Link to="/createapplication/family">
-                <button
-                  className="px-6 py-2 bg-[#345e34] text-white font-bold rounded-lg hover:bg-green-900 focus:outline-none disabled:bg-gray-400"
-                >
-                  Prev
-                </button>
-                </Link>
-                
+          </div>
+              {/* Action Buttons */}
+          
+          <div className="flex justify-end gap-5 mb-5 mx-5">
+          <div className="text-left">
+        <button
+          className="px-6 py-2 bg-green-500 text-white font-bold rounded-lg hover:bg-red-700 focus:outline-none"
+          onClick={(e) => {
+            // You can call the handleSubmit function or directly trigger scroll-to-top here.
+            handleSubmit(e); // If you want to run the handleSubmit logic
             
-                  <button
-                    className="px-6 py-2 bg-[#345e34] text-white font-bold rounded-lg hover:bg-green-900 focus:outline-none disabled:bg-gray-400"
-                    disabled={isButtonDisabled}
-                    onClick={handleSubmit}
-                  >
-                    Next
-                  </button>
-                
-              </div>
-              </div>
+          }}
+        
+          >
+          Update Application
+        </button>
+        </div>
+      </div>
       </form>
     </div>
   );

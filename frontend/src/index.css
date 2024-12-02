@@ -2,12 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+#root {
+  height: 100%;
+  overflow-y: auto; /* Ensure scroll is enabled */
+}
+
+
 @font-face {
     font-family: 'Lucidity Expand';
     src: url('/fonts/LucidityExpand.woff2') format('woff2'); /* Adjust the path if needed */
     font-weight: normal;
     font-style: normal;
   }
+
+  
   
 
 /* Style the scrollbar */

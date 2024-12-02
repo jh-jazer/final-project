@@ -59,6 +59,17 @@ const Appointment = () => {
     <div className="w-full min-h-screen bg-white p-8 pt-12 shadow-xl rounded-lg flex flex-col justify-between">
       <div className="appointment-form-container">
         <h2 className='text-3xl font-extrabold flex justify-center items-center'>Schedule an Appointment</h2>
+       
+        <div className="bg-gray-800 text-white px-4 rounded pt-3 pb-6 mb-3">
+        <h3 className="text-lg text-white font-bold mb-2">Directions</h3>
+        <ul  className="list-disc pl-6">
+          <li>Choose a date and time you can visit the Office of Student Affairs and Services (OSAS) at Cavite State University - Bacoor to personally submit the original copies of your uploaded requirements for validation.</li>
+          <li>Select Submit Application to schedule your appointment and finalize your admission application.
+</li>
+       
+        </ul>
+      </div>
+
         <form onSubmit={handleAddAppointment}>
           <div className="form-group">
             <label htmlFor="appointmentDate">Select Date</label>
@@ -83,6 +94,19 @@ const Appointment = () => {
               required
             />
           </div>
+            {/* Certification Statement */}
+            <div className="bg-gray-100 p-4 rounded mb-6">
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  required
+                  className="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                />
+                <span className="text-sm">
+                  I hereby certify that all information stated are true and correct to the best of my knowledge.
+                </span>
+              </label>
+            </div>
 
           <button type="submit" className="submit-btn">Add Appointment</button>
         </form>

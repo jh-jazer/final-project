@@ -29,7 +29,7 @@ const Login = () => {
       const response = await axios.post('http://localhost:5005/login', { ID, password });
 
       if (response.status === 200) {
-        navigate('/studentdb');
+        navigate('/studentdb/profile');
       }
     } catch (error) {
       if (error.response) {
@@ -124,7 +124,7 @@ const Login = () => {
 
           {/* Forgot Password */}
           <div className="text-center">
-            <Link to="/forgot-password" className="text-sm text-[#C61A01] p-2 hover:underline">
+            <Link to="/forgotpassword" className="text-sm text-[#C61A01] p-2 hover:underline">
               Forgot password?
             </Link>
           </div>

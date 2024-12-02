@@ -4,6 +4,8 @@ import { AppProvider } from './contexts/AppContext.jsx';
 import './index.css'
 import App from './App.jsx'
 import Login from './pages/Login.jsx';
+import ForgotPassword from './pages/ForgotPassword.jsx';
+import ResetPassword from './pages/ResetPassword.jsx';
 import Apply from './pages/Apply.jsx';
 import Privacy from './pages/DataPrivacyNotice.jsx';
 import Create from './pages/Create.jsx';
@@ -56,6 +58,14 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/forgotpassword",
+    element: <ForgotPassword />,
+  },
+  {
+    path: "/resetpassword",
+    element: <ResetPassword />,
   },
   {
     path: "/Register",

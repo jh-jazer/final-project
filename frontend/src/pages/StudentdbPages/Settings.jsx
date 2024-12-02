@@ -5,6 +5,7 @@ const Settings = () => {
   const [formData, setFormData] = useState({
     username: 'student123',
     email: 'student@example.com',
+    oldPassword: '', // New field for old password
     password: '',
     confirmPassword: '',
     notifications: true,
@@ -24,7 +25,11 @@ const Settings = () => {
   // Handle password change logic
   const handlePasswordChange = (e) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
+
+    // Validation for old password and matching new passwords
+    if (formData.oldPassword !== 'currentPassword') { // Replace 'currentPassword' with the actual current password or a placeholder
+      alert('Old password is incorrect!');
+    } else if (formData.password !== formData.confirmPassword) {
       alert('Passwords do not match!');
     } else {
       // Handle the logic to update the password
@@ -72,6 +77,17 @@ const Settings = () => {
         {/* Password Change Section */}
         <section className="section">
           <h2>Change Password</h2>
+          <div className="form-group">
+            <label htmlFor="oldPassword">Old Password</label>
+            <input
+              type="password"
+              name="oldPassword"
+              id="oldPassword"
+              value={formData.oldPassword}
+              onChange={handleChange}
+              required
+            />
+          </div>
           <div className="form-group">
             <label htmlFor="password">New Password</label>
             <input

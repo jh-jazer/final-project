@@ -501,7 +501,7 @@ const Personal = () => {
       {/* Action Buttons */}
       
       <div className="flex justify-end gap-5 mb-5 mx-5">
-      <Link to="/createapplication/education">
+      <Link to="/createapplication">
         <button
           className="px-6 py-2 bg-[#345e34] text-white font-bold rounded-lg hover:bg-green-900 focus:outline-none disabled:bg-gray-400"
         >

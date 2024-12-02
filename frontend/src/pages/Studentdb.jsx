@@ -18,7 +18,7 @@ const StudentDashboard = () => {
   const navigate = useNavigate();
 
   const user = {
-    name: "John Doe",
+    id: "202212345", // Change the name to default ID
     course: "BSCS", // Add course information
     status: "Regular", // Add status information (Regular or Irregular)
     avatar: "https://via.placeholder.com/100",
@@ -55,12 +55,12 @@ const StudentDashboard = () => {
               onClick={() => setIsSidebarOpen(false)}
             />
           </Link>
-          
+
           <h2
             className="text-xl font-semibold cursor-pointer"
             onClick={() => setIsSidebarOpen(false)}
           >
-            {user.name}
+            {user.id} {/* Display the ID instead of name */}
           </h2>
           <p className="text-sm text-gray-400">
             {user.course} | {user.status} {/* Display course and status */}

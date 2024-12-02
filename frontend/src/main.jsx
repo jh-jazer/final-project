@@ -125,7 +125,6 @@ const router = createBrowserRouter([
         children: [
       {
         index: true, // Default route for /studentdb
-        path: "details",
         element: <Details />, // Render the Home component by default
       },
       {

@@ -80,7 +80,7 @@ const Create = () => {
 
     setErrorMessage("");
     alert("Application successfully created!");
-    navigate("/createapplication/details"); // Redirect to details page upon successful submission
+    navigate("/createapplication"); // Redirect to details page upon successful submission
   };
 
   return (

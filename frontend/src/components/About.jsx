@@ -11,21 +11,21 @@ const About = () => {
       title: "University History",
       content:
         "Here is the history of our university, showcasing its journey from inception to its present state.",
-      buttonText: "Learn More",
+      buttonText: "LEARN MORE",
       link: "/university",
     },
     {
       title: "Organizational Chart",
       content:
         "This chart displays the structure of our organization, highlighting the key departments and roles.",
-      buttonText: "View Chart",
+      buttonText: "VIEW CHART",
       link: "/comstudy",
     },
     {
       title: "Mission and Vision",
       content:
         "Learn about our mission and vision, which guide our commitment to excellence and community service.",
-      buttonText: "Read More",
+      buttonText: "READ MORE",
       link: "/missionvision",
     },
   ];
@@ -110,7 +110,7 @@ const About = () => {
         {/* White Rectangle at the Bottom */}
         <div className="absolute bottom-0 w-full bg-[#E8E8E8] h-16 sm:h-24 flex items-center justify-center z-20">
           <p className="text-xs sm:text-lg text-[#033D04] font-semibold text-center px-4">
-            "Truth · Excellence · Service"
+            Truth · Excellence · Service
           </p>
         </div>
       </div>

@@ -1,12 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import '../CreateApppagesCSS/Requirement.css';
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
+import { useAppContext } from '../../contexts/AppContext';
 
 const Requirement = () => {
+  const { applicantType } = useAppContext(); // Access applicant type from the context
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [requirements, setRequirements] = useState([]);
   const [newRequirement, setNewRequirement] = useState('');
   const [newImage, setNewImage] = useState(null);
+  const [applicantRequirements, setApplicantRequirements] = useState([]);
+
+  // Mapping applicant types to required documents
+  const requirementMapping = {
+    shs: [
+      'Grade 12 Report Card*',
+      'Certificate of non-issuance of Form 137*',
+    ],
+    transferee: [
+      'Certificate of grades or transcript of records of all enrolled semesters*',
+    ],
+    als: [
+      'Certificate of rating with college eligibility remark*',
+    ],
+    grade12: [
+      'Accomplished Grade 11 Report Card*',
+      'Certification of Grade 12 Enrollment with strand*',
+    ],
+    bachelors: [
+      'Complete Transcript of Records with date of graduation*',
+    ],
+  };
+
+  // Update applicant-specific requirements when applicant type changes
+  useEffect(() => {
+    if (applicantType && requirementMapping[applicantType]) {
+      setApplicantRequirements(requirementMapping[applicantType]);
+    }
+  }, [applicantType]);
 
   const handleAddRequirement = (e) => {
     e.preventDefault();
@@ -39,16 +70,26 @@ const Requirement = () => {
 
   // Enable the "Next" button only if at least one requirement is added
   useEffect(() => {
-    if (requirements.length > 0) {
-      setIsButtonDisabled(false);
-    } else {
-      setIsButtonDisabled(true);
-    }
+    setIsButtonDisabled(requirements.length === 0);
   }, [requirements]);
 
   return (
     <div className="requirement-form-container">
-      <h2 className='text-3xl font-extrabold flex justify-center items-center'>Upload Requirements</h2>
+      <h2 className="text-3xl font-extrabold flex justify-center items-center">
+        Upload Requirements
+      </h2>
+
+      <h3 className="text-xl font-semibold my-4">
+        Required Documents for {applicantType || 'Applicant'}:
+      </h3>
+      <ul className="mb-6">
+        {applicantRequirements.map((req, index) => (
+          <li key={index} className="mb-2">
+            {req}
+          </li>
+        ))}
+      </ul>
+
       <form onSubmit={handleAddRequirement}>
         <div className="form-group">
           <label htmlFor="requirementName">Requirement Name</label>
@@ -75,11 +116,13 @@ const Requirement = () => {
           />
         </div>
 
-        <button type="submit" className="submit-btn">Add Requirement</button>
+        <button type="submit" className="submit-btn">
+          Add Requirement
+        </button>
       </form>
 
       <div className="requirements-list">
-        <h3>Required Documents List</h3>
+        <h3>Uploaded Documents</h3>
         <ul>
           {requirements.map((requirement, index) => (
             <li key={index} className="requirement-item">
@@ -104,17 +147,14 @@ const Requirement = () => {
           ))}
         </ul>
       </div>
-      
+
       <div className="flex justify-end gap-5 mb-5 mx-5">
-      <Link to="/createapplication/education">
-        <button
-          className="px-6 py-2 bg-[#345e34] text-white font-bold rounded-lg hover:bg-green-900 focus:outline-none disabled:bg-gray-400"
-        >
-          Prev
-        </button>
+        <Link to="/createapplication/education">
+          <button className="px-6 py-2 bg-[#345e34] text-white font-bold rounded-lg hover:bg-green-900 focus:outline-none disabled:bg-gray-400">
+            Prev
+          </button>
         </Link>
 
-        {/* Disable Next button if no requirements have been added */}
         <Link to="/createapplication/appointment">
           <button
             className="px-6 py-2 bg-[#345e34] text-white font-bold rounded-lg hover:bg-green-900 focus:outline-none"

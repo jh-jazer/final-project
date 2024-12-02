@@ -56,11 +56,11 @@ const Hero = () => {
         {/* White Rectangle at the Bottom */}
         <div className="absolute bottom-0 w-full bg-[#E8E8E8] h-16 sm:h-24 flex items-center justify-center z-20">
         <p className="text-xs sm:text-lg text-[#033D04] font-semibold text-center px-4">
-  "Or check out the CSG page
+  Or check out the CSG page
   <Link
   to="https://www.facebook.com/CSGBacoor">
-   <span className="underline text-blue-600 hover:text-blue-800 cursor-pointer">here
-    </span>"
+   <span className="underline text-blue-600 hover:text-blue-800 pl-2 cursor-pointer">here
+    </span>
     </Link>
 </p>
 

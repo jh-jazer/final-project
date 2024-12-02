@@ -1,20 +1,43 @@
 import { useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
+import { useAppContext } from "../contexts/AppContext";
 import {
   FaBars,
   FaTimes,
   FaSignOutAlt,
 } from "react-icons/fa";
 
+
 const AdmissionsPage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
+  const { applicantType, preferredProgram } = useAppContext();
 
   const user = {
     name: "Jane Applicant",
     preferredProgram: "Computer Science",
     applicantType: "Transfer",
     avatar: "https://via.placeholder.com/100",
+  };
+
+  const fullNames = {
+    als: "Alternative Learning System (ALS) Passer",
+    shs: "Senior High School Graduate",
+    grade12: "Currently Enrolled Grade 12 Student",
+    bachelors: "Bachelor's Degree Graduate",
+    transferee: "Transferee",
+    stem: "Science, Technology, Engineering, and Mathematics (STEM)",
+    abm: "Accountancy, Business, and Management (ABM)",
+    humss: "Humanities and Social Sciences (HUMSS)",
+    gas: "General Academic Strand (GAS)",
+    afa: "Agri-Fishery Arts (AFA)",
+    he: "Home Economics (HE)",
+    ia: "Industrial Arts (IA)",
+    ict: "Information and Communications Technology (ICT)",
+    ad: "Arts and Design",
+    sports: "Sports",
+    it: "Bachelor of Science in Information Technology",
+    cs: "Bachelor of Science in Computer Science",
   };
 
   const handleLogout = () => {
@@ -45,14 +68,14 @@ const AdmissionsPage = () => {
           >
             {user.name}
           </h2>
-          <p className="text-sm text-gray-400">{user.preferredProgram}</p>
-          <p className="text-sm text-gray-400">{user.applicantType} Applicant</p>
+          <p className="text-sm text-gray-400">{preferredProgram || "Not provided"}</p>
+          <p className="text-sm text-gray-400"> {fullNames[applicantType] || applicantType || "Not provided"}</p>
         </div>
         <nav className="flex-1 mt-4">
           <ul className="space-y-2">
             <li>
               <Link
-                to="details"
+                to="/createapplication"
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >

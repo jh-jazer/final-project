@@ -80,13 +80,13 @@ const Sidenav = ({ homeRef, aboutRef, newsRef, contactRef }) => {
                 </span>
               </button>
               {activeDropdown === menu.label && (
-                <div className="absolute left-0 mt-2 bg-white shadow-md w-[180px] rounded-lg z-50">
+                <div className="absolute left-0 mt-2 bg-white shadow-md w-[150px] rounded-lg z-50">
                    {menu.options.map((option) => (
                       // Check if option has a path, then render Link
                       <Link
                         key={option.label || option}
                         to={option.path || '#'}
-                        className="block w-full px-4 py-2 text-left text-[#033D04] hover:bg-gray-100 hover:text-black"
+                        className="block w-full px-4 py-2 text-center  text-[#033D04] hover:bg-gray-100 hover:text-black"
                         onClick={() => setNav(false)} // Close the dropdown after clicking
                       >
                         {option.label || option}

@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import TopNav from './../components/Topnav';
+
 
 const Admissiondb = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -159,10 +161,13 @@ const Admissiondb = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-gray-50 p-8">
-      {/* Page Title */}
-      <div className="w-full max-w-4xl mb-8">
+      <div>
+        <TopNav/>
+      </div>
+      <div className="w-full max-w-4xl pt-[7%] mb-8">
         <h1 className="text-3xl font-extrabold text-center text-gray-800">Admission Dashboard</h1>
       </div>
+      
 
       {/* Tabs Container */}
       <div className="w-full max-w-4xl bg-white rounded-lg shadow-lg">

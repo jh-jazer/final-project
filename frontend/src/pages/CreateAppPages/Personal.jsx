@@ -8,16 +8,13 @@ const Personal = () => {
     middleName: '',
     suffix: '',
     sex: '',
+    nationalities:'',
     dob: '',
-    contactNumber: '',
     civilStatus: '',
     religion: '',
     phoneNumber: '',
-    email: '',
-    emergencyContactName: '',
-    emergencyContactNumber: '',
-    addressLine1: '',
-    addressLine2: '',
+    //
+    streetAddress: '',
     city: '',
     state: '',
     zipCode: '',
@@ -43,8 +40,7 @@ const Personal = () => {
     const validationErrors = {};
     const regex = {
       contactNumber: /^\d{11}$/,
-      email: /\S+@\S+\.\S+/,
-      emergencyContactNumber: /^\d{10,15}$/
+    
     };
 
     if (!formData.givenName) validationErrors.givenName = "Given Name is required.";
@@ -52,15 +48,12 @@ const Personal = () => {
     if (!formData.dob) validationErrors.dob = "Date of Birth is required.";
     if (!formData.contactNumber || !regex.contactNumber.test(formData.contactNumber))
       validationErrors.contactNumber = "Contact Number must be 11 digits.";
-    if (!formData.email || !regex.email.test(formData.email)) validationErrors.email = "Email is invalid.";
-    if (!formData.emergencyContactName) validationErrors.emergencyContactName = "Emergency Contact Name is required.";
-    if (!formData.emergencyContactNumber || !regex.emergencyContactNumber.test(formData.emergencyContactNumber))
-      validationErrors.emergencyContactNumber = "Emergency Contact Number must be between 10 and 15 digits.";
-    if (!formData.addressLine1) validationErrors.addressLine1 = "Address Line 1 is required.";
+    if (!formData.streetAddress) validationErrors.streetAddress = "Street Address is required.";
     if (!formData.city) validationErrors.city = "City is required.";
     if (!formData.state) validationErrors.state = "State/Province/Region is required.";
-    if (!formData.zipCode) validationErrors.zipCode = "Zip Code is required.";
     if (!formData.country) validationErrors.country = "Country is required.";
+    if (!formData.zipCode) validationErrors.zipCode = "Zip Code is required.";
+
 
     setErrors(validationErrors);
     return Object.keys(validationErrors).length === 0;
@@ -202,7 +195,7 @@ const Personal = () => {
         {/* Sex Field */}
         <div className="mb-4">
           <label className="text-gray-600 text-lg font-semibold" htmlFor="sex">
-            Sex
+            Sex at birth
           </label>
           <select
             id="sex"
@@ -317,20 +310,8 @@ const Personal = () => {
             <option value="Zoroastrianism">Zoroastrianism</option>
           </select>
         </div>
-        
-
-         {/* Thin Horizontal Line */}
-         <hr className="my-11 border-t-2 border-gray-700" />
-
-         <div>
-             <h5 className="text-2xl font-extrabold text-[#001800] mb-6 text-left pb-5">
-              Contact Details 
-              </h5>
-          </div>
-
-        
-          {/* Contact Number Field */}
-          <div className="mb-4">
+        {/* Contact Number Field */}
+        <div className="mb-4">
           <label className="text-gray-600 text-lg font-semibold" htmlFor="contactNumber">
             Contact Number*
           </label>
@@ -345,66 +326,30 @@ const Personal = () => {
           />
           {errors.contactNumber && <p className="text-red-500 text-sm">{errors.contactNumber}</p>}
         </div>
-          {/* Email Address */}
-          <div className="mb-4">
-            <label className="form-group text-lg font-sans text-gray-600" htmlFor="email">Email Address</label>
-            <input
-              type="email"
-              className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              placeholder="Enter email address"
-            />
-            {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+        
+
+         {/* Thin Horizontal Line */}
+         <hr className="my-11 border-t-2 border-gray-700" />
+
+         <div>
+             <h5 className="text-2xl font-extrabold text-[#001800] mb-6 text-left pb-5">
+              Address Details 
+              </h5>
           </div>
 
-          {/* Emergency Contact Name */}
-          <div className="mb-4">
-            <label className="form-group text-lg font-sans text-gray-600" htmlFor="emergencyContactName">Emergency Contact Name</label>
-            <input
-              type="text"
-              className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
-              id="emergencyContactName"
-              name="emergencyContactName"
-              value={formData.emergencyContactName}
-              onChange={handleChange}
-              required
-              placeholder="Enter emergency contact name"
-            />
-            {errors.emergencyContactName && <p className="text-red-500 text-sm">{errors.emergencyContactName}</p>}
-          </div>
-
-          {/* Emergency Contact Number */}
-          <div className="mb-4">
-            <label className="form-group text-lg font-sans text-gray-600" htmlFor="emergencyContactNumber">Emergency Contact Number</label>
-            <input
-              type="tel"
-              className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
-              id="emergencyContactNumber"
-              name="emergencyContactNumber"
-              value={formData.emergencyContactNumber}
-              onChange={handleChange}
-              required
-              placeholder="Enter emergency contact number"
-            />
-            {errors.emergencyContactNumber && <p className="text-red-500 text-sm">{errors.emergencyContactNumber}</p>}
-          </div>
 
           {/* Address Fields */}
           <div className="mb-4">
-            <label className="form-group text-lg font-sans text-gray-600" htmlFor="addressLine1">Address Line 1</label>
+            <label className="form-group text-lg font-sans text-gray-600" htmlFor="addressLine1">Street Address</label>
             <input
               type="text"
               className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
-              id="addressLine1"
-              name="addressLine1"
-              value={formData.addressLine1}
+              id="streetAddress"
+              name="streetAddress"
+              value={formData.streetAddress}
               onChange={handleChange}
               required
-              placeholder="Enter address line 1"
+              placeholder="Enter Street Address"
             />
             {errors.addressLine1 && <p className="text-red-500 text-sm">{errors.addressLine1}</p>}
           </div>

@@ -1,169 +1,198 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import DatePicker from "react-datepicker"; // Import DatePicker
+import "react-datepicker/dist/react-datepicker.css";
 
 const Appointment = () => {
-  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-  const [appointments, setAppointments] = useState([]);
+  const navigate = useNavigate();
+  const [isSubmitButtonDisabled, setIsSubmitButtonDisabled] = useState(true);
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [isSubmitConfirmationOpen, setIsSubmitConfirmationOpen] = useState(false);
+  const [isCheckboxChecked, setIsCheckboxChecked] = useState(false); // Checkbox state
+  const [appointmentDetails, setAppointmentDetails] = useState(null); // Store the selected date and time
 
-  const handleAddAppointment = (e) => {
-    e.preventDefault();
-    if (date && time) {
-      const appointment = {
-        date,
-        time,
-      };
-      setAppointments((prevAppointments) => [...prevAppointments, appointment]);
-      setDate(''); // Clear the date input after adding
-      setTime(''); // Clear the time input after adding
-    } else {
-      alert("Please select both a date and a time for the appointment.");
-    }
+  const slots = {
+    morning: 5, // Example slots left in the morning
+    afternoon: 3, // Example slots left in the afternoon
   };
 
-  const handleDeleteAppointment = (index) => {
-    const updatedAppointments = appointments.filter((_, i) => i !== index);
-    setAppointments(updatedAppointments);
+  const [startDate, setStartDate] = useState(null);
+
+  const handleDateChange = (date) => {
+    setStartDate(date);
+    setDate(date); // Store the date selected
+  };
+
+  const isWeekend = (date) => {
+    const day = date.getDay();
+    return day === 0 || day === 6; // Sunday (0) or Saturday (6)
   };
 
   const handleSubmit = () => {
-    if (appointments.length === 0) {
-      alert("Please add at least one appointment before submitting.");
+    if (!date || !time) {
+      alert("Please select both a date and a time for the appointment.");
     } else {
-      setIsSubmitConfirmationOpen(true);
+      // Format the date to a readable string
+      const formattedDate = new Date(date).toLocaleDateString();
+
+      const appointment = {
+        date: formattedDate,
+        time,
+      };
+
+      setAppointmentDetails(appointment); // Store appointment details
+      setIsSubmitConfirmationOpen(true); // Open confirmation dialog
     }
   };
 
-  const confirmSubmit = () => {
+ const confirmSubmit = () => {
+
     // Proceed with the submission
-    alert("Your appointments have been submitted successfully!");
+    alert("Your appointment has been submitted successfully!");
     setIsSubmitConfirmationOpen(false); // Close confirmation dialog
+    navigate("/admissiondb"); // Navigate to /admissiondb
   };
+
 
   const cancelSubmit = () => {
     setIsSubmitConfirmationOpen(false); // Close confirmation dialog
   };
 
-  // Enable the submit button only when both date and time are selected
+  // Enable/disable submit button dynamically
   useEffect(() => {
-    if (appointments.length > 0) {
-      setIsButtonDisabled(false);
+    if (date && time && isCheckboxChecked) {
+      setIsSubmitButtonDisabled(false);
     } else {
-      setIsButtonDisabled(true);
+      setIsSubmitButtonDisabled(true);
     }
-  }, [appointments]); // This will run whenever appointments change
+  }, [date, time, isCheckboxChecked]);
 
   return (
     <div className="w-full min-h-screen bg-white p-8 pt-12 shadow-xl rounded-lg flex flex-col justify-between">
-      <div className="appointment-form-container">
-        <h2 className='text-3xl font-extrabold flex justify-center items-center'>Schedule an Appointment</h2>
-       
-        <div className="bg-gray-800 text-white px-4 rounded pt-3 pb-6 mb-3">
-        <h3 className="text-lg text-white font-bold mb-2">Directions</h3>
-        <ul  className="list-disc pl-6">
-          <li>Choose a date and time you can visit the Office of Student Affairs and Services (OSAS) at Cavite State University - Bacoor to personally submit the original copies of your uploaded requirements for validation.</li>
-          <li>Select Submit Application to schedule your appointment and finalize your admission application.
-</li>
-       
-        </ul>
+      <div className="relative text-center my-10">
+        <Link to="/createapplication/personal" className="absolute left-0 top-1/2 transform -translate-y-1/2">
+          <button className="text-[#345e34] hover:text-green-900">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        </Link>
+        <h1 className="text-3xl font-extrabold text-[#001800]">Schedule Appointment</h1>
       </div>
 
-        <form onSubmit={handleAddAppointment}>
+      <div className="appointment-form-container">
+        <div className="bg-gray-800 text-white px-4 rounded pt-3 pb-6 mb-3">
+          <h3 className="text-lg text-white font-bold mb-2">Directions</h3>
+          <ul className="list-disc pl-6">
+            <li>
+              Choose a date and time you can visit the Office of Student Affairs and Services (OSAS) at Cavite State University - Bacoor to personally submit the original copies of your uploaded requirements for validation.
+            </li>
+            <li>
+              Select Submit Application to schedule your appointment and finalize your admission application.
+            </li>
+          </ul>
+        </div>
+
+        <form onSubmit={(e) => e.preventDefault()}>
           <div className="form-group">
             <label htmlFor="appointmentDate">Select Date</label>
-            <input
-              type="date"
-              id="appointmentDate"
-              name="appointmentDate"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              required
+            <DatePicker
+              selected={startDate}
+              onChange={handleDateChange}
+              minDate={new Date()} // Restrict past dates
+              filterDate={(date) => !isWeekend(date)} // Disable weekends
+              dateFormat="yyyy-MM-dd"
+              className="block w-full p-2 border rounded"
+              placeholderText="Select a date"
             />
           </div>
 
           <div className="form-group">
             <label htmlFor="appointmentTime">Select Time</label>
-            <input
-              type="time"
+            <select
               id="appointmentTime"
               name="appointmentTime"
               value={time}
               onChange={(e) => setTime(e.target.value)}
               required
-            />
+              className="block w-full p-2 border rounded"
+            >
+              <option value="" disabled>Select a time slot</option>
+              <option value="08:00 AM-12:00 PM">
+                08:00 AM - 12:00 PM ({slots.morning} slots left)
+              </option>
+              <option value="01:00 PM-05:00 PM">
+                01:00 PM - 05:00 PM ({slots.afternoon} slots left)
+              </option>
+            </select>
           </div>
-            {/* Certification Statement */}
-            <div className="bg-gray-100 p-4 rounded mb-6">
-              <label className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  required
-                  className="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                />
-                <span className="text-sm">
-                  I hereby certify that all information stated are true and correct to the best of my knowledge.
-                </span>
-              </label>
-            </div>
 
-          <button type="submit" className="submit-btn">Add Appointment</button>
+          {/* Certification Statement */}
+          <div className="bg-gray-100 p-4 rounded mb-6">
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={isCheckboxChecked}
+                onChange={(e) => setIsCheckboxChecked(e.target.checked)}
+                className="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+              />
+              <span className="text-sm">
+                I hereby certify that all information stated are true and correct to the best of my knowledge.
+              </span>
+            </label>
+          </div>
         </form>
-
-        <div className="appointments-list">
-          <h3>Scheduled Appointments</h3>
-          <ul>
-            {appointments.map((appointment, index) => (
-              <li key={index} className="appointment-item">
-                <span>{`${appointment.date} at ${appointment.time}`}</span>
-                <button
-                  type="button"
-                  className="delete-btn"
-                  onClick={() => handleDeleteAppointment(index)}
-                >
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
       </div>
 
       <div className="flex justify-end gap-5 mb-5 mx-5">
-      <Link to="/createapplication/requirements">
-        <button
-          className="px-6 py-2 bg-[#345e34] text-white font-bold rounded-lg hover:bg-green-900 focus:outline-none"
-          
-        >
-          Prev
-        </button>
-        </Link>
-
-        {/* The Submit button is now disabled if there are no appointments */}
-        <button
-          className="px-6 py-2 bg-[#345e34] text-white font-bold rounded-lg hover:bg-green-900 focus:outline-none"
-          disabled={appointments.length === 0}
-          onClick={handleSubmit}
-        >
-          Submit
-        </button>
+        <div className="text-left">
+          <button
+            className={`px-6 py-2 font-bold rounded-lg focus:outline-none ${isSubmitButtonDisabled ? "bg-gray-300 text-gray-600 cursor-not-allowed" : "bg-green-500 text-white hover:bg-red-700"}`}
+            onClick={handleSubmit}
+            disabled={isSubmitButtonDisabled}
+          >
+            Submit Application
+          </button>
+        </div>
       </div>
 
-      {/* Submit Confirmation Dialog */}
-      {isSubmitConfirmationOpen && (
-        <div className="confirmation-dialog flex justify-end">
-          <p className='flex justify-end mt-6'>Are you sure you want to submit your appointments?</p>
-          <div className="flex justify-around mt-4 gap-5 mb-5 mx-5">
-            <button onClick={confirmSubmit} className="px-4 py-2 bg-green-500 text-white rounded-lg">
-              Yes
-            </button>
-            <button onClick={cancelSubmit} className="px-4 py-2 bg-red-500 text-white rounded-lg">
-              No
-            </button>
-          </div>
-        </div>
-      )}
+     {/* Submit Confirmation Modal */}
+{isSubmitConfirmationOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+    <div className="bg-white p-8 rounded-lg shadow-lg w-96 max-w-sm mx-4">
+      <h2 className="text-2xl font-semibold text-center text-gray-800 mb-4">
+        Confirm Appointment Submission
+      </h2>
+      <p className="text-lg text-gray-600 text-center mb-4">
+        Are you sure you want to submit your appointment details?
+      </p>
+      <div className="text-center mb-6">
+        {appointmentDetails && (
+          <p className="text-xl font-medium text-gray-800">
+            <span className="block">{appointmentDetails.date}</span>
+            <span className="block text-green-600">{appointmentDetails.time}</span>
+          </p>
+        )}
+      </div>
+      <div className="flex justify-around gap-4">
+        <button
+          onClick={confirmSubmit}
+          className="px-6 py-2 bg-green-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-green-700 transition duration-200"
+        >
+          Confirm
+        </button>
+        <button
+          onClick={cancelSubmit}
+          className="px-6 py-2 bg-red-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-red-700 transition duration-200"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

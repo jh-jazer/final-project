@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect, useRef} from 'react';
 import '../CreateApppagesCSS/Requirement.css';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../../contexts/AppContext';
@@ -11,29 +11,30 @@ const Requirement = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true);
+  const divRef = useRef(null);
 
   const requirementMapping = {
     shs: [
-      'Upload your Grade 12 Report Card',
-      'Upload a 2x2 Picture',
-      'Upload your Certificate of non-issuance of Form 137',
+      'Grade 12 Report Card',
+      '2x2 Picture',
+      'Certificate of non-issuance of Form 137',
     ],
     transferee: [
-      'Upload your Certificate of grades or transcript of records of all enrolled semesters',
-      'Upload a 2x2 Picture',
+      'Certificate of grades or transcript of records of all enrolled semesters',
+      '2x2 Picture',
     ],
     als: [
-      'Upload your Certificate of rating with college eligibility remark',
-      'Upload a 2x2 Picture',
+      'Certificate of rating with college eligibility remark',
+      '2x2 Picture',
     ],
     grade12: [
-      'Upload your Accomplished Grade 11 Report Card',
-      'Upload your Certification of Grade 12 Enrollment with strand',
-      'Upload a 2x2 Picture',
+      'Accomplished Grade 11 Report Card',
+      'Certification of Grade 12 Enrollment with strand',
+      '2x2 Picture',
     ],
     bachelors: [
-      'Upload your Complete Transcript of Records with date of graduation',
-      'Upload a 2x2 Picture',
+      'Complete Transcript of Records with date of graduation',
+      '2x2 Picture',
     ],
   };
 
@@ -77,10 +78,26 @@ const Requirement = () => {
     setImagePreviews(updatedPreviews);
   };
 
+  // Remove the image
+const handleRemoveImage = (index) => {
+  const updatedFiles = [...uploadedFiles];
+  const updatedPreviews = [...imagePreviews];
+
+  updatedFiles[index] = null;
+  updatedPreviews[index] = null;
+
+  setUploadedFiles(updatedFiles);
+  setImagePreviews(updatedPreviews);
+};
+
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSuccessMessage('');
     setErrorMessage('');
+    divRef.current.scrollIntoView({ behavior: "smooth" });
+
 
     try {
       const formData = new FormData();
@@ -117,7 +134,9 @@ const Requirement = () => {
   }, [imagePreviews]);
 
   return (
-    <div className="w-full min-h-screen bg-white p-8 pt-12 shadow-xl rounded-lg flex flex-col">
+    <div 
+    ref={divRef}
+    className="w-full min-h-screen bg-white p-8 pt-12 shadow-xl rounded-lg flex flex-col">
       {successMessage && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
           {successMessage}
@@ -162,38 +181,67 @@ const Requirement = () => {
       </div>
 
       <form onSubmit={handleSubmit}>
-        <ul className="mb-6">
-          {applicantRequirements.map((req, index) => (
-            <li key={index} className="mb-4">
-              <label htmlFor={`requirement-${index}`}>{req}</label>
-              <input
-                id={`requirement-${index}`}
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleImageChange(e, index)}
-                required
-                className="mt-2"
-              />
-              {imagePreviews[index] && (
-                <div className="mt-2">
-                  <img
-                    src={imagePreviews[index]}
-                    alt={`Preview ${index}`}
-                    style={{ width: '100px', height: 'auto' }}
-                  />
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-        <button
-          type="submit"
-          className={`submit-btn`}
-          
-        >
-          Submit Requirements
-        </button>
-      </form>
+  <ul className="mb-6">
+    {applicantRequirements.map((req, index) => (
+      <li key={index} className="mb-4">
+        <label htmlFor={`requirement-${index}`}>Upload your {req}</label>
+        <input
+          id={`requirement-${index}`}
+          type="file"
+          accept="image/*"
+          onChange={(e) => handleImageChange(e, index)}
+          required={!uploadedFiles[index]} // Input is required only if there's no uploaded file
+          className="mt-2"
+        />
+        {imagePreviews[index] && uploadedFiles[index] && (
+          <div className="mt-2">
+            <label htmlFor={`requirement-${index}`}>{req}</label>
+            <p className="text-sm text-gray-600 mt-1">
+              {`(${(uploadedFiles[index].size / 1024).toFixed(2)} KB of 1024 KB used)`}
+            </p>
+            <img
+              src={imagePreviews[index]}
+              alt={`Preview ${index}`}
+              style={{ width: '100px', height: 'auto' }}
+            />
+           
+            <div className="mt-2 flex gap-2">
+              {/* Remove Image Button */}
+              <button
+                type="button"
+                onClick={() => handleRemoveImage(index)}
+                className="px-4 py-1 bg-red-500 text-white rounded-lg hover:bg-red-700"
+              >
+                Remove
+              </button>
+           
+            </div>
+          </div>
+        )}
+        {/* Divider */}
+        {index < applicantRequirements.length - 1 && (
+          <hr className="my-4 border-gray-500" />
+        )}
+      </li>
+    ))}
+  </ul>
+
+  {/* Action Buttons */}
+  <div className="flex justify-end gap-5 mb-5 mx-5">
+    <div className="text-left">
+      <button
+        className="px-6 py-2 bg-green-500 text-white font-bold rounded-lg hover:bg-red-700 focus:outline-none"
+        onClick={(e) => {
+          handleSubmit(e);
+        }}
+      >
+        Update Application
+      </button>
+    </div>
+  </div>
+</form>
+
+
     </div>
   );
 };

@@ -8,6 +8,8 @@ import Apply from './pages/Apply.jsx';
 import Privacy from './pages/DataPrivacyNotice.jsx';
 import Create from './pages/Create.jsx';
 
+
+import Admissiondb from './pages/Admissiondb.jsx';
 import Studentdb from './pages/Studentdb.jsx';
 import Profile from './pages/StudentdbPages/Profile.jsx';
 import Checklist from "./pages/StudentdbPages/Checklist.jsx";
@@ -117,6 +119,10 @@ const router = createBrowserRouter([
   {
     path: "/comstudy",
     element: <ComputerStudies />,
+  },
+  {
+    path: "/admissiondb",
+    element: <Admissiondb />,
   },
   {
         path: "/createapplication",

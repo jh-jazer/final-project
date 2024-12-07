@@ -74,8 +74,8 @@ const StudentInformation = () => {
   }, [searchTerm, statusFilter]);
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
-      <div className="bg-white shadow-lg rounded-lg p-6 max-w-6xl mx-auto">
+    <div className="p-4 sm:p-8 bg-gray-50 min-h-screen">
+      <div className="bg-white shadow-lg rounded-lg p-6 mx-auto max-w-full sm:max-w-6xl">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">Student Information</h2>
 
         {/* Search bar */}
@@ -88,8 +88,8 @@ const StudentInformation = () => {
         />
 
         {/* Radio buttons for filtering by enrollment status (inline) */}
-        <div className="mb-4 flex space-x-6">
-          <label>
+        <div className="mb-4 flex flex-wrap sm:flex-nowrap space-x-6 sm:space-x-8">
+          <label className="flex items-center">
             <input
               type="radio"
               name="statusFilter"
@@ -100,7 +100,7 @@ const StudentInformation = () => {
             />{' '}
             All Students
           </label>
-          <label>
+          <label className="flex items-center">
             <input
               type="radio"
               name="statusFilter"
@@ -111,7 +111,7 @@ const StudentInformation = () => {
             />{' '}
             Current Students
           </label>
-          <label>
+          <label className="flex items-center">
             <input
               type="radio"
               name="statusFilter"
@@ -125,74 +125,76 @@ const StudentInformation = () => {
         </div>
 
         {/* Table for student information */}
-        <table className="min-w-full table-auto border-collapse">
-          <thead>
-            <tr className="bg-gray-200">
-              <th
-                className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
-                onClick={() => handleSort('name')}
-              >
-                Student Name
-              </th>
-              <th
-                className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
-                onClick={() => handleSort('email')}
-              >
-                Email
-              </th>
-              <th
-                className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
-                onClick={() => handleSort('phone')}
-              >
-                Phone
-              </th>
-              <th
-                className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
-                onClick={() => handleSort('address')}
-              >
-                Address
-              </th>
-              <th
-                className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
-                onClick={() => handleSort('year')}
-              >
-                Year
-              </th>
-              <th
-                className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
-                onClick={() => handleSort('section')}
-              >
-                Section
-              </th>
-              <th
-                className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
-                onClick={() => handleSort('course')}
-              >
-                Course
-              </th>
-              <th
-                className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
-                onClick={() => handleSort('enrollmentStatus')}
-              >
-                Enrollment Status
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredStudents.map((student) => (
-              <tr key={student.id} className="hover:bg-gray-100">
-                <td className="px-4 py-2 border border-gray-300">{student.name}</td>
-                <td className="px-4 py-2 border border-gray-300">{student.email}</td>
-                <td className="px-4 py-2 border border-gray-300">{student.phone}</td>
-                <td className="px-4 py-2 border border-gray-300">{student.address}</td>
-                <td className="px-4 py-2 border border-gray-300">{student.year}</td>
-                <td className="px-4 py-2 border border-gray-300">{student.section}</td>
-                <td className="px-4 py-2 border border-gray-300">{student.course}</td>
-                <td className="px-4 py-2 border border-gray-300">{student.enrollmentStatus}</td>
+        <div className="overflow-x-auto">
+          <table className="min-w-full table-auto border-collapse">
+            <thead>
+              <tr className="bg-gray-200">
+                <th
+                  className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
+                  onClick={() => handleSort('name')}
+                >
+                  Student Name
+                </th>
+                <th
+                  className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
+                  onClick={() => handleSort('email')}
+                >
+                  Email
+                </th>
+                <th
+                  className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
+                  onClick={() => handleSort('phone')}
+                >
+                  Phone
+                </th>
+                <th
+                  className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
+                  onClick={() => handleSort('address')}
+                >
+                  Address
+                </th>
+                <th
+                  className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
+                  onClick={() => handleSort('year')}
+                >
+                  Year
+                </th>
+                <th
+                  className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
+                  onClick={() => handleSort('section')}
+                >
+                  Section
+                </th>
+                <th
+                  className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
+                  onClick={() => handleSort('course')}
+                >
+                  Course
+                </th>
+                <th
+                  className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
+                  onClick={() => handleSort('enrollmentStatus')}
+                >
+                  Enrollment Status
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredStudents.map((student) => (
+                <tr key={student.id} className="hover:bg-gray-100">
+                  <td className="px-4 py-2 border border-gray-300">{student.name}</td>
+                  <td className="px-4 py-2 border border-gray-300">{student.email}</td>
+                  <td className="px-4 py-2 border border-gray-300">{student.phone}</td>
+                  <td className="px-4 py-2 border border-gray-300">{student.address}</td>
+                  <td className="px-4 py-2 border border-gray-300">{student.year}</td>
+                  <td className="px-4 py-2 border border-gray-300">{student.section}</td>
+                  <td className="px-4 py-2 border border-gray-300">{student.course}</td>
+                  <td className="px-4 py-2 border border-gray-300">{student.enrollmentStatus}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

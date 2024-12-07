@@ -115,48 +115,52 @@ const AcademicRecords = () => {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-md"
+            className="px-4 py-2 border border-gray-300 rounded-md w-full"
           >
             <option value="name">Sort by Student Name</option>
             <option value="year">Sort by Year</option>
           </select>
         </div>
 
-        {/* Table */}
-        <table className="min-w-full table-auto border-collapse">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="px-4 py-2 text-left border border-gray-300">Student Name</th>
-              <th className="px-4 py-2 text-left border border-gray-300">Course</th>
-              <th className="px-4 py-2 text-left border border-gray-300">Year & Section</th>
-              <th className="px-4 py-2 text-left border border-gray-300">Semester Grades</th>
-              <th className="px-4 py-2 text-left border border-gray-300">Average Grade</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredStudents.map((student) => (
-              <tr
-                key={student.id}
-                className="hover:bg-gray-100 cursor-pointer"
-                onClick={() => handleRowClick(student)}
-              >
-                <td className="px-4 py-2 border border-gray-300">{student.name}</td>
-                <td className="px-4 py-2 border border-gray-300">{student.course}</td>
-                <td className="px-4 py-2 border border-gray-300">{`${student.year} & Section ${student.section.split('-')[1]}`}</td>
-                <td className="px-4 py-2 border border-gray-300">
-                  {Object.keys(student.grades).map((semester) => (
-                    <div key={semester}>
-                      {semester}: {student.grades[semester]}
-                    </div>
-                  ))}
-                </td>
-                <td className="px-4 py-2 border border-gray-300">
-                  {calculateAverageGrade(student.grades)}
-                </td>
+        {/* Table (Mobile-Friendly with Tailwind's Responsive Utilities) */}
+        <div className="overflow-x-auto">
+          <table className="min-w-full table-auto border-collapse">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="px-4 py-2 text-left border border-gray-300">Student Name</th>
+                <th className="px-4 py-2 text-left border border-gray-300">Course</th>
+                <th className="px-4 py-2 text-left border border-gray-300">Year & Section</th>
+                <th className="px-4 py-2 text-left border border-gray-300">Semester Grades</th>
+                <th className="px-4 py-2 text-left border border-gray-300">Average Grade</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredStudents.map((student) => (
+                <tr
+                  key={student.id}
+                  className="hover:bg-gray-100 cursor-pointer"
+                  onClick={() => handleRowClick(student)}
+                >
+                  <td className="px-4 py-2 border border-gray-300">{student.name}</td>
+                  <td className="px-4 py-2 border border-gray-300">{student.course}</td>
+                  <td className="px-4 py-2 border border-gray-300">
+                    {`${student.year} & Section ${student.section.split('-')[1]}`}
+                  </td>
+                  <td className="px-4 py-2 border border-gray-300">
+                    {Object.keys(student.grades).map((semester) => (
+                      <div key={semester}>
+                        {semester}: {student.grades[semester]}
+                      </div>
+                    ))}
+                  </td>
+                  <td className="px-4 py-2 border border-gray-300">
+                    {calculateAverageGrade(student.grades)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Modal */}

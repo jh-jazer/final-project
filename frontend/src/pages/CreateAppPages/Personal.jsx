@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { nationalities, countries, religions } from "../../constants.js";
+
 
 const Personal = () => {
+  const [selectedNationality, setSelectedNationality] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState("");
   const [formData, setFormData] = useState({
     givenName: '',
     familyName: '',
@@ -14,9 +18,12 @@ const Personal = () => {
     religion: '',
     phoneNumber: '',
     //
+    houseNumber:'',
     streetAddress: '',
-    city: '',
-    state: '',
+    region:'',
+    province:'',
+    municipality: '',
+    barangay: '',
     zipCode: '',
     country: '',
   });
@@ -27,6 +34,8 @@ const Personal = () => {
   const [formUpdated, setFormUpdated] = useState(false); // Tracks if the form has been successfully updated
   const divRef = useRef(null);
 
+
+  
 
 
   // Effect to enable or disable the button based on form completion
@@ -48,13 +57,16 @@ const Personal = () => {
     if (!formData.dob) validationErrors.dob = "Date of Birth is required.";
     if (!formData.contactNumber || !regex.contactNumber.test(formData.contactNumber))
       validationErrors.contactNumber = "Contact Number must be 11 digits.";
+    //
+    if (!formData.houseNumber) validationErrors.houseNumber = "House Number is required.";
     if (!formData.streetAddress) validationErrors.streetAddress = "Street Address is required.";
-    if (!formData.city) validationErrors.city = "City is required.";
-    if (!formData.state) validationErrors.state = "State/Province/Region is required.";
+    if (!formData.region) validationErrors.region = "Region is required.";
+    if (!formData.province) validationErrors.province = "Province is required.";
+    if (!formData.municipality) validationErrors.municipality = "Municipality is required.";
+    if (!formData.barangay) validationErrors.barangay = "Barangay is required.";
+    if (!formData.zipCode) validationErrors.zipCode = "Zip-Code is required.";
     if (!formData.country) validationErrors.country = "Country is required.";
-    if (!formData.zipCode) validationErrors.zipCode = "Zip Code is required.";
-
-
+  
     setErrors(validationErrors);
     return Object.keys(validationErrors).length === 0;
   };
@@ -244,72 +256,47 @@ const Personal = () => {
         </div>
 
         <div className="mb-4">
-          <label className="text-gray-600 text-lg font-semibold" htmlFor="religion">
-            Religion
-          </label>
-          <select
-            id="religion"
-            name="religion"
-            className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
-            value={formData.religion}
-            onChange={handleChange}
-          >
-            <option value="" disabled selected>
-              Select your religion
+      <label className="text-gray-600 text-lg font-semibold" htmlFor="religion">
+        Religion
+      </label>
+      <select
+        id="religion"
+        name="religion"
+        className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
+        value={formData.religion}
+        onChange={handleChange}
+      >
+        <option value="" disabled selected>
+          Select your religion
+        </option>
+        {religions.map((religion, index) => (
+          <option key={index} value={religion}>
+            {religion}
+          </option>
+        ))}
+      </select>
+    </div>
+
+            {/* Nationality Dropdown */}
+      <div className="mb-4">
+      <label className="text-gray-600 text-lg font-semibold" htmlFor="nationality">
+            Nationality
+          </label>        <select
+          id="nationality"
+          name='nationality'
+          className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
+
+          value={selectedNationality}
+          onChange={handleChange}
+        >
+          <option value="">Select a Nationality</option>
+          {nationalities.map((nationality, index) => (
+            <option key={index} value={nationality}>
+              {nationality}
             </option>
-            <option value="Anglican">Anglican</option>
-            <option value="Apostolic">Apostolic</option>
-            <option value="Assembly of God">Assembly of God</option>
-            <option value="Babi and Baha'i Faiths">Babi and Baha'i Faiths</option>
-            <option value="Baptist">Baptist</option>
-            <option value="Bible Church of Christ">Bible Church of Christ</option>
-            <option value="Buddhism">Buddhism</option>
-            <option value="Calvinist">Calvinist</option>
-            <option value="Christian and Missionary Alliance">
-              Christian and Missionary Alliance
-            </option>
-            <option value="Christian Science">Christian Science</option>
-            <option value="Church of Christ">Church of Christ</option>
-            <option value="Church of God">Church of God</option>
-            <option value="Church of God in Christ">Church of God in Christ</option>
-            <option value="Church of Jesus Christ of Latter-day Saints">
-              Church of Jesus Christ of Latter-day Saints
-            </option>
-            <option value="Church of the Nazarene">Church of the Nazarene</option>
-            <option value="Confucianism">Confucianism</option>
-            <option value="Deism">Deism</option>
-            <option value="Episcopalian">Episcopalian</option>
-            <option value="Evangelical">Evangelical</option>
-            <option value="Evangelical Christian">Evangelical Christian</option>
-            <option value="Hinduism">Hinduism</option>
-            <option value="Iglesia ni Cristo">Iglesia ni Cristo</option>
-            <option value="Islam">Islam</option>
-            <option value="Jehovah's Witness">Jehovah's Witness</option>
-            <option value="Judaism">Judaism</option>
-            <option value="Lutheran">Lutheran</option>
-            <option value="Methodist">Methodist</option>
-            <option value="None">None</option>
-            <option value="Orthodox">Orthodox</option>
-            <option value="Other Christian and Christian Heritage">
-              Other Christian and Christian Heritage
-            </option>
-            <option value="Pentecostal">Pentecostal</option>
-            <option value="Philippine Independent Church">
-              Philippine Independent Church
-            </option>
-            <option value="Presbyterian">Presbyterian</option>
-            <option value="Protestant">Protestant</option>
-            <option value="Roman Catholic">Roman Catholic</option>
-            <option value="Seventh Day Adventist">Seventh Day Adventist</option>
-            <option value="Sikhism">Sikhism</option>
-            <option value="Taoism">Taoism</option>
-            <option value="United Church of Christ in the Philippines">
-              United Church of Christ in the Philippines
-            </option>
-            <option value="Worldwide Church of God">Worldwide Church of God</option>
-            <option value="Zoroastrianism">Zoroastrianism</option>
-          </select>
-        </div>
+          ))}
+        </select>
+      </div>
         {/* Contact Number Field */}
         <div className="mb-4">
           <label className="text-gray-600 text-lg font-semibold" htmlFor="contactNumber">
@@ -340,6 +327,19 @@ const Personal = () => {
 
           {/* Address Fields */}
           <div className="mb-4">
+            <label className="form-group text-lg font-sans text-gray-600" htmlFor="addressLine1">House Number</label>
+            <input
+              type="text"
+              className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
+              id="houseNumber"
+              name="houseNumber"
+              value={formData.houseNumber}
+              onChange={handleChange}
+              required
+              placeholder="Enter House Number"
+            />
+          {errors.houseNumber && <p className="text-red-500 text-sm">{errors.houseNumber}</p>}          </div>
+          <div className="mb-4">
             <label className="form-group text-lg font-sans text-gray-600" htmlFor="addressLine1">Street Address</label>
             <input
               type="text"
@@ -351,37 +351,51 @@ const Personal = () => {
               required
               placeholder="Enter Street Address"
             />
-            {errors.addressLine1 && <p className="text-red-500 text-sm">{errors.addressLine1}</p>}
+            {errors.streetAddress && <p className="text-red-500 text-sm">{errors.streetAddress}</p>}
           </div>
-
           <div className="mb-4">
-            <label className="form-group text-lg font-sans text-gray-600" htmlFor="city">City</label>
+            <label className="form-group text-lg font-sans text-gray-600" htmlFor="city">Region</label>
             <input
               type="text"
               className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
-              id="city"
-              name="city"
+              id="region"
+              name="region"
               value={formData.city}
               onChange={handleChange}
               required
-              placeholder="Enter city"
+              placeholder="Enter Region"
+            />
+            {errors.region && <p className="text-red-500 text-sm">{errors.region}</p>}
+          </div>
+
+          <div className="mb-4">
+            <label className="form-group text-lg font-sans text-gray-600" htmlFor="city">Province</label>
+            <input
+              type="text"
+              className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
+              id="province "
+              name="province"
+              value={formData.city}
+              onChange={handleChange}
+              required
+              placeholder="Enter Province"
             />
             {errors.city && <p className="text-red-500 text-sm">{errors.city}</p>}
           </div>
 
           <div className="mb-4">
-            <label className="form-group text-lg font-sans text-gray-600" htmlFor="state">State/Province/Region</label>
+            <label className="form-group text-lg font-sans text-gray-600" htmlFor="state">Municipality</label>
             <input
               type="text"
               className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
-              id="state"
-              name="state"
+              id="municipality"
+              name="municipality"
               value={formData.state}
               onChange={handleChange}
               required
-              placeholder="Enter state, province, or region"
+              placeholder="Enter Municipality"
             />
-            {errors.state && <p className="text-red-500 text-sm">{errors.state}</p>}
+            {errors.municipality && <p className="text-red-500 text-sm">{errors.municipality}</p>}
           </div>
 
           <div className="mb-4">
@@ -400,19 +414,24 @@ const Personal = () => {
           </div>
 
           <div className="mb-4">
-            <label className="form-group text-lg font-sans text-gray-600" htmlFor="country">Country</label>
-            <input
-              type="text"
-              id="country"
-              className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
-              name="country"
-              value={formData.country}
-              onChange={handleChange}
-              required
-              placeholder="Enter country"
-            />
-            {errors.country && <p className="text-red-500 text-sm">{errors.country}</p>}
-          </div>
+      <label className="text-gray-600 text-lg font-semibold" htmlFor="country">
+            Country
+          </label>        <select
+          id="country"
+          name='country'
+          className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
+
+          value={selectedCountry}
+          onChange={handleChange}
+        >
+          <option value="">Select a Country</option>
+          {countries.map((country, index) => (
+            <option key={index} value={country}>
+              {country}
+            </option>
+          ))}
+        </select>
+      </div>
           </div>
     
 

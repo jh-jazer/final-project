@@ -15,11 +15,13 @@ const Profile = () => {
     nationality: "Filipino",
     houseNumber: "1",
     streetAddress: "Not provided",
+    region: "National Capital Region (NCR)",
     province: "Metro Manila",
     municipality: "Taguig",
     barangay: "Not provided",
     zipCode: "1740",
-    region: "National Capital Region (NCR)",
+    country: "Philippines",
+    
     fathersName: "Not Applicable",
     fathersOccupation: "Not Applicable",
     fathersContactNumber: "Not Applicable",
@@ -30,7 +32,7 @@ const Profile = () => {
     guardiansOccupation: "Joshua",
     guardiansContactNumber: "0948756134",
     numberOfSiblings: "1",
-    incomeBracket: "2",
+    incomeBracket: "22,001 - 43,000",
     educationalBackground: [
       {
         level: "Elementary",
@@ -107,6 +109,7 @@ const Profile = () => {
               { label: "Municipality", value: formData.municipality },
               { label: "Barangay", value: formData.barangay },
               { label: "ZIP Code", value: formData.zipCode },
+              { label: "Country", value: formData.country },
             ].map((field, index) => (
               <div key={index} className="p-4 border rounded-lg">
                 <h3 className="font-semibold text-gray-600">{field.label}</h3>

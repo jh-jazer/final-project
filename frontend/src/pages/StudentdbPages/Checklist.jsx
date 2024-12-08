@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const Checklist = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [course, setCourse] = useState('CS'); // Add state to determine the course (CS or IT)
+  const location = useLocation();
+  const { user } = location.state || {};  // Safely access user data
+  
 
   // List of semesters and their courses
   const csSemesters = [
@@ -212,71 +216,69 @@ const Checklist = () => {
     },
   ];
   
-
   const currentSemester = course === 'CS' ? csSemesters[currentIndex] : itSemesters[currentIndex];
 
+  // Function to handle semester navigation
+  const goToNextSemester = () => {
+    if (currentIndex < (course === 'CS' ? csSemesters.length : itSemesters.length) - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  };
+
+  const goToPreviousSemester = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  };
   
-
   return (
-    <div className="min-h-screen bg-gray-100  p-8">
+    <div className="min-h-screen bg-gray-100 p-8">
       <div className="bg-white shadow-md rounded-lg p-6">
-        <h1 className="text-3xl font-extrabold text-green-700 mb-4">
-          {course === 'CS' ? 'Computer Science' : 'Information Technology'} Student Checklist
-        </h1>
-
-           {/* Dropdown to switch between courses */}
-           <div className="mb-4">
-          <select
-            className="p-2 bg-gray-200 rounded-md"
-            value={course}
-            onChange={(e) => setCourse(e.target.value)}
-          >
-            <option value="CS">Computer Science</option>
-            <option value="IT">Information Technology</option>
-          </select>
+        {/* Display User Info (if available) */}
+        {user && <h2 className="text-xl font-semibold mb-4">Welcome, {user.name}</h2>}
+        
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">{currentSemester.label}</h2>
+          <div>
+            <button
+              onClick={goToPreviousSemester}
+              disabled={currentIndex === 0}
+              className="bg-blue-500 text-white px-4 py-2 rounded mr-4 disabled:bg-gray-300"
+            >
+              Previous
+            </button>
+            <button
+              onClick={goToNextSemester}
+              disabled={currentIndex === (course === 'CS' ? csSemesters.length : itSemesters.length) - 1}
+              className="bg-blue-500 text-white px-4 py-2 rounded disabled:bg-gray-300"
+            >
+              Next
+            </button>
+          </div>
         </div>
 
-        <div className="flex items-center justify-center mb-4">
-          <button
-            onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))}
-            className="mr-4 p-2 bg-gray-200 text-gray-800 rounded-md"
-          >
-            &#8592; Prev
-          </button>
-          <span className="font-semibold text-xl">{currentSemester.label}</span>
-          <button
-            onClick={() => setCurrentIndex((prev) => Math.min(prev + 1, (course === 'CS' ? csSemesters : itSemesters).length - 1))}
-            className="ml-4 p-2 bg-gray-200 text-gray-800 rounded-md"
-          >
-            Next &#8594;
-          </button>
-        </div>
-
-       {/* Table for Courses */}
-       <div className="overflow-x-auto max-w-full">
-        <table className="min-w-full table-auto border-collapse">
+        <table className="table-auto w-full border-collapse">
           <thead>
-            <tr className="bg-gray-200">
-              <th className="border border-gray-300 px-4 py-2 text-sm text-gray-800">Course Code</th>
-              <th className="border border-gray-300 px-4 py-2 text-sm text-gray-800">Course Name</th>
-              <th className="border border-gray-300 px-4 py-2 text-sm text-gray-800">Prerequisite</th>
-              <th className="border border-gray-300 px-4 py-2 text-sm text-gray-800">Grade</th>
-              <th className="border border-gray-300 px-4 py-2 text-sm text-gray-800">Instructor</th>
+            <tr>
+              <th className="px-4 py-2 border">Code</th>
+              <th className="px-4 py-2 border">Course Name</th>
+              <th className="px-4 py-2 border">Prerequisite</th>
+              <th className="px-4 py-2 border">Grade</th>
+              <th className="px-4 py-2 border">Instructor</th>
             </tr>
           </thead>
           <tbody>
             {currentSemester.courses.map((course, index) => (
               <tr key={index}>
-                <td className="border border-gray-300 px-4 py-2 text-sm text-gray-800">{course.code}</td>
-                <td className="border border-gray-300 px-4 py-2 text-sm text-gray-800">{course.name}</td>
-                <td className="border border-gray-300 px-4 py-2 text-sm text-gray-800">{course.prerequisite}</td>
-                <td className="border border-gray-300 px-4 py-2 text-sm text-gray-800">{course.grade}</td>
-                <td className="border border-gray-300 px-4 py-2 text-sm text-gray-800">{course.instructor}</td>
+                <td className="px-4 py-2 border">{course.code}</td>
+                <td className="px-4 py-2 border">{course.name}</td>
+                <td className="px-4 py-2 border">{course.prerequisite}</td>
+                <td className="px-4 py-2 border">{course.grade}</td>
+                <td className="px-4 py-2 border">{course.instructor}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        </div>
       </div>
     </div>
   );

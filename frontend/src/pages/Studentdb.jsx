@@ -36,6 +36,9 @@ const StudentDashboard = () => {
   const handleNavigateToPayment = () => {
     navigate("/studentdb/payment-records", { state: { user: user } });
   };
+  const handleNavigateToChecklist = () => {
+    navigate("/studentdb/checklist", { state: { user: user } });
+  };
   
   
 
@@ -103,17 +106,16 @@ const StudentDashboard = () => {
 
             {/* Checklist */}
             <li>
-              <Link
-                to="checklist"
-                className={`px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer ${
-                  isSidebarMinimized ? "justify-center" : ""
-                }`}
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaBook />
-                {!isSidebarMinimized && <span>Checklist</span>}
-              </Link>
-            </li>
+                      <button
+                        onClick={handleNavigateToChecklist} 
+                        className={`px-4 py-2  w-full flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer ${
+                          isSidebarMinimized ? "justify-center" : ""
+                        }`}
+                      >
+                        <FaBook />
+                        {!isSidebarMinimized && <span>Checklist</span>}
+                      </button>
+                    </li>
 
             {/* Enroll - Use the handler here */}
             <li>

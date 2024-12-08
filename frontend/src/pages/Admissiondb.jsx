@@ -80,7 +80,7 @@ const Admissiondb = () => {
               <li><strong>Guardian's Occupation:</strong> Joshua</li>
               <li><strong>Guardian's Contact Number:</strong> 0948756134</li>
               <li><strong>Number of Siblings:</strong> 1</li>
-              <li><strong>Income Bracket:</strong> 2</li>
+              <li><strong>Income Bracket:</strong> 22,001 - 43,000</li>
             </ul>
           </div>
 

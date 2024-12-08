@@ -94,13 +94,6 @@ const Details = () => {
       Cancel Application
     </button>
   </Link>
-    <button
-      className="px-6 py-2 bg-[#345e34] text-white font-bold rounded-lg hover:bg-green-900 focus:outline-none disabled:bg-gray-400"
-      disabled={isButtonDisabled}
-      onClick={() => alert("Application submitted successfully!")}
-    >
-      Prev
-    </button>
     <Link 
     to='/createapplication/personal'>
     <button

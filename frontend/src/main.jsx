@@ -16,11 +16,13 @@ import Studentdb from './pages/Studentdb.jsx';
 import Profile from './pages/StudentdbPages/Profile.jsx';
 import Checklist from "./pages/StudentdbPages/Checklist.jsx";
 import Enroll from "./pages/StudentdbPages/Enroll.jsx";
+import SocietyPayment from "./pages/StudentdbPages/SocietyPayment.jsx";
 import Home from "./pages/StudentdbPages/Home.jsx";
 import Settings from "./pages/StudentdbPages/Settings.jsx";
 
 import Employeedb from './pages/Employeedb.jsx';
 import EmployProfile from './pages/EmployeedbPages/EmployProfile.jsx';
+import EmployEnroll from './pages/EmployeedbPages/EmployEnroll.jsx';
 import UserManage from "./pages/EmployeedbPages/UserManage.jsx";
 import ApplyManage from "./pages/EmployeedbPages/EmployManage.jsx";
 import EmployAcads from "./pages/EmployeedbPages/EmployAcads.jsx";
@@ -183,8 +185,11 @@ const router = createBrowserRouter([
       {
         path: "enroll",
         element: <Enroll />, // Component to render when /studentdb/courses is visited
+      }, 
+      {
+        path: "payment-records",
+        element: <SocietyPayment />, // Component to render when /studentdb/courses is visited
       },
-    
       {
         path: "settings",
         element: <Settings />, // Component for /studentdb/settings
@@ -200,27 +205,31 @@ const router = createBrowserRouter([
         element: <EmployHome />, // Render the Home component by default
       },
       {
-        path: "employProfile",
+        path: "employee-profile",
         element: <EmployProfile />, // Component to render when /studentdb/courses is visited
       },
       {
-        path: "employStuds",
+        path: "student-informations",
         element: <EmployStuds />, // Component to render when /studentdb/courses is visited
       },
       {
-        path: "employAcads",
+        path: "manage-enrollment",
+        element: <EmployEnroll />, // Component to render when /studentdb/courses is visited
+      },
+      {
+        path: "academic-records",
         element: <EmployAcads />, // Component to render when /studentdb/courses is visited
       },
       {
-        path: "userManage",
+        path: "manage-accounts",
         element: <UserManage />, // Component to render when /studentdb/courses is visited
       },
       {
-        path: "applyManage",
+        path: "manage-applications",
         element: <ApplyManage />, // Component to render when /studentdb/courses is visited
       },
       {
-        path: "employSettings",
+        path: "employee=settings",
         element: <EmploySettings />, // Component for /studentdb/settings
       },
     ],

@@ -4,6 +4,8 @@ import {
   FaBars,
   FaTimes,
   FaUser,
+  FaAngleDoubleRight,
+  FaAngleDoubleLeft,
   FaClipboardList,
   FaBook,
   FaBell,
@@ -14,6 +16,7 @@ import LogoutConfirmationModal from "./LogoutConfirmationModal"; // Import the m
 
 const AdminDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarMinimized, setIsSidebarMinimized] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
   const navigate = useNavigate();
 
@@ -43,91 +46,113 @@ const AdminDashboard = () => {
       <aside
         className={`w-64 bg-[#081708] text-white flex flex-col fixed top-0 left-0 h-full z-50 transform ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } transition-transform duration-300 lg:relative lg:translate-x-0`}
+        } ${isSidebarMinimized ? "w-16" : "w-64"} transition-all duration-300 lg:relative lg:translate-x-0`}
       >
-        <div className="p-6 flex flex-col items-center border-b border-gray-700">
+        {/* Profile Section */}
+        <div
+          className={`p-6 flex flex-col items-center border-b border-gray-700 ${
+            isSidebarMinimized ? "items-center" : "items-start"
+          }`}
+        >
           <Link to="/employeedb">
             <img
               src={user.avatar}
               alt="Profile"
-              className="rounded-full w-20 h-20 mb-3 border-4 border-white cursor-pointer"
+              className={`rounded-full w-12 h-12 mb-3 border-4 border-white cursor-pointer ${
+                isSidebarMinimized ? "w-10 h-10" : "w-20 h-20"
+              }`}
               onClick={() => setIsSidebarOpen(false)}
             />
           </Link>
 
-          <h2
-            className="text-xl font-semibold cursor-pointer"
-            onClick={() => setIsSidebarOpen(false)}
-          >
-            {user.name}
-          </h2>
-          <p className="text-sm text-gray-400">{user.role}</p> {/* Display employee type */}
+          {!isSidebarMinimized && (
+            <>
+              <h2
+                className="text-xl font-semibold cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                {user.name}
+              </h2>
+              <p className="text-sm text-gray-400">{user.role}</p> {/* Display employee type */}
+            </>
+          )}
         </div>
+
+        {/* Navigation Links */}
         <nav className="flex-1 mt-4">
           <ul className="space-y-2">
             <li>
               <Link
-                to="employProfile"
+                to="employee-profile"
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <FaUser />
-                <span>Profile</span>
+                {!isSidebarMinimized && <span>Profile</span>}
               </Link>
             </li>
             <li>
               <Link
-                to="employSettings"
+                to="employee=settings"
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <FaCog />
-                <span>Settings</span>
+                {!isSidebarMinimized && <span>Settings</span>}
               </Link>
             </li>
-            {/* Thin Horizontal Line */}
             <hr className="my-6 border-t-2 border-gray-700" />
             <li>
               <Link
-                to="EmployAcads"
+                to="academic-records"
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <FaUser />
-                <span>Academic Records</span>
+                {!isSidebarMinimized && <span>Academic Records</span>}
               </Link>
             </li>
             <li>
               <Link
-                to="EmployStuds"
+                to="student-informations"
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <FaUser />
-                <span>Student Records</span>
+                {!isSidebarMinimized && <span>Student Records</span>}
               </Link>
             </li>
             <li>
               <Link
-                to="userManage"
+                to="manage-accounts"
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <FaBook />
-                <span>Manage Accounts</span>
+                {!isSidebarMinimized && <span>Manage Accounts</span>}
               </Link>
             </li>
             <li>
               <Link
-                to="applyManage"
+                to="manage-applications"
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <FaClipboardList />
-                <span>Manage Applications</span>
+                {!isSidebarMinimized && <span>Manage Applications</span>}
               </Link>
             </li>
-            {/* Thin Horizontal Line */}
+            {/* Manage Enrollment Section */}
+            <li>
+              <Link
+                to="manage-enrollment"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaClipboardList />
+                {!isSidebarMinimized && <span>Manage Enrollment</span>}
+              </Link>
+            </li>
             <hr className="my-6 border-t-2 border-gray-700" />
             <li>
               <button
@@ -135,12 +160,24 @@ const AdminDashboard = () => {
                 className="w-full px-4 py-2 flex items-center space-x-3 hover:bg-red-600 rounded-lg cursor-pointer mt-auto"
               >
                 <FaSignOutAlt />
-                <span>Logout</span>
+                {!isSidebarMinimized && <span>Logout</span>}
               </button>
             </li>
           </ul>
         </nav>
       </aside>
+
+      {/* Button for Minimizing Sidebar */}
+      <button
+        className="hidden lg:block fixed top-4 left-4 z-50 bg-[#081708] text-white p-2 rounded-md"
+        onClick={() => setIsSidebarMinimized(!isSidebarMinimized)}
+      >
+        {isSidebarMinimized ? (
+          <FaAngleDoubleLeft size={20} />
+        ) : (
+          <FaAngleDoubleRight size={20} />
+        )}
+      </button>
 
       {/* Mobile Menu Button */}
       <button

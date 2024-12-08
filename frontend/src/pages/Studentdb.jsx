@@ -1,21 +1,26 @@
 import { useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import {
-  FaBars,
-  FaTimes,
-  FaUser,
-  FaClipboardList,
-  FaBook,
-  FaBell,
-  FaCog,
-  FaSignOutAlt,
-} from "react-icons/fa";
+    FaBars,
+    FaTimes,
+    FaUser,
+    FaClipboardList,
+    FaBook,
+    FaBell,
+    FaCog,
+    FaSignOutAlt,
+    FaChevronDown,
+    FaChevronUp,
+  } from "react-icons/fa";
 import LogoutConfirmationModal from "./LogoutConfirmationModal"; // Import the modal
 
 const StudentDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
   const navigate = useNavigate();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Dropdown state
+
+  const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
 
   const user = {
     id: "202212345", // Change the name to default ID
@@ -98,6 +103,34 @@ const StudentDashboard = () => {
                 <span>Enroll</span>
               </Link>
             </li>
+          
+            {/* Dropdown Section */}
+            <li>
+              <button
+                className="w-full px-4 py-2 flex items-center justify-between hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={toggleDropdown}
+              >
+                <span className="flex items-center space-x-3">
+                  <FaBell />
+                  <span>Society Task</span>
+                </span>
+                {isDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
+              </button>
+              {isDropdownOpen && (
+                <ul className="mt-2 space-y-2 pl-8">
+                  <li>
+                    <Link
+                      to="payment-records"
+                      className="px-2 py-2 flex items-center space-x-2 hover:bg-gray-700 rounded-lg cursor-pointer"
+                      onClick={() => setIsSidebarOpen(false)}
+                    >
+                      <span>Payment Records</span>
+                    </Link>
+                  </li>
+                </ul>
+              )}
+            </li>
+            <hr className="border-gray-600 my-4" />
             <li>
               <Link
                 to="settings"

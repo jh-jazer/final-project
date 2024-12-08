@@ -26,13 +26,18 @@ const StudentDashboard = () => {
     id: "202212345", // Change the name to default ID
     course: "BSCS", // Add course information
     status: "Regular", // Add status information (Regular or Irregular)
-    role: "Student", // Update the role as needed
+    role: "Society Officer", // Update the role as needed
     avatar: "https://via.placeholder.com/100",
   };
 
   const handleNavigateToEnroll = () => {
     navigate("/studentdb/enroll", { state: { status: user.status } });
   };
+  const handleNavigateToPayment = () => {
+    navigate("/studentdb/payment-records", { state: { user: user } });
+  };
+  
+  
 
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
 
@@ -114,7 +119,7 @@ const StudentDashboard = () => {
             <li>
               <button
                 onClick={handleNavigateToEnroll} 
-                className={`px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer ${
+                className={`px-4 py-2 w-full flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer ${
                   isSidebarMinimized ? "justify-center" : ""
                 }`}
               >
@@ -139,15 +144,17 @@ const StudentDashboard = () => {
                 </button>
                 {isDropdownOpen && (
                   <ul className="mt-2 space-y-2 pl-4">
+                        {/* Enroll - Use the handler here */}
                     <li>
-                      <Link
-                        to="payment-records"
-                        className="px-2 py-2 flex items-center space-x-2 hover:bg-gray-700 rounded-lg cursor-pointer"
-                        onClick={() => setIsSidebarOpen(false)}
+                      <button
+                        onClick={handleNavigateToPayment} 
+                        className={`px-4 py-2  w-full flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer ${
+                          isSidebarMinimized ? "justify-center" : ""
+                        }`}
                       >
                         <FaClipboardList />
                         {!isSidebarMinimized && <span>Payment Records</span>}
-                      </Link>
+                      </button>
                     </li>
                   </ul>
                 )}

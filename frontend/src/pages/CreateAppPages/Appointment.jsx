@@ -48,10 +48,7 @@ const Appointment = () => {
 
  const confirmSubmit = () => {
 
-    // Proceed with the submission
-    alert("Your appointment has been submitted successfully!");
-    setIsSubmitConfirmationOpen(false); // Close confirmation dialog
-    navigate("/admissiondb"); // Navigate to /admissiondb
+    navigate("/continue-application"); // Navigate to /admissiondb
   };
 
 
@@ -152,7 +149,7 @@ const Appointment = () => {
             onClick={handleSubmit}
             disabled={isSubmitButtonDisabled}
           >
-            Submit Application
+            Schedule Appointment
           </button>
         </div>
       </div>
@@ -162,10 +159,10 @@ const Appointment = () => {
   <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
     <div className="bg-white p-8 rounded-lg shadow-lg w-96 max-w-sm mx-4">
       <h2 className="text-2xl font-semibold text-center text-gray-800 mb-4">
-        Confirm Appointment Submission
+        Confirm Appointment Schedule
       </h2>
       <p className="text-lg text-gray-600 text-center mb-4">
-        Are you sure you want to submit your appointment details?
+        Are you sure you want to schedule this appointment?
       </p>
       <div className="text-center mb-6">
         {appointmentDetails && (

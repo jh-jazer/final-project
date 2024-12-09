@@ -10,6 +10,14 @@ const Admissiondb = () => {
       label: "Application Details",
       content: (
         <div className="p-6 space-y-6">
+          
+          {/* Schedule Details */}
+          <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Schedules</h2>
+            <ul className="space-y-2 text-gray-700">
+              <li><strong>Appointment for Requirement Validation:</strong> March 05, 2025, 08:00 AM - 12:00 PM</li>
+            </ul>
+          </div>
           {/* Applicant Details */}
           <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">Applicant Details</h2>
@@ -23,13 +31,6 @@ const Admissiondb = () => {
             </ul>
           </div>
 
-          {/* Schedule Details */}
-          <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Schedules</h2>
-            <ul className="space-y-2 text-gray-700">
-              <li><strong>Appointment for Requirement Validation:</strong> March 05, 2025, 08:00 AM - 12:00 PM</li>
-            </ul>
-          </div>
         </div>
       ),
     },

@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 const AccountManagement = () => {
   const [accounts, setAccounts] = useState([
-    { id: 1, username: 'johndoe', role: 'Admin', status: 'Active' },
-    { id: 2, username: 'janesmith', role: 'Employee', status: 'Active' },
-    { id: 3, username: 'marklee', role: 'Student', status: 'Inactive' },
+    { id: 1, fullName: 'John Doe', cvsuEmail: 'johndoe@cvsu.edu', phoneNumber: '09123456789', role: 'Admin', status: 'Active' },
+    { id: 2, fullName: 'Jane Smith', cvsuEmail: 'janesmith@cvsu.edu', phoneNumber: '09123456780', role: 'Employee', status: 'Active' },
+    { id: 3, fullName: 'Mark Lee', cvsuEmail: 'marklee@cvsu.edu', phoneNumber: '09123456781', role: 'Student', status: 'Inactive' },
+    { id: 4, fullName: 'Emily Jones', cvsuEmail: 'emilyjones@cvsu.edu', phoneNumber: '09123456782', role: 'Employee', status: 'Pending' },
+    { id: 5, fullName: 'William Son', cvsuEmail: 'williamson@cvsu.edu', phoneNumber: '09123456783', role: 'Admin', status: 'Pending' },
     // Add more accounts as needed
   ]);
   const [search, setSearch] = useState('');
-  const [sortBy, setSortBy] = useState('username');
-  const [statusFilter, setStatusFilter] = useState('All');
+  const [statusFilter, setStatusFilter] = useState('Sign Up');
 
   // Function to handle account status toggle (Activate/Deactivate)
   const handleStatusToggle = (id) => {
@@ -27,32 +28,23 @@ const AccountManagement = () => {
     setAccounts((prevAccounts) => prevAccounts.filter((account) => account.id !== id));
   };
 
-  // Sorting function
-  const sortAccounts = (accounts) => {
-    return accounts.sort((a, b) => {
-      if (sortBy === 'username') {
-        return a.username.localeCompare(b.username);
-      } else if (sortBy === 'role') {
-        return a.role.localeCompare(b.role);
-      }
-      return 0;
-    });
-  };
-
-  // Filtering function based on role
+  // Filtering function based on the selected status filter
   const filterAccounts = (accounts) => {
-    return accounts.filter((account) => {
-      if (statusFilter === 'All') return true;
-      return account.role.toLowerCase() === statusFilter.toLowerCase();
-    });
+    if (statusFilter === 'Sign Up') {
+      // Only show 'Pending' accounts in the Sign Up tab
+      return accounts.filter((account) => account.status === 'Pending');
+    } else if (statusFilter === 'Active') {
+      return accounts.filter((account) => account.status === 'Active');
+    } else if (statusFilter === 'Inactive') {
+      return accounts.filter((account) => account.status === 'Inactive');
+    }
+    return accounts;
   };
 
   // Handle search and filtering
   const filteredAccounts = filterAccounts(
-    sortAccounts(
-      accounts.filter((account) =>
-        account.username.toLowerCase().includes(search.toLowerCase())
-      )
+    accounts.filter((account) =>
+      account.fullName.toLowerCase().includes(search.toLowerCase())
     )
   );
 
@@ -67,100 +59,182 @@ const AccountManagement = () => {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by Username"
+            placeholder="Search by Full Name"
             className="px-4 py-2 border border-gray-300 rounded-md w-full"
           />
         </div>
 
-        {/* Radio Buttons for Account Type */}
+        {/* Tabs for Account Status */}
         <div className="mb-4">
-          <div className="flex flex-wrap space-x-4">
-            <label className="flex items-center mb-2">
-              <input
-                type="radio"
-                name="statusFilter"
-                value="All"
-                checked={statusFilter === 'All'}
-                onChange={() => setStatusFilter('All')}
-                className="mr-2"
-              />
-              All Accounts
-            </label>
-            <label className="flex items-center mb-2">
-              <input
-                type="radio"
-                name="statusFilter"
-                value="Student"
-                checked={statusFilter === 'Student'}
-                onChange={() => setStatusFilter('Student')}
-                className="mr-2"
-              />
-              Student Accounts
-            </label>
-            <label className="flex items-center mb-2">
-              <input
-                type="radio"
-                name="statusFilter"
-                value="Employee"
-                checked={statusFilter === 'Employee'}
-                onChange={() => setStatusFilter('Employee')}
-                className="mr-2"
-              />
-              Employee Accounts
-            </label>
+          <div className="flex space-x-4 border-b-2">
+            <button
+              onClick={() => setStatusFilter('Sign Up')}
+              className={`${
+                statusFilter === 'Sign Up' ? 'text-blue-600 font-semibold' : 'text-gray-600'
+              } px-4 py-2`}
+            >
+              Sign Ups
+            </button>
+            <button
+              onClick={() => setStatusFilter('Active')}
+              className={`${
+                statusFilter === 'Active' ? 'text-blue-600 font-semibold' : 'text-gray-600'
+              } px-4 py-2`}
+            >
+              Active Accounts
+            </button>
+            <button
+              onClick={() => setStatusFilter('Inactive')}
+              className={`${
+                statusFilter === 'Inactive' ? 'text-blue-600 font-semibold' : 'text-gray-600'
+              } px-4 py-2`}
+            >
+              Inactive Accounts
+            </button>
           </div>
         </div>
 
-        {/* Sort Dropdown */}
-        <div className="mb-4">
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-md w-full"
-          >
-            <option value="username">Sort by Username</option>
-            <option value="role">Sort by Role</option>
-          </select>
-        </div>
-
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="min-w-full table-auto border-collapse">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="px-4 py-2 text-left border border-gray-300">Username</th>
-                <th className="px-4 py-2 text-left border border-gray-300">Role</th>
-                <th className="px-4 py-2 text-left border border-gray-300">Status</th>
-                <th className="px-4 py-2 text-left border border-gray-300">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredAccounts.map((account) => (
-                <tr key={account.id} className="hover:bg-gray-100">
-                  <td className="px-4 py-2 border border-gray-300">{account.username}</td>
-                  <td className="px-4 py-2 border border-gray-300">{account.role}</td>
-                  <td className="px-4 py-2 border border-gray-300">{account.status}</td>
-                  <td className="px-4 py-2 border border-gray-300 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                    <button
-                      onClick={() => handleStatusToggle(account.id)}
-                      className={`${
-                        account.status === 'Active' ? 'bg-yellow-500' : 'bg-green-500'
-                      } text-white px-4 py-2 rounded-md hover:bg-opacity-80 w-full sm:w-auto`}
-                    >
-                      {account.status === 'Active' ? 'Deactivate' : 'Activate'}
-                    </button>
-                    <button
-                      onClick={() => handleAccountDeletion(account.id)}
-                      className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-opacity-80 w-full sm:w-auto"
-                    >
-                      Delete
-                    </button>
-                  </td>
+        {/* Table for the selected status */}
+        {statusFilter === 'Sign Up' && (
+          <div className="overflow-x-auto mb-6">
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">Sign Up Accounts</h3>
+            <table className="min-w-full table-auto border-collapse">
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="px-4 py-2 text-left border border-gray-300">ID</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Full Name</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">CVSU Email</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Phone Number</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Role</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Status</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {filteredAccounts.map((account) => (
+                  <tr key={account.id} className="hover:bg-gray-100">
+                    <td className="px-4 py-2 border border-gray-300">{account.id}</td>
+                    <td className="px-4 py-2 border border-gray-300">{account.fullName}</td>
+                    <td className="px-4 py-2 border border-gray-300">{account.cvsuEmail}</td>
+                    <td className="px-4 py-2 border border-gray-300">{account.phoneNumber}</td>
+                    <td className="px-4 py-2 border border-gray-300">{account.role}</td>
+                    <td className="px-4 py-2 border border-gray-300">{account.status}</td>
+                    <td className="px-4 py-2 border border-gray-300 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                      <button
+                        onClick={() => handleStatusToggle(account.id)}
+                        className={`${
+                          account.status === 'Active' ? 'bg-yellow-500' : 'bg-green-500'
+                        } text-white px-4 py-2 rounded-md hover:bg-opacity-80 w-full sm:w-auto`}
+                      >
+                        {account.status === 'Active' ? 'Deactivate' : 'Activate'}
+                      </button>
+                      <button
+                        onClick={() => handleAccountDeletion(account.id)}
+                        className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-opacity-80 w-full sm:w-auto"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {statusFilter === 'Active' && (
+          <div className="overflow-x-auto mb-6">
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">Active Accounts</h3>
+            <table className="min-w-full table-auto border-collapse">
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="px-4 py-2 text-left border border-gray-300">ID</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Full Name</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">CVSU Email</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Phone Number</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Role</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Status</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredAccounts.map((account) => (
+                  <tr key={account.id} className="hover:bg-gray-100">
+                    <td className="px-4 py-2 border border-gray-300">{account.id}</td>
+                    <td className="px-4 py-2 border border-gray-300">{account.fullName}</td>
+                    <td className="px-4 py-2 border border-gray-300">{account.cvsuEmail}</td>
+                    <td className="px-4 py-2 border border-gray-300">{account.phoneNumber}</td>
+                    <td className="px-4 py-2 border border-gray-300">{account.role}</td>
+                    <td className="px-4 py-2 border border-gray-300">{account.status}</td>
+                    <td className="px-4 py-2 border border-gray-300 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                      <button
+                        onClick={() => handleStatusToggle(account.id)}
+                        className={`${
+                          account.status === 'Active' ? 'bg-yellow-500' : 'bg-green-500'
+                        } text-white px-4 py-2 rounded-md hover:bg-opacity-80 w-full sm:w-auto`}
+                      >
+                        {account.status === 'Active' ? 'Deactivate' : 'Activate'}
+                      </button>
+                      <button
+                        onClick={() => handleAccountDeletion(account.id)}
+                        className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-opacity-80 w-full sm:w-auto"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {statusFilter === 'Inactive' && (
+          <div className="overflow-x-auto mb-6">
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">Inactive Accounts</h3>
+            <table className="min-w-full table-auto border-collapse">
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="px-4 py-2 text-left border border-gray-300">ID</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Full Name</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">CVSU Email</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Phone Number</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Role</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Status</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredAccounts.map((account) => (
+                  <tr key={account.id} className="hover:bg-gray-100">
+                    <td className="px-4 py-2 border border-gray-300">{account.id}</td>
+                    <td className="px-4 py-2 border border-gray-300">{account.fullName}</td>
+                    <td className="px-4 py-2 border border-gray-300">{account.cvsuEmail}</td>
+                    <td className="px-4 py-2 border border-gray-300">{account.phoneNumber}</td>
+                    <td className="px-4 py-2 border border-gray-300">{account.role}</td>
+                    <td className="px-4 py-2 border border-gray-300">{account.status}</td>
+                    <td className="px-4 py-2 border border-gray-300 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                      <button
+                        onClick={() => handleStatusToggle(account.id)}
+                        className={`${
+                          account.status === 'Active' ? 'bg-yellow-500' : 'bg-green-500'
+                        } text-white px-4 py-2 rounded-md hover:bg-opacity-80 w-full sm:w-auto`}
+                      >
+                        {account.status === 'Active' ? 'Deactivate' : 'Activate'}
+                      </button>
+                      <button
+                        onClick={() => handleAccountDeletion(account.id)}
+                        className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-opacity-80 w-full sm:w-auto"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

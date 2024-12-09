@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 const StudentInformation = () => {
   // Sample data to simulate all student information
   const [students, setStudents] = useState([
+    // Enrolled Students
     {
       id: 1,
       name: 'John Doe',
@@ -25,53 +26,71 @@ const StudentInformation = () => {
       course: 'Information Technology',
       enrollmentStatus: 'Graduated',
     },
-    // Add more students as needed
+  ]);
+  
+  const [applicants, setApplicants] = useState([
+    {
+      applicantId: 1,
+      applicantName: 'Emily Johnson',
+      applicantType: 'Transfer',
+      preferredPrograms: 'Computer Science, Software Engineering',
+      proofOfRequirements: 'Completed',
+      enrollmentStatus: 'Applicant',
+    },
+    {
+      applicantId: 2,
+      applicantName: 'Michael Brown',
+      applicantType: 'Freshman',
+      preferredPrograms: 'Information Technology',
+      proofOfRequirements: 'Pending',
+      enrollmentStatus: 'Applicant',
+    },
   ]);
 
-  const [filteredStudents, setFilteredStudents] = useState(students);
+  const [activeTab, setActiveTab] = useState('Applicants');
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortOrder, setSortOrder] = useState('asc');
-  const [statusFilter, setStatusFilter] = useState('All'); // 'All', 'Current', 'Graduated'
+  
+  // Separate states for filtered data
+  const [filteredApplicants, setFilteredApplicants] = useState([]);
+  const [filteredEnrolled, setFilteredEnrolled] = useState([]);
+  const [filteredGraduated, setFilteredGraduated] = useState([]);
 
-  useEffect(() => {
-    // Fetch data from an API or database here if needed
-    // Example: setStudents(fetchedData);
-    setFilteredStudents(students);
-  }, [students]);
-
-  // Filter students based on the search term and status filter
-  const filterStudents = () => {
-    let filtered = students.filter((student) =>
-      student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.phone.includes(searchTerm)
+  // Filter applicants, enrolled, and graduated students based on search term
+  const filterData = () => {
+    // Filter applicants based on search term
+    const filteredApplicants = applicants.filter(
+      (applicant) =>
+        applicant.applicantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        applicant.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        applicant.phone?.includes(searchTerm)
     );
 
-    if (statusFilter !== 'All') {
-      filtered = filtered.filter((student) => student.enrollmentStatus === statusFilter);
-    }
+    // Filter students based on search term
+    const filteredEnrolled = students.filter(
+      (student) =>
+        student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.phone?.includes(searchTerm)
+    );
+    
+    // Filter graduated students based on search term
+    const filteredGraduated = students.filter(
+      (student) =>
+        student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.phone?.includes(searchTerm)
+    );
 
-    return filtered;
+    // Set filtered data based on active tab
+    setFilteredApplicants(filteredApplicants);
+    setFilteredEnrolled(filteredEnrolled.filter((student) => student.enrollmentStatus === 'Enrolled'));
+    setFilteredGraduated(filteredGraduated.filter((student) => student.enrollmentStatus === 'Graduated'));
   };
 
-  // Handle sorting by name or enrollment status
-  const handleSort = (key) => {
-    const sorted = [...filteredStudents].sort((a, b) => {
-      if (sortOrder === 'asc') {
-        return a[key] > b[key] ? 1 : -1;
-      } else {
-        return a[key] < b[key] ? 1 : -1;
-      }
-    });
-
-    setFilteredStudents(sorted);
-    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-  };
-
-  // Update filtered students when the filter or search term changes
+  // Trigger filter function when searchTerm or any of the data changes
   useEffect(() => {
-    setFilteredStudents(filterStudents());
-  }, [searchTerm, statusFilter]);
+    filterData();
+  }, [searchTerm, students, applicants]);
 
   return (
     <div className="p-4 sm:p-8 bg-gray-50 min-h-screen">
@@ -87,114 +106,93 @@ const StudentInformation = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
 
-        {/* Radio buttons for filtering by enrollment status (inline) */}
-        <div className="mb-4 flex flex-wrap sm:flex-nowrap space-x-6 sm:space-x-8">
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="statusFilter"
-              value="All"
-              checked={statusFilter === 'All'}
-              onChange={() => setStatusFilter('All')}
-              className="mr-2"
-            />{' '}
-            All Students
-          </label>
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="statusFilter"
-              value="Enrolled"
-              checked={statusFilter === 'Enrolled'}
-              onChange={() => setStatusFilter('Enrolled')}
-              className="mr-2"
-            />{' '}
-            Current Students
-          </label>
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="statusFilter"
-              value="Graduated"
-              checked={statusFilter === 'Graduated'}
-              onChange={() => setStatusFilter('Graduated')}
-              className="mr-2"
-            />{' '}
-            Graduated
-          </label>
+        {/* Tabs for Applicant, Enrolled, and Alumni */}
+        <div className="mb-4">
+          <div className="flex space-x-4 border-b-2">
+            <button
+              onClick={() => setActiveTab('Applicants')}
+              className={`${activeTab === 'Applicants' ? 'text-blue-600 font-semibold' : 'text-gray-600'} px-4 py-2`}
+            >
+              Applicants
+            </button>
+            <button
+              onClick={() => setActiveTab('Enrolled')}
+              className={`${activeTab === 'Enrolled' ? 'text-blue-600 font-semibold' : 'text-gray-600'} px-4 py-2`}
+            >
+              Enrolled Students
+            </button>
+            <button
+              onClick={() => setActiveTab('Graduated')}
+              className={`${activeTab === 'Graduated' ? 'text-blue-600 font-semibold' : 'text-gray-600'} px-4 py-2`}
+            >
+              Alumni
+            </button>
+          </div>
         </div>
 
-        {/* Table for student information */}
-        <div className="overflow-x-auto">
-          <table className="min-w-full table-auto border-collapse">
-            <thead>
-              <tr className="bg-gray-200">
-                <th
-                  className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
-                  onClick={() => handleSort('name')}
-                >
-                  Student Name
-                </th>
-                <th
-                  className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
-                  onClick={() => handleSort('email')}
-                >
-                  Email
-                </th>
-                <th
-                  className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
-                  onClick={() => handleSort('phone')}
-                >
-                  Phone
-                </th>
-                <th
-                  className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
-                  onClick={() => handleSort('address')}
-                >
-                  Address
-                </th>
-                <th
-                  className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
-                  onClick={() => handleSort('year')}
-                >
-                  Year
-                </th>
-                <th
-                  className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
-                  onClick={() => handleSort('section')}
-                >
-                  Section
-                </th>
-                <th
-                  className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
-                  onClick={() => handleSort('course')}
-                >
-                  Course
-                </th>
-                <th
-                  className="px-4 py-2 text-left border border-gray-300 cursor-pointer"
-                  onClick={() => handleSort('enrollmentStatus')}
-                >
-                  Enrollment Status
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredStudents.map((student) => (
-                <tr key={student.id} className="hover:bg-gray-100">
-                  <td className="px-4 py-2 border border-gray-300">{student.name}</td>
-                  <td className="px-4 py-2 border border-gray-300">{student.email}</td>
-                  <td className="px-4 py-2 border border-gray-300">{student.phone}</td>
-                  <td className="px-4 py-2 border border-gray-300">{student.address}</td>
-                  <td className="px-4 py-2 border border-gray-300">{student.year}</td>
-                  <td className="px-4 py-2 border border-gray-300">{student.section}</td>
-                  <td className="px-4 py-2 border border-gray-300">{student.course}</td>
-                  <td className="px-4 py-2 border border-gray-300">{student.enrollmentStatus}</td>
+        {/* Table for Applicants */}
+        {activeTab === 'Applicants' && (
+          <div className="overflow-x-auto">
+            <table className="min-w-full table-auto border-collapse">
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="px-4 py-2 text-left border border-gray-300">Applicant ID</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Applicant Name</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Applicant Type</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Preferred Programs</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Proof of Requirements</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Enrollment Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {filteredApplicants.map((applicant) => (
+                  <tr key={applicant.applicantId} className="hover:bg-gray-100">
+                    <td className="px-4 py-2 border border-gray-300">{applicant.applicantId}</td>
+                    <td className="px-4 py-2 border border-gray-300">{applicant.applicantName}</td>
+                    <td className="px-4 py-2 border border-gray-300">{applicant.applicantType}</td>
+                    <td className="px-4 py-2 border border-gray-300">{applicant.preferredPrograms}</td>
+                    <td className="px-4 py-2 border border-gray-300">{applicant.proofOfRequirements}</td>
+                    <td className="px-4 py-2 border border-gray-300">{applicant.enrollmentStatus}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Table for Enrolled and Graduated Students */}
+        {(activeTab === 'Enrolled' || activeTab === 'Graduated') && (
+          <div className="overflow-x-auto">
+            <table className="min-w-full table-auto border-collapse">
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="px-4 py-2 text-left border border-gray-300">Student Name</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Email</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Phone</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Address</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Year</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Section</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Course</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Enrollment Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(activeTab === 'Enrolled' ? filteredEnrolled : filteredGraduated).map((student) => (
+                  <tr key={student.id} className="hover:bg-gray-100">
+                    <td className="px-4 py-2 border border-gray-300">{student.name}</td>
+                    <td className="px-4 py-2 border border-gray-300">{student.email}</td>
+                    <td className="px-4 py-2 border border-gray-300">{student.phone}</td>
+                    <td className="px-4 py-2 border border-gray-300">{student.address}</td>
+                    <td className="px-4 py-2 border border-gray-300">{student.year}</td>
+                    <td className="px-4 py-2 border border-gray-300">{student.section}</td>
+                    <td className="px-4 py-2 border border-gray-300">{student.course}</td>
+                    <td className="px-4 py-2 border border-gray-300">{student.enrollmentStatus}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

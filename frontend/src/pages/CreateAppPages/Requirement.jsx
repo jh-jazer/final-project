@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef} from 'react';
-import '../CreateApppagesCSS/Requirement.css';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../../contexts/AppContext';
 
@@ -158,7 +157,7 @@ const handleRemoveImage = (index) => {
             </svg>
           </button>
         </Link>
-        <h1 className="text-3xl font-extrabold text-[#001800]">Personal Information</h1>
+        <h1 className="text-3xl font-extrabold text-[#001800]">Requirement Submission</h1>
         <Link to="/createapplication/appointment" className="absolute right-0 top-1/2 transform -translate-y-1/2">
           <button
             className={`text-[#345e34] hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}

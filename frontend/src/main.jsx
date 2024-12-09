@@ -38,6 +38,15 @@ import Education from './pages/CreateAppPages/Education.jsx';
 import Requirement from './pages/CreateAppPages/Requirement.jsx';
 import Appointment from './pages/CreateAppPages/Appointment.jsx';
 
+
+import ContinueApplication from "./pages/ContinueApplication.jsx";
+import DocumentVerification from './pages/ContinueAppPages/DocumentVerification.jsx';
+import EntranceExamination from './pages/ContinueAppPages/EntranceExamination.jsx';
+import DocumentSubmission from './pages/ContinueAppPages/DocumentSubmission.jsx';
+import EnrollmentCompleted from './pages/ContinueAppPages/EnrollmentCompleted.jsx';
+import ApplicantSocietyPayment from './pages/ContinueAppPages/ApplicantSocietyPayment.jsx';
+
+
 import Register from './pages/Register.jsx';
 import UniversityHistory from './pages/AboutUsPages/UniversityHistory.jsx';
 import ComputerStudies from './pages/AboutUsPages/ComputerStudies.jsx';
@@ -166,6 +175,33 @@ const router = createBrowserRouter([
       },
     ],
   },
+  {
+    path: "/continue-application",
+    element: <ContinueApplication />,
+    children: [
+  {
+    index: true, // Default route for /studentdb
+    element: <DocumentVerification />, // Render the Home component by default
+  },
+  {
+    path: "entrance-examination",
+    element: <EntranceExamination />, // Component to render when /studentdb/courses is visited
+  },
+  {
+    path: "document-submission",
+    element: <DocumentSubmission />, // Component to render when /studentdb/courses is visited
+  },
+  {
+    path: "applicant-society-payment",
+    element: <ApplicantSocietyPayment />, // Component for /studentdb/notifications
+  },
+  {
+    path: "enrollment-completed",
+    element: <EnrollmentCompleted />, // Component for /studentdb/settings
+  },
+
+],
+},
   {
     path: "/studentdb",
     element: <Studentdb />,

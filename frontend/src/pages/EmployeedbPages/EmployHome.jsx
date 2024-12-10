@@ -20,7 +20,7 @@ const EmployHome = () => {
   return (
     <div className="p-8">
       {/* Welcome Section */}
-      <div className="bg-green-600 text-white rounded-lg p-6 shadow-md">
+      <div className="bg-green-500 text-white rounded-lg p-6 shadow-md">
         <h1 className="text-2xl font-bold">Employee Dashboard</h1>
         <p className="mt-2 text-lg">
           Welcome to your dashboard! Here you can view the current statistics.

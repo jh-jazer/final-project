@@ -46,7 +46,7 @@ const AdminDashboard = () => {
       <aside
         className={`w-64 bg-[#081708] text-white flex flex-col fixed top-0 left-0 h-full z-50 transform ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } ${isSidebarMinimized ? "w-14" : "w-64"} transition-all duration-300 lg:relative lg:translate-x-0`}
+        } ${isSidebarMinimized ? "w-[60px]" : "w-64"} transition-all duration-300 lg:relative lg:translate-x-0`}
       >
         {/* Profile Section */}
         <div

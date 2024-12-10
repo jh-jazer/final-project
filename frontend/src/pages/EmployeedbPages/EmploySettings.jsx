@@ -39,6 +39,8 @@ const Settings = () => {
   };
 
   return (
+    <div className="p-8 bg-green-500 min-h-screen">
+
     <div className="settings-container">
       <h1>Account Settings</h1>
       
@@ -132,7 +134,8 @@ const Settings = () => {
           Save Changes
         </button>
       </form>
-    </div>
+      </div> 
+      </div>
   );
 };
 

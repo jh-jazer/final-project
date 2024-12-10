@@ -165,7 +165,7 @@ const SocietyPayments = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 bg-green-500 min-h-screen">
       <div className="bg-white shadow-lg rounded-lg p-6 mx-auto max-w-7xl">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">
           Enrollment Management

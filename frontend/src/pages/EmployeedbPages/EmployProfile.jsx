@@ -20,7 +20,8 @@ const EmployeeProfile = () => {
   }, []);
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    
+    <div className="p-8 bg-green-500 min-h-screen">
       <div className="bg-white shadow-lg rounded-lg p-6 max-w-4xl mx-auto">
         {/* Profile Header */}
         <div className="flex items-center space-x-6">

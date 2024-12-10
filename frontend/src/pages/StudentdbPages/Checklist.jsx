@@ -234,9 +234,17 @@ const Checklist = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="bg-white shadow-md rounded-lg p-6">
-        {/* Display User Info (if available) */}
-        {user && <h2 className="text-xl font-semibold mb-4">Welcome, {user.name}</h2>}
-        
+      
+      {/* Student Basic Information Section */}
+      {user && (
+        <div className="student-info" style={{ marginBottom: '20px', padding: '10px', border: '1px solid #ccc', borderRadius: '8px' }}>
+          <h3>Student Information</h3>
+          <p><strong>Name:</strong> {user.name}</p>
+          <p><strong>ID:</strong> {user.id}</p>
+          <p><strong>Email:</strong> {user.email}</p>
+          <p><strong>Course:</strong> {course}</p>
+        </div>
+      )}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">{currentSemester.label}</h2>
           <div>

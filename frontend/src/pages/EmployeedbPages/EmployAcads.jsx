@@ -5,8 +5,9 @@ const AcademicRecords = () => {
   const [students, setStudents] = useState([
     {
       id: 1,
+      studentNumber: '202301234', // 9-digit student number
       name: 'John Doe',
-      course: 'Computer Science',
+      program: 'Computer Science',
       year: 'First Year',
       section: '1-1',
       grades: { 'Year 1 Sem 1': 1.5, 'Year 1 Sem 2': 1.25 },
@@ -14,8 +15,9 @@ const AcademicRecords = () => {
     },
     {
       id: 2,
+      studentNumber: '202201234',
       name: 'Jane Smith',
-      course: 'Computer Science',
+      program: 'Computer Science',
       year: 'Second Year',
       section: '2-3',
       grades: { 'Year 2 Sem 1': 2.5, 'Year 2 Sem 2': 1.00 },
@@ -23,8 +25,9 @@ const AcademicRecords = () => {
     },
     {
       id: 3,
+      studentNumber: '202101234',
       name: 'Mark Lee',
-      course: 'Computer Science',
+      program: 'Information Technology',
       year: 'Irregular',
       section: 'Irregular',
       grades: { 'Year 3 Sem 1': 1.25, 'Year 3 Sem 2': 2.5 },
@@ -33,28 +36,18 @@ const AcademicRecords = () => {
   ]);
 
   const [search, setSearch] = useState('');
-  const [sortBy, setSortBy] = useState('name');
-  const [yearSectionFilter, setYearSectionFilter] = useState('All');
-  
+
   // State for the selected student and modal visibility
   const [selectedStudent, setSelectedStudent] = useState(null);
 
-  const filteredStudents = students
-    .filter((student) => {
-      return (
-        student.name.toLowerCase().includes(search.toLowerCase()) &&
-        (yearSectionFilter === 'All' ||
-          `${student.year} & Section ${student.section.split('-')[1]}` === yearSectionFilter)
-      );
-    })
-    .sort((a, b) => {
-      if (sortBy === 'name') {
-        return a.name.localeCompare(b.name);
-      } else if (sortBy === 'year') {
-        return a.year.localeCompare(b.year);
-      }
-      return 0;
-    });
+  // Filter students based on search input (by student number or name)
+  const filteredStudents = students.filter((student) => {
+    const lowerSearch = search.toLowerCase();
+    return (
+      student.name.toLowerCase().includes(lowerSearch) ||
+      student.studentNumber.includes(lowerSearch)
+    );
+  });
 
   const calculateAverageGrade = (grades) => {
     const gradeValues = Object.values(grades);
@@ -73,7 +66,7 @@ const AcademicRecords = () => {
   };
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    <div className="p-6 bg-green-500 min-h-screen">
       <div className="bg-white shadow-lg rounded-lg p-6 max-w-6xl mx-auto">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">Academic Records</h2>
 
@@ -83,43 +76,9 @@ const AcademicRecords = () => {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by Student Name"
+            placeholder="Search by Student Number or Name"
             className="px-4 py-2 border border-gray-300 rounded-md w-full"
           />
-        </div>
-
-        {/* Year & Section Filter Dropdown */}
-        <div className="mb-4">
-          <select
-            value={yearSectionFilter}
-            onChange={(e) => setYearSectionFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-md w-full"
-          >
-            <option value="All">All Years & Sections</option>
-            <option value="First Year & Section 1">First Year & Section 1</option>
-            <option value="First Year & Section 2">First Year & Section 2</option>
-            <option value="First Year & Section 3">First Year & Section 3</option>
-            <option value="First Year & Section 4">First Year & Section 4</option>
-            <option value="First Year & Section 5">First Year & Section 5</option>
-            <option value="Second Year & Section 1">Second Year & Section 1</option>
-            <option value="Second Year & Section 2">Second Year & Section 2</option>
-            <option value="Second Year & Section 3">Second Year & Section 3</option>
-            <option value="Second Year & Section 4">Second Year & Section 4</option>
-            <option value="Second Year & Section 5">Second Year & Section 5</option>
-            <option value="Irregular">Irregular</option>
-          </select>
-        </div>
-
-        {/* Sort Dropdown */}
-        <div className="mb-4">
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-md w-full"
-          >
-            <option value="name">Sort by Student Name</option>
-            <option value="year">Sort by Year</option>
-          </select>
         </div>
 
         {/* Table (Mobile-Friendly with Tailwind's Responsive Utilities) */}
@@ -127,10 +86,10 @@ const AcademicRecords = () => {
           <table className="min-w-full table-auto border-collapse">
             <thead>
               <tr className="bg-gray-200">
+                <th className="px-4 py-2 text-left border border-gray-300">Student Number</th>
                 <th className="px-4 py-2 text-left border border-gray-300">Student Name</th>
-                <th className="px-4 py-2 text-left border border-gray-300">Course</th>
+                <th className="px-4 py-2 text-left border border-gray-300">Program</th>
                 <th className="px-4 py-2 text-left border border-gray-300">Year & Section</th>
-                <th className="px-4 py-2 text-left border border-gray-300">Semester Grades</th>
                 <th className="px-4 py-2 text-left border border-gray-300">Average Grade</th>
               </tr>
             </thead>
@@ -141,17 +100,11 @@ const AcademicRecords = () => {
                   className="hover:bg-gray-100 cursor-pointer"
                   onClick={() => handleRowClick(student)}
                 >
+                  <td className="px-4 py-2 border border-gray-300">{student.studentNumber}</td>
                   <td className="px-4 py-2 border border-gray-300">{student.name}</td>
-                  <td className="px-4 py-2 border border-gray-300">{student.course}</td>
+                  <td className="px-4 py-2 border border-gray-300">{student.program}</td>
                   <td className="px-4 py-2 border border-gray-300">
                     {`${student.year} & Section ${student.section.split('-')[1]}`}
-                  </td>
-                  <td className="px-4 py-2 border border-gray-300">
-                    {Object.keys(student.grades).map((semester) => (
-                      <div key={semester}>
-                        {semester}: {student.grades[semester]}
-                      </div>
-                    ))}
                   </td>
                   <td className="px-4 py-2 border border-gray-300">
                     {calculateAverageGrade(student.grades)}

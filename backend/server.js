@@ -141,6 +141,45 @@ app.post('/forgot-password', async (req, res) => {
   }
 });
 
+app.post('/resetpassword', async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  if (!token || !newPassword) {
+    return res.status(400).json({ message: 'Missing token or new password' });
+  }
+
+  try {
+    const [results] = await db.query(
+      'SELECT * FROM login WHERE reset_token IS NOT NULL AND reset_token_expiry > ?',
+      [Date.now()]
+    );
+
+    if (results.length === 0) {
+      return res.status(400).json({ message: 'Invalid or expired token' });
+    }
+
+    const user = results.find((u) => bcrypt.compareSync(token, u.reset_token));
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired token' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const [updateResult] = await db.query(
+      'UPDATE login SET password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE email = ?',
+      [hashedPassword, user.email]
+    );
+
+    if (updateResult.affectedRows === 0) {
+      return res.status(500).json({ message: 'Failed to update password' });
+    }
+
+    res.status(200).json({ message: 'Password reset successful' });
+  } catch (err) {
+    console.error('Error resetting password:', err.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // Start Server
 app.listen(port, () => {
   console.log(`Server running at https://cvsu-system.vercel.app`);

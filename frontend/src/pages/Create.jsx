@@ -54,16 +54,16 @@ const Create = () => {
   };
 
  const programOptions = {
-    stem: ["Bachelor of Science in Computer Science.", "Bachelor of Science in Information Technology"],
-    abm: ["Bachelor of Science in Computer Science.", "Bachelor of Science in Information Technology"],
-    humss: ["Bachelor of Science in Computer Science.", "Bachelor of Science in Information Technology"],
-    gas: ["Bachelor of Science in Computer Science.", "Bachelor of Science in Information Technology"],
-    afa: ["Bachelor of Science in Computer Science.", "Bachelor of Science in Information Technology"],
-    he: ["Bachelor of Science in Computer Science.", "Bachelor of Science in Information Technology"],
-    ia: ["Bachelor of Science in Computer Science.e", "Bachelor of Science in Information Technology"],
-    ict: ["Bachelor of Science in Computer Science.", "Bachelor of Science in Information Technology"],
-    ad: ["Bachelor of Science in Computer Science.", "Bachelor of Science in Information Technology"], // Programs for Arts and Design
-    sports: ["Bachelor of Science in Computer Science.", "Bachelor of Science in Information Technology"], // Programs for Sports
+    stem: ["Bachelor of Science in Computer Science", "Bachelor of Science in Information Technology"],
+    abm: ["Bachelor of Science in Computer Science", "Bachelor of Science in Information Technology"],
+    humss: ["Bachelor of Science in Computer Science", "Bachelor of Science in Information Technology"],
+    gas: ["Bachelor of Science in Computer Science", "Bachelor of Science in Information Technology"],
+    afa: ["Bachelor of Science in Computer Science", "Bachelor of Science in Information Technology"],
+    he: ["Bachelor of Science in Computer Science", "Bachelor of Science in Information Technology"],
+    ia: ["Bachelor of Science in Computer Science", "Bachelor of Science in Information Technology"],
+    ict: ["Bachelor of Science in Computer Science", "Bachelor of Science in Information Technology"],
+    ad: ["Bachelor of Science in Computer Science", "Bachelor of Science in Information Technology"], // Programs for Arts and Design
+    sports: ["Bachelor of Science in Computer Science", "Bachelor of Science in Information Technology"], // Programs for Sports
   };
 
   // Form Submission Handler

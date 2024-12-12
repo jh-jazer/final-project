@@ -37,7 +37,7 @@ const ResetPassword = () => {
       setErrorMessage('');
       setSuccessMessage('');
 
-      const response = await axios.post('https://cvsu-system.vercel.app/resetpassword', {
+      const response = await axios.post('https://final-project-lqbc.vercel.app/resetpassword', {
         token,
         newPassword: password,
       });

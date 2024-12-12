@@ -6,9 +6,9 @@ import nodemailer from 'nodemailer';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
+import fs from "fs";
 
 dotenv.config();
-
 const app = express();
 const port = process.env.PORT || 5005;
 
@@ -18,16 +18,20 @@ app.use(bodyParser.json());
 
 // MySQL Connection Pool
 const db = mysql.createPool({
-  host: 'sql12.freesqldatabase.com',
-  user: 'sql12747537',
-  password: 'TBKuWLTHwL',
-  database: 'sql12747537',
-  port: 3306,
+  host: 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com',
+  user: '3n4es3nK7WN2Li9.root',
+  password: 'EftaeZlyZ4F96UoG',
+  database: 'test',
+  port: 4000,
+  ssl: {
+    ca: fs.readFileSync('./certificate.pem')  // Path to the certificate
+  }
+
 });
 
 try {
   const connection = await db.getConnection(); // Test database connection
-  console.log('Connected to MySQL Server');
+  console.log('Connected to tiDB');
 } catch (error) {
   console.error('Database connection failed:', error.stack);
   process.exit(1); // Exit if connection fails

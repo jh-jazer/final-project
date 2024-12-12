@@ -6,7 +6,7 @@ import StudentImage from '../assets/student.jpg';
 import TopNav from '../components/Topnav';
 
 const Login = () => {
-  const [ID, setId] = useState('');
+  const [login_id, setLoginId] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -16,8 +16,8 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!ID.trim() || !password.trim()) {
-      setErrorMessage('Please fill in both ID and password fields');
+    if (!login_id.trim() || !password.trim()) {
+      setErrorMessage('Please fill in both login ID and password fields');
       return;
     }
 
@@ -26,7 +26,7 @@ const Login = () => {
       setErrorMessage('');
 
       // Backend API call
-      const response = await axios.post('http://localhost:5005/login', { ID, password });
+      const response = await axios.post('https://cvsu-system.vercel.app/login', { login_id, password });
 
       if (response.status === 200) {
         navigate('/studentdb/profile');
@@ -34,9 +34,9 @@ const Login = () => {
     } catch (error) {
       if (error.response) {
         if (error.response.status === 400) {
-          setErrorMessage('Please fill in both ID and password fields');
+          setErrorMessage('Please fill in both login ID and password fields');
         } else if (error.response.status === 401) {
-          setErrorMessage('Invalid ID or password');
+          setErrorMessage('Invalid login ID or password');
         } else {
           setErrorMessage('An error occurred. Please try again.');
         }
@@ -68,19 +68,19 @@ const Login = () => {
 
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* ID Input */}
+            {/* Login ID Input */}
             <div>
-              <label htmlFor="id" className="block text-sm font-medium text-gray-700">
-                ID
+              <label htmlFor="login_id" className="block text-sm font-medium text-gray-700">
+                Login ID
               </label>
               <input
                 type="text"
-                id="id"
-                name="id"
+                id="login_id"
+                name="login_id"
                 className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
-                placeholder="Enter your ID"
-                value={ID}
-                onChange={(e) => setId(e.target.value)}
+                placeholder="Enter your Login ID"
+                value={login_id}
+                onChange={(e) => setLoginId(e.target.value)}
               />
             </div>
 

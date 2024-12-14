@@ -10,6 +10,12 @@
         {
         "src": "/(.*)",
         "dest": "server.js"
+        },
+        {
+        "files": ["./backend/certificate.pem"]
         }
+          
     ]
+    
 }
+

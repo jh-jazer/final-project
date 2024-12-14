@@ -32,13 +32,18 @@ const db = mysql.createPool({
   }
 });
 
-try {
-  const connection = await db.getConnection(); // Test database connection
-  console.log('Connected to tiDB!');
-} catch (error) {
-  console.error('Database connection failed:', error.stack);
-  process.exit(1); // Exit if connection fails
-}
+const testDatabaseConnection = async () => {
+  try {
+    const connection = await db.getConnection(); // Test database connection
+    console.log('Connected to tiDB!');
+  } catch (error) {
+    console.error('Database connection failed:', error.stack);
+    process.exit(1); // Exit if connection fails
+  }
+};
+
+testDatabaseConnection();
+
 
 
 

@@ -134,7 +134,7 @@ app.post('/forgot-password', async (req, res) => {
       [hashedToken, resetTokenExpiry, email.trim()]
     );
 
-    const resetUrl = `http://localhost:5173/resetpassword?token=${resetToken}`;
+    const resetUrl = `https://cvsu-bacoor-system.vercel.app/resetpassword?token=${resetToken}`;
     console.log(`Generated Reset URL: ${resetUrl}`);
     const mailOptions = {
       from: process.env.GMAIL_USER,
@@ -215,5 +215,5 @@ app.get('/', (req, res) => {
 
 // ----------------------------------- Start Server
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+  console.log(`Server running at https://cvsu-bacoor-system.vercel.app`);
 });

@@ -28,7 +28,7 @@ const db = mysql.createPool({
   database: 'enrollmentsystem',
   port: 4000,
   ssl: {
-    ca: fs.readFileSync('./certificate.pem') // Path to the certificate
+    ca: process.env.DB_CERT // Path to the certificate
   }
 });
 
@@ -40,7 +40,12 @@ try {
   process.exit(1); // Exit if connection fails
 }
 
-// Login Route
+
+
+
+
+
+// ----------------------------------- Login Route
 app.post('/login', async (req, res) => {
   const { login_id, password } = req.body;
 
@@ -70,7 +75,13 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Nodemailer Transporter
+
+
+
+
+
+
+// ----------------------------------- Nodemailer Transporter
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 587,
@@ -90,7 +101,12 @@ try {
   console.error('Email server verification failed:', error);
 }
 
-// Forgot Password Route
+
+
+
+
+
+// ----------------------------------- Forgot Password Route
 app.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
 
@@ -113,7 +129,7 @@ app.post('/forgot-password', async (req, res) => {
       [hashedToken, resetTokenExpiry, email.trim()]
     );
 
-    const resetUrl = `https://final-project-lqbc.vercel.app/resetpassword?token=${resetToken}`;
+    const resetUrl = `http://localhost:5173/resetpassword?token=${resetToken}`;
     console.log(`Generated Reset URL: ${resetUrl}`);
     const mailOptions = {
       from: process.env.GMAIL_USER,
@@ -141,6 +157,12 @@ app.post('/forgot-password', async (req, res) => {
   }
 });
 
+
+
+
+
+
+// ----------------------------------- Reset Password Route
 app.post('/resetpassword', async (req, res) => {
   const { token, newPassword } = req.body;
 
@@ -180,7 +202,7 @@ app.post('/resetpassword', async (req, res) => {
   }
 });
 
-// Start Server
+// ----------------------------------- Start Server
 app.listen(port, () => {
-  console.log(`Server running at https://final-project-lqbc.vercel.app`);
+  console.log(`Server running at http://localhost:${port}`);
 });

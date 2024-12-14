@@ -26,7 +26,7 @@ const Login = () => {
       setErrorMessage('');
 
       // Backend API call
-      const response = await axios.post('https://cvsu-system.vercel.app/login', { login_id, password });
+      const response = await axios.post('http://localhost:5005/login', { login_id, password });
 
       if (response.status === 200) {
         navigate('/studentdb/profile');

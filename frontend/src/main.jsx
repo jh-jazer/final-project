@@ -9,7 +9,7 @@ import ResetPassword from './pages/ResetPassword.jsx';
 import Apply from './pages/Apply.jsx';
 import Privacy from './pages/DataPrivacyNotice.jsx';
 import Create from './pages/Create.jsx';
-
+import { ActiveItemProvider } from './contexts/CreateAppContext.jsx';
 
 import Admissiondb from './pages/Admissiondb.jsx';
 import Studentdb from './pages/Studentdb.jsx';
@@ -39,7 +39,6 @@ import Requirement from './pages/CreateAppPages/Requirement.jsx';
 import Appointment from './pages/CreateAppPages/Appointment.jsx';
 
 
-import ContinueApplication from "./pages/ContinueApplication.jsx";
 import DocumentVerification from './pages/ContinueAppPages/DocumentVerification.jsx';
 import EntranceExamination from './pages/ContinueAppPages/EntranceExamination.jsx';
 import DocumentSubmission from './pages/ContinueAppPages/DocumentSubmission.jsx';
@@ -61,6 +60,8 @@ import FreshmenPro from './pages/ProceduresPages/FreshmenPro.jsx';
 import GraduatePro from './pages/ProceduresPages/GraduatePro.jsx';
 import ReturneePro from './pages/ProceduresPages/ReturneePro.jsx';
 import TransfereePro from './pages/ProceduresPages/TransfereePro.jsx';
+
+
 
 const router = createBrowserRouter([
   {
@@ -173,35 +174,30 @@ const router = createBrowserRouter([
         path: "appointment",
         element: <Appointment />, // Component for /studentdb/settings
       },
+      {
+        path: "document-verification", // Default route for /studentdb
+        element: <DocumentVerification />, // Render the Home component by default
+      },
+      {
+        path: "entrance-examination",
+        element: <EntranceExamination />, // Component to render when /studentdb/courses is visited
+      },
+      {
+        path: "document-submission",
+        element: <DocumentSubmission />, // Component to render when /studentdb/courses is visited
+      },
+      {
+        path: "applicant-society-payment",
+        element: <ApplicantSocietyPayment />, // Component for /studentdb/notifications
+      },
+      {
+        path: "enrollment-completed",
+        element: <EnrollmentCompleted />, // Component for /studentdb/settings
+      },
     ],
   },
-  {
-    path: "/continue-application",
-    element: <ContinueApplication />,
-    children: [
-  {
-    index: true, // Default route for /studentdb
-    element: <DocumentVerification />, // Render the Home component by default
-  },
-  {
-    path: "entrance-examination",
-    element: <EntranceExamination />, // Component to render when /studentdb/courses is visited
-  },
-  {
-    path: "document-submission",
-    element: <DocumentSubmission />, // Component to render when /studentdb/courses is visited
-  },
-  {
-    path: "applicant-society-payment",
-    element: <ApplicantSocietyPayment />, // Component for /studentdb/notifications
-  },
-  {
-    path: "enrollment-completed",
-    element: <EnrollmentCompleted />, // Component for /studentdb/settings
-  },
+  
 
-],
-},
   {
     path: "/studentdb",
     element: <Studentdb />,
@@ -275,7 +271,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AppProvider>
-      <RouterProvider router={router} />
+      <ActiveItemProvider> {/* Wrap with ActiveItemProvider */}
+        <RouterProvider router={router} />
+      </ActiveItemProvider>
     </AppProvider>
   </StrictMode>
 );

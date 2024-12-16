@@ -1,10 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { useActiveItem } from "../../contexts/CreateAppContext";
+import { useNavigate } from 'react-router-dom';
 
 const DocumentVerification = () => {
-  const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true);
+  const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(false);
   const divRef = useRef(null);
-
+   const { setActiveItem } = useActiveItem();
+        const navigate = useNavigate();
+      
+        const handleSecondClick = (item) => {
+          if (!isNextButtonDisabled) {
+            navigate('/createapplication/enrollment-completed');// Navigate to the desired route
+            setActiveItem(item);
+          } 
+        };
 
   return (
     <div 
@@ -14,16 +23,16 @@ const DocumentVerification = () => {
       {/* Header Section */}
       <div className="relative text-center my-10">
         <h1 className="text-3xl font-extrabold text-[#001800]">Society Payment</h1>
-        <Link to="/createapplication/appointment" className="absolute right-0 top-1/2 transform -translate-y-1/2">
-          <button
-            className={`text-[#345e34] hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+        
+          <button onClick={() => handleSecondClick('/enrollment-completed')}
+            className={`absolute right-0 top-1/2 text-[#345e34] hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
             disabled={isNextButtonDisabled}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
-        </Link>
+     
       </div>
 
       {/* Content Section */}

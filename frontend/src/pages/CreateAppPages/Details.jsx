@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAppContext } from "../../contexts/AppContext";
+import { useActiveItem } from "../../contexts/CreateAppContext";
 
 
 const Details = () => {
   // Access values from the context
   const { applicantType, seniorHighTrack, strand, preferredProgram } = useAppContext();
-
+  // const { nextItem } = useHighlight();
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+
+  const { setActiveItem } = useActiveItem();
+
+  // Handle button click to set the active item
+  const handleButtonClick = (item) => {
+    setActiveItem(item);
+  };
 
   // Mapping of abbreviations to full names
   const fullNames = {
@@ -93,12 +101,12 @@ const Details = () => {
     >
       Cancel Application
     </button>
-  </Link>
-    <Link 
-    to='/createapplication/personal'>
-    <button
+  </Link >
+  <Link 
+    to= '/createapplication/personal'>
+    <button  onClick={() => handleButtonClick('/personal')}
       className="px-6 py-2 bg-[#345e34] text-white font-bold rounded-lg hover:bg-green-900 focus:outline-none"
-
+      // onClick={nextItem}
     >
       Next
     </button>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'
 import {
+  
   AiOutlineInfoCircle,
   AiOutlineFileText,
   AiOutlinePhone,
@@ -15,8 +16,11 @@ const Sidenav = ({ homeRef, aboutRef, newsRef, contactRef }) => {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [activeDropdown, setActiveDropdown] = useState(null);
 
-  const handleNav = () => setNav(!nav);
 
+  const handleNav = () => {
+    setNav(!nav);
+  };
+  
   const toggleDropdown = (dropdown) => {
     setActiveDropdown(activeDropdown === dropdown ? null : dropdown);
   };
@@ -28,25 +32,77 @@ const Sidenav = ({ homeRef, aboutRef, newsRef, contactRef }) => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setShowTopNav(window.scrollY < lastScrollY);
+      if (window.scrollY > lastScrollY) {
+        setShowTopNav(false); // Hide top nav on scroll down
+      } else {
+        setShowTopNav(true); // Show top nav on scroll up
+      }
       setLastScrollY(window.scrollY);
     };
 
-    const handleResize = () => {
-      if (window.innerWidth >= 768) setNav(false);
-    };
-
     window.addEventListener('scroll', handleScroll);
-    window.addEventListener('resize', handleResize);
-
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleResize);
     };
   }, [lastScrollY]);
 
+  // Handle screen resize event
+  useEffect(() => {
+    const handleResize = () => {
+      // Close mobile menu if screen size is >= 'md' (768px and above)
+      if (window.innerWidth >= 768) {
+        setNav(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Initial check on component mount
+    handleResize();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   return (
     <div>
+      {/* Top Navigation Bar */}
+      <div
+        className={`fixed top-0 left-0 h-[100px] w-full z-[90] bg-transparent shadow-lg transition-transform duration-300 ${
+          showTopNav ? 'translate-y-0' : '-translate-y-full'
+        }`}
+      >
+        <div className="flex justify-between items-center px-20 py-3">
+        
+          {/* Logo with transform effects */}
+          <div className="logo transform transition-all duration-300 ease-in-out shadow-lg py-[-8] hover:scale-110 hover:rotate-0">
+            <img src={logo} alt="Logo" className="h-[80px]" />
+          </div>
+
+          {/* Navigation buttons */}
+          <div className="hidden md:flex space-x-6">
+            <button onClick={() => scrollToSection(homeRef)} className="text-white hover:text-black">
+              Home
+            </button>
+            
+            <button onClick={() => scrollToSection(aboutRef)} className="text-white hover:text-black">
+              About
+            </button>
+            <button onClick={() => scrollToSection(newsRef)} className="text-white hover:text-black">
+              News
+            </button>
+            <button onClick={() => scrollToSection(contactRef)} className="text-white hover:text-black">
+              Contact
+            </button>
+          </div>
+          <AiOutlineMenu
+            size={30}
+            onClick={handleNav}
+            className="md:hidden cursor-pointer text-gray-600"
+          />
+        </div>
+      </div> <div>
     {/* Top Navigation */}
     <div
       className={`fixed top-0 left-0 w-full h-[100px] z-[90] bg-[#E8E8E8] shadow-lg transition-transform duration-300 ${
@@ -104,9 +160,8 @@ const Sidenav = ({ homeRef, aboutRef, newsRef, contactRef }) => {
         />
       </div>
     </div>
-  
-  
-   {/* Mobile Navigation */}
+
+    {/* Mobile Navigation */}
 {nav && (
   <div className="fixed top-0 left-0 w-full h-screen bg-white/90 z-40 flex flex-col items-center justify-center pt-10">
     {/* Dropdown Menus */}
@@ -152,33 +207,62 @@ const Sidenav = ({ homeRef, aboutRef, newsRef, contactRef }) => {
   </div>
 )}
 
-
-      {/* Side Navigation for Larger Screens */}
+      {/* Side Navigation Menu (For larger screens) */}
       {!showTopNav && (
-        <div className="fixed top-[25%] left-0 z-[99] hidden md:block">
+        <div
+          className={`fixed top-[25%] left-0 z-[99] transition-transform duration-300 hidden md:block`}
+        >
           <div className="flex flex-col pl-5">
-            {[
-              { icon: <AiOutlineHome size={20} />, label: 'Home', ref: homeRef },
-              { icon: <AiOutlineInfoCircle size={20} />, label: 'About', ref: aboutRef },
-              { icon: <AiOutlineFileText size={20} />, label: 'News', ref: newsRef },
-              { icon: <AiOutlinePhone size={20} />, label: 'Contact', ref: contactRef },
-            ].map((item) => (
-              <a
-                key={item.label}
-                onClick={() => scrollToSection(item.ref)}
-                className="flex items-center mb-4 group"
-              >
-                <div className="flex justify-center items-center w-12 h-12 rounded-full bg-gray-100 shadow-lg cursor-pointer hover:scale-110 ease-in duration-300">
-                  {item.icon}
-                </div>
-                <span className="pl-4 text-gray-800 group-hover:text-black opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  {item.label}
-                </span>
-              </a>
-            ))}
+            <a
+              onClick={() => scrollToSection(homeRef)}
+              className="flex items-center mb-4 group"
+            >
+              <div className="flex justify-center items-center w-12 h-12 rounded-full bg-gray-100 shadow-lg shadow-gray-400 cursor-pointer hover:scale-110 ease-in duration-300">
+                <AiOutlineHome size={20} />
+              </div>
+              <span className="pl-4 text-gray-800 group-hover:text-black opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                Home
+              </span>
+            </a>
+           
+          
+            <a
+              onClick={() => scrollToSection(aboutRef)}
+              className="flex items-center mb-4 group"
+            >
+              <div className="flex justify-center items-center w-12 h-12 rounded-full bg-gray-100 shadow-lg shadow-gray-400 cursor-pointer hover:scale-110 ease-in duration-300">
+                <AiOutlineInfoCircle size={20} />
+              </div>
+              <span className="pl-4 text-gray-800 group-hover:text-black opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                About
+              </span>
+            </a>
+            <a
+              onClick={() => scrollToSection(newsRef)}
+              className="flex items-center mb-4 group"
+            >
+              <div className="flex justify-center items-center w-12 h-12 rounded-full bg-gray-100 shadow-lg shadow-gray-400 cursor-pointer hover:scale-110 ease-in duration-300">
+                <AiOutlineFileText size={20} />
+              </div>
+              <span className="pl-4 text-gray-800 group-hover:text-black opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                News
+              </span>
+            </a>
+            <a
+              onClick={() => scrollToSection(contactRef)}
+              className="flex items-center mb-4 group"
+            >
+              <div className="flex justify-center items-center w-12 h-12 rounded-full bg-gray-100 shadow-lg shadow-gray-400 cursor-pointer hover:scale-110 ease-in duration-300">
+                <AiOutlinePhone size={20} />
+              </div>
+              <span className="pl-4 text-gray-800 group-hover:text-black opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                Contact
+              </span>
+            </a>
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 };

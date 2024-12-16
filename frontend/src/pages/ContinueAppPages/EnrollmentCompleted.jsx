@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 const EnrollmentCompletion = () => {
-  const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true);
+  const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(false);
   const divRef = useRef(null);
 
   return (

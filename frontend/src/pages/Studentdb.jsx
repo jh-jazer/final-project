@@ -25,8 +25,8 @@ const StudentDashboard = () => {
   const user = {
     id: "202212345", // Change the name to default ID
     course: "BSCS", // Add course information
-    status: "Regular", // Add status information (Regular or Irregular)
-    role: "Society Officer", // Update the role as needed
+    status: "Irregular", // Add status information (Regular or Irregular)
+    role: "Student", // Update the role as needed
     avatar: "https://via.placeholder.com/100",
   };
 

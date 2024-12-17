@@ -29,6 +29,11 @@ import EmployAcads from "./pages/EmployeedbPages/EmployAcads.jsx";
 import EmployStuds from "./pages/EmployeedbPages/EmployStuds.jsx";
 import EmployHome from "./pages/EmployeedbPages/EmployHome.jsx";
 import EmploySettings from "./pages/EmployeedbPages/EmploySettings.jsx";
+import ManageCourses from "./pages/EmployeedbPages/ManageClass.jsx";
+import ManageSections from "./pages/EmployeedbPages/ManageSections.jsx";
+
+
+
 
 import CreateApplication from "./pages/CreateApplication.jsx";
 import Details from './pages/CreateAppPages/Details.jsx';
@@ -267,6 +272,14 @@ const router = createBrowserRouter([
       {
         path: "employee=settings",
         element: <EmploySettings />, // Component for /studentdb/settings
+      },
+      {
+        path: "manage-classes",
+        element: <ManageCourses />, // Component to render when /studentdb/courses is visited
+      },
+      {
+        path: "manage-sections",
+        element: <ManageSections />, // Component to render when /studentdb/courses is visited
       },
     ],
   },

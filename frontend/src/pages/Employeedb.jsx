@@ -54,21 +54,11 @@ const AdminDashboard = () => {
             isSidebarMinimized ? "items-center" : "items-start"
           }`}
         >
-          <Link to="/employeedb">
-            <img
-              src={user.avatar}
-              alt="Profile"
-              className={`rounded-full w-12 h-12 mb-3 border-4 border-white cursor-pointer ${
-                isSidebarMinimized ? "w-10 h-10" : "w-20 h-20"
-              }`}
-              onClick={() => setIsSidebarOpen(false)}
-            />
-          </Link>
-
+        
           {!isSidebarMinimized && (
             <>
               <h2
-                className="text-xl font-semibold cursor-pointer"
+                className="text-xl font-semibold cursor-pointer mt-10"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 {user.name}
@@ -151,6 +141,28 @@ const AdminDashboard = () => {
               >
                 <FaClipboardList />
                 {!isSidebarMinimized && <span>Manage Enrollment</span>}
+              </Link>
+            </li>
+             {/* Manage Enrollment Section */}
+             <li>
+              <Link
+                to="manage-classes"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaClipboardList />
+                {!isSidebarMinimized && <span>Manage Classes</span>}
+              </Link>
+            </li>
+             {/* Manage Enrollment Section */}
+             <li>
+              <Link
+                to="manage-sections"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaClipboardList />
+                {!isSidebarMinimized && <span>Manage Sections</span>}
               </Link>
             </li>
             <hr className="my-6 border-t-2 border-gray-700" />

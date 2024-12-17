@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 
 const Enroll = () => {
   const location = useLocation();
-  const userStatus = location.state?.status || 'Regular'; // Fallback to 'Regular' if no state is passed
+  const userStatus = location.state?.status || 'Irregular'; // Fallback to 'Regular' if no state is passed
 
   const [gradesChecked, setGradesChecked] = useState(false);
   const [feeChecked, setFeeChecked] = useState(false);

@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { nationalities, countries, religions } from "../../constants.js";
-
+import { useNavigate } from 'react-router-dom';
+import { useActiveItem } from "../../contexts/CreateAppContext";
 
 const Personal = () => {
   const [selectedNationality, setSelectedNationality] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     givenName: '',
     familyName: '',
@@ -17,13 +19,11 @@ const Personal = () => {
     civilStatus: '',
     religion: '',
     phoneNumber: '',
-    //
     houseNumber:'',
     streetAddress: '',
     region:'',
     province:'',
     municipality: '',
-    barangay: '',
     zipCode: '',
     country: '',
   });
@@ -34,15 +34,34 @@ const Personal = () => {
   const [formUpdated, setFormUpdated] = useState(false); // Tracks if the form has been successfully updated
   const divRef = useRef(null);
 
+  const { setActiveItem } = useActiveItem();
+  
+    // Handle button click to set the active item
+  const handleFirstClick = (item) => {
+    if (!isNextButtonDisabled) {
+      navigate('/createapplication/family');// Navigate to the desired route
+      setActiveItem(item);
+    } 
+  };
 
+  const handleSecondClick = (item) => {
+    if (isNextButtonDisabled) {
+      navigate('/createapplication');
+      setActiveItem(item);
+    } 
+  };
   
 
 
   // Effect to enable or disable the button based on form completion
   useEffect(() => {
-    const isFormValid = validate(); // Checks if the form is valid based on `validate` function
-    setIsNextButtonDisabled(!(isFormValid && formUpdated)); // Enables "Next" only if valid and updated
+    const isFormValid = validate();
+    console.log("Form Valid: ", isFormValid);  // Debugging
+    console.log("Form Updated: ", formUpdated);  // Debugging
+    setIsNextButtonDisabled(!(isFormValid && formUpdated));
   }, [formData, formUpdated]);
+
+  
   
 
   const validate = () => {
@@ -57,13 +76,11 @@ const Personal = () => {
     if (!formData.dob) validationErrors.dob = "Date of Birth is required.";
     if (!formData.contactNumber || !regex.contactNumber.test(formData.contactNumber))
       validationErrors.contactNumber = "Contact Number must be 11 digits.";
-    //
     if (!formData.houseNumber) validationErrors.houseNumber = "House Number is required.";
     if (!formData.streetAddress) validationErrors.streetAddress = "Street Address is required.";
     if (!formData.region) validationErrors.region = "Region is required.";
     if (!formData.province) validationErrors.province = "Province is required.";
     if (!formData.municipality) validationErrors.municipality = "Municipality is required.";
-    if (!formData.barangay) validationErrors.barangay = "Barangay is required.";
     if (!formData.zipCode) validationErrors.zipCode = "Zip-Code is required.";
     if (!formData.country) validationErrors.country = "Country is required.";
   
@@ -73,8 +90,13 @@ const Personal = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevData => ({ ...prevData, [name]: value }));
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+    setFormUpdated(true); // Mark the form as updated
   };
+  
 
     const handleSubmit = (e) => {
     e.preventDefault(); 
@@ -113,26 +135,26 @@ const Personal = () => {
 
       {/* Header Section */}
       <div className="relative text-center my-10">
-        <Link to="/createapplication/personal" className="absolute left-0 top-1/2 transform -translate-y-1/2">
-          <button className="text-[#345e34] hover:text-green-900">
+      <button 
+            onClick={() => handleSecondClick('/createapplication')}
+            className="absolute left-0 top-1/2 transform -translate-y-1/2text-[#345e34] hover:text-green-900">
             <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-        </Link>
         <h1 className="text-3xl font-extrabold text-[#001800]">Personal Information</h1>
-        <Link to="/createapplication/education" className="absolute right-0 top-1/2 transform -translate-y-1/2">
-          <button
-            className={`text-[#345e34] hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
-            disabled={isNextButtonDisabled}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </Link>
+        
+        <button
+          onClick={() => handleFirstClick('/family')}
+          className={`absolute right-0 top-1/2 transform -translate-y-1/2 text-[#345e34] hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+          disabled={isNextButtonDisabled}
+         >
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+          
       </div>
-
           <div>
              <h5 className="text-2xl font-extrabold text-[#001800] mb-6 text-left pl-11 pb-5">
             Basic Details
@@ -278,25 +300,25 @@ const Personal = () => {
     </div>
 
             {/* Nationality Dropdown */}
-      <div className="mb-4">
-      <label className="text-gray-600 text-lg font-semibold" htmlFor="nationality">
-            Nationality
-          </label>        <select
-          id="nationality"
-          name='nationality'
-          className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
-
-          value={selectedNationality}
-          onChange={handleChange}
-        >
-          <option value="">Select a Nationality</option>
-          {nationalities.map((nationality, index) => (
-            <option key={index} value={nationality}>
-              {nationality}
-            </option>
-          ))}
-        </select>
-      </div>
+            <div className="mb-4">
+  <label className="text-gray-600 text-lg font-semibold" htmlFor="nationality">
+    Nationality
+  </label>
+  <select
+    id="nationality"
+    name="nationalities" // Update the name to match formData
+    className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
+    value={formData.nationalities} // Use formData.nationalities instead of selectedNationality
+    onChange={handleChange}
+  >
+    <option value="">Select a Nationality</option>
+    {nationalities.map((nationality, index) => (
+      <option key={index} value={nationality}>
+        {nationality}
+      </option>
+    ))}
+  </select>
+</div>
         {/* Contact Number Field */}
         <div className="mb-4">
           <label className="text-gray-600 text-lg font-semibold" htmlFor="contactNumber">
@@ -354,19 +376,19 @@ const Personal = () => {
             {errors.streetAddress && <p className="text-red-500 text-sm">{errors.streetAddress}</p>}
           </div>
           <div className="mb-4">
-            <label className="form-group text-lg font-sans text-gray-600" htmlFor="city">Region</label>
-            <input
-              type="text"
-              className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
-              id="region"
-              name="region"
-              value={formData.city}
-              onChange={handleChange}
-              required
-              placeholder="Enter Region"
-            />
-            {errors.region && <p className="text-red-500 text-sm">{errors.region}</p>}
-          </div>
+            <label className="form-group text-lg font-sans text-gray-600" htmlFor="region">Region</label>
+              <input
+               type="text"
+               className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
+               id="region"
+                name="region"
+                value={formData.region}
+                onChange={handleChange}
+                 required
+                placeholder="Enter Region"
+               />
+               {errors.region && <p className="text-red-500 text-sm">{errors.region}</p>}
+              </div>
 
           <div className="mb-4">
             <label className="form-group text-lg font-sans text-gray-600" htmlFor="city">Province</label>
@@ -413,25 +435,27 @@ const Personal = () => {
             {errors.zipCode && <p className="text-red-500 text-sm">{errors.zipCode}</p>}
           </div>
 
+          {/* Country Dropdown */}
           <div className="mb-4">
-      <label className="text-gray-600 text-lg font-semibold" htmlFor="country">
-            Country
-          </label>        <select
-          id="country"
-          name='country'
-          className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
+  <label className="text-gray-600 text-lg font-semibold" htmlFor="country">
+    Country
+  </label>
+  <select
+    id="country"
+    name="country" // The name should match formData
+    className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
+    value={formData.country} // Use formData.country instead of selectedCountry
+    onChange={handleChange}
+  >
+    <option value="">Select a Country</option>
+    {countries.map((country, index) => (
+      <option key={index} value={country}>
+        {country}
+      </option>
+    ))}
+  </select>
+</div>
 
-          value={selectedCountry}
-          onChange={handleChange}
-        >
-          <option value="">Select a Country</option>
-          {countries.map((country, index) => (
-            <option key={index} value={country}>
-              {country}
-            </option>
-          ))}
-        </select>
-      </div>
           </div>
     
 

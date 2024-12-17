@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
 import { useAppContext } from '../../contexts/AppContext';
+import { useActiveItem } from "../../contexts/CreateAppContext";
+import { useNavigate } from 'react-router-dom';
 
 const DocumentVerification = () => {
   const { applicantType, schedule } = useAppContext(); // Access schedule data from context
-  const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true);
+  const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(false);
   const divRef = useRef(null);
 
   // Assuming schedule has 'date' and 'time' fields
@@ -16,7 +17,15 @@ const DocumentVerification = () => {
   const appointmentDate = new Date(scheduleDate);
   const timeDiff = appointmentDate - currentDate;
   const hoursLeft = Math.floor(timeDiff / (1000 * 60 * 60)); // hours until appointment
-
+  const { setActiveItem } = useActiveItem();
+      const navigate = useNavigate();
+    
+      const handleSecondClick = (item) => {
+        if (!isNextButtonDisabled) {
+          navigate('/createapplication/applicant-society-payment');// Navigate to the desired route
+          setActiveItem(item);
+        } 
+      };
   // Reminder message based on time left
   let reminderMessage = '';
   if (hoursLeft < 24) {
@@ -35,16 +44,16 @@ const DocumentVerification = () => {
       {/* Header Section */}
       <div className="relative text-center my-10">
         <h1 className="text-3xl font-extrabold text-[#001800]">Documents Submission</h1>
-        <Link to="/createapplication/appointment" className="absolute right-0 top-1/2 transform -translate-y-1/2">
-          <button
-            className={`text-[#345e34] hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+       
+          <button onClick={() => handleSecondClick('/applicant-society-payment')}
+            className={`absolute right-0 top-1/2 text-[#345e34] hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
             disabled={isNextButtonDisabled}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
-        </Link>
+       
       </div>
 
       {/* Content Section */}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker"; // Import DatePicker
 import "react-datepicker/dist/react-datepicker.css";
+import { useActiveItem } from "../../contexts/CreateAppContext";
 
 const Appointment = () => {
   const navigate = useNavigate();
@@ -11,6 +12,14 @@ const Appointment = () => {
   const [isSubmitConfirmationOpen, setIsSubmitConfirmationOpen] = useState(false);
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false); // Checkbox state
   const [appointmentDetails, setAppointmentDetails] = useState(null); // Store the selected date and time
+  const { setActiveItem } = useActiveItem();
+
+  const handleSecondClick = (item) => {
+    if (isSubmitButtonDisabled) {
+      navigate('/createapplication/requirements');// Navigate to the desired route
+      setActiveItem(item);
+    } 
+  };
 
   const slots = {
     morning: 5, // Example slots left in the morning
@@ -19,8 +28,9 @@ const Appointment = () => {
 
   const [startDate, setStartDate] = useState(null);
 
-  const handleDateChange = (date) => {
+  const handleDateChange = (date,item) => {
     setStartDate(date);
+    setActiveItem(item);
     setDate(date); // Store the date selected
   };
 
@@ -46,14 +56,15 @@ const Appointment = () => {
     }
   };
 
- const confirmSubmit = () => {
-
-    navigate("/continue-application"); // Navigate to /admissiondb
+ const confirmSubmit = (item) => {
+    navigate("/createapplication/document-verification"); // Navigate to /admissiondb
+    setActiveItem(item);
   };
 
 
-  const cancelSubmit = () => {
+  const cancelSubmit = (item) => {
     setIsSubmitConfirmationOpen(false); // Close confirmation dialog
+    setActiveItem(item);
   };
 
   // Enable/disable submit button dynamically
@@ -68,13 +79,13 @@ const Appointment = () => {
   return (
     <div className="w-full min-h-screen bg-white p-8 pt-12 shadow-xl rounded-lg flex flex-col justify-between">
       <div className="relative text-center my-10">
-        <Link to="/createapplication/personal" className="absolute left-0 top-1/2 transform -translate-y-1/2">
-          <button className="text-[#345e34] hover:text-green-900">
+      <button 
+            onClick={() => handleSecondClick('/requirements')}
+            className="absolute left-0 top-1/2 transform -translate-y-1/2text-[#345e34] hover:text-green-900">
             <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-        </Link>
         <h1 className="text-3xl font-extrabold text-[#001800]">Schedule Appointment</h1>
       </div>
 
@@ -174,13 +185,13 @@ const Appointment = () => {
       </div>
       <div className="flex justify-around gap-4">
         <button
-          onClick={confirmSubmit}
+          onClick={() => confirmSubmit('/document-verification')}
           className="px-6 py-2 bg-green-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-green-700 transition duration-200"
         >
           Confirm
         </button>
         <button
-          onClick={cancelSubmit}
+          onClick={() => cancelSubmit('/document-verification')}
           className="px-6 py-2 bg-red-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-red-700 transition duration-200"
         >
           Cancel

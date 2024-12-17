@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { PencilSquareIcon, TrashIcon, EyeIcon } from "@heroicons/react/24/solid";
+import { motion, AnimatePresence } from "framer-motion";
 
 const ClassManagement = () => {
   const [classes, setClasses] = useState([
@@ -38,6 +40,8 @@ const ClassManagement = () => {
 
   const [activeClass, setActiveClass] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [classToDelete, setClassToDelete] = useState(null);
   const [editingClass, setEditingClass] = useState(null);
   const [newClass, setNewClass] = useState({
     id: null,
@@ -52,26 +56,40 @@ const ClassManagement = () => {
     students: [],
   });
 
-  // Handle opening and closing the modal
   const openModal = (classData) => {
     setActiveClass(classData);
     setIsModalOpen(true);
   };
+
   const closeModal = () => {
     setActiveClass(null);
     setIsModalOpen(false);
   };
 
-  // Handle adding and editing a class
+  const openDeleteModal = (classData) => {
+    setClassToDelete(classData); // Correctly setting the class to delete
+    setShowDeleteModal(true);    // Show the delete modal
+  };
+
+  const closeDeleteModal = () => {
+    setClassToDelete(null);
+    setShowDeleteModal(false);  // Correcting the state variable here
+  };
+
   const handleInputChange = (e) => {
     setNewClass({ ...newClass, [e.target.name]: e.target.value });
   };
+
   const saveClass = () => {
     if (editingClass) {
       setClasses(classes.map((c) => (c.id === editingClass.id ? newClass : c)));
     } else {
       setClasses([...classes, { ...newClass, id: classes.length + 1 }]);
     }
+    resetForm();
+  };
+
+  const resetForm = () => {
     setNewClass({
       id: null,
       classCode: "",
@@ -87,15 +105,21 @@ const ClassManagement = () => {
     setEditingClass(null);
   };
 
-  // Handle deleting a class
-  const deleteClass = (id) => {
-    setClasses(classes.filter((c) => c.id !== id));
+  const deleteClass = () => {
+    setClasses(classes.filter((c) => c.id !== classToDelete.id));
+    closeDeleteModal();
+  };
+
+  const startEditing = (classData) => {
+    setEditingClass(classData);
+    setNewClass({ ...classData });
   };
 
   return (
     <div className="p-6 bg-green-500 min-h-screen">
       <div className="bg-white shadow-lg rounded-lg p-6 mx-auto max-w-full sm:max-w-6xl">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">Class Management</h2>
+
         {/* Add/Edit Form */}
         <div className="mb-6">
           <h3 className="text-xl font-semibold text-gray-600">
@@ -150,23 +174,36 @@ const ClassManagement = () => {
               onChange={handleInputChange}
               className="border px-3 py-2 rounded-md"
             />
-            <button
-              onClick={saveClass}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 col-span-2"
-            >
-              {editingClass ? "Save Changes" : "Add Class"}
-            </button>
+            <div className="col-span-2 flex gap-4">
+              <button
+                onClick={saveClass}
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+              >
+                {editingClass ? "Save Changes" : "Add Class"}
+              </button>
+              {editingClass && (
+                <button
+                  onClick={resetForm}
+                  className="bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500"
+                >
+                  Cancel
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Table for Classes */}
+        {/* Table */}
         <div className="overflow-x-auto">
           <table className="min-w-full table-auto border-collapse">
             <thead>
               <tr className="bg-gray-200">
                 <th className="px-4 py-2 text-left border border-gray-300">Class Code</th>
                 <th className="px-4 py-2 text-left border border-gray-300">Course Name</th>
+                <th className="px-4 py-2 text-left border border-gray-300">Course Code</th>
                 <th className="px-4 py-2 text-left border border-gray-300">Instructor</th>
+                <th className="px-4 py-2 text-left border border-gray-300">Year</th>
+                <th className="px-4 py-2 text-left border border-gray-300">Section</th>
                 <th className="px-4 py-2 text-left border border-gray-300">Actions</th>
               </tr>
             </thead>
@@ -175,25 +212,19 @@ const ClassManagement = () => {
                 <tr key={classData.id} className="hover:bg-gray-100">
                   <td className="px-4 py-2 border border-gray-300">{classData.classCode}</td>
                   <td className="px-4 py-2 border border-gray-300">{classData.courseName}</td>
+                  <td className="px-4 py-2 border border-gray-300">{classData.courseCode}</td>
                   <td className="px-4 py-2 border border-gray-300">{classData.instructor}</td>
-                  <td className="px-4 py-2 border border-gray-300 space-x-2">
-                    <button
-                      className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-                      onClick={() => openModal(classData)}
-                    >
-                      View Students
+                  <td className="px-4 py-2 border border-gray-300">{classData.year}</td>
+                  <td className="px-4 py-2 border border-gray-300">{classData.section}</td>
+                  <td className="px-4 py-2 border border-gray-300 flex space-x-2">
+                    <button onClick={() => openModal(classData)}>
+                      <EyeIcon className="h-6 w-6 text-green-500" />
                     </button>
-                    <button
-                      className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
-                      onClick={() => setEditingClass(classData)}
-                    >
-                      Edit
+                    <button onClick={() => startEditing(classData)}>
+                      <PencilSquareIcon className="h-6 w-6 text-yellow-500" />
                     </button>
-                    <button
-                      className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                      onClick={() => deleteClass(classData.id)}
-                    >
-                      Delete
+                    <button onClick={() => openDeleteModal(classData)}>
+                      <TrashIcon className="h-6 w-6 text-red-500" />
                     </button>
                   </td>
                 </tr>
@@ -225,6 +256,42 @@ const ClassManagement = () => {
             </div>
           </div>
         )}
+
+        {/* Animated Delete Modal */}
+        <AnimatePresence>
+          {showDeleteModal && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center"
+            >
+              <motion.div
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0.8 }}
+                className="bg-white rounded-md p-6 space-y-4"
+              >
+                <h3 className="text-lg text-center font-semibold">Confirm Deletion</h3>
+                <p>Are you sure you want to delete this class?</p>
+                <div className="flex space-x-4 justify-center">
+                  <button
+                    className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                    onClick={deleteClass}
+                  >
+                    Delete
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500"
+                    onClick={closeDeleteModal}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

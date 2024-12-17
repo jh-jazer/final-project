@@ -81,16 +81,7 @@ const AdminDashboard = () => {
                 {!isSidebarMinimized && <span>Profile</span>}
               </Link>
             </li>
-            <li>
-              <Link
-                to="employee=settings"
-                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaCog />
-                {!isSidebarMinimized && <span>Settings</span>}
-              </Link>
-            </li>
+            
             <hr className="my-6 border-t-2 border-gray-700" />
             <li>
               <Link
@@ -110,6 +101,16 @@ const AdminDashboard = () => {
               >
                 <FaUser />
                 {!isSidebarMinimized && <span>Student Records</span>}
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="employee-instructors"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaUser />
+                {!isSidebarMinimized && <span>Manage Instructors</span>}
               </Link>
             </li>
             <li>

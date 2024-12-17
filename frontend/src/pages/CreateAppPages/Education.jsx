@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAppContext } from "../../contexts/AppContext";
+import { useNavigate } from 'react-router-dom';
+import { useActiveItem } from "../../contexts/CreateAppContext";
 
 const Education = () => {
   const { applicantType } = useAppContext();
   const showCollegeFields = applicantType === "transferee" || applicantType === "bachelors";
   const showSeniorHighYearField = applicantType !== "grade12"; // Check if senior high year should be shown
+  const navigate = useNavigate();
+  const { setActiveItem } = useActiveItem();
 
   const [formData, setFormData] = useState({
     elementarySchoolName: "",
@@ -33,6 +37,20 @@ const Education = () => {
       const isFormValid = validate(); // Checks if the form is valid based on `validate` function
       setIsNextButtonDisabled(!(isFormValid && formUpdated)); // Enables "Next" only if valid and updated
     }, [formData, formUpdated]);
+
+    const handleFirstClick = (item) => {
+      if (!isNextButtonDisabled) {
+        navigate('/createapplication/requirements');// Navigate to the desired route
+        setActiveItem(item);
+      } 
+    };
+  
+    const handleSecondClick = (item) => {
+      if (isNextButtonDisabled) {
+        navigate('/createapplication/family');// Navigate to the desired route
+        setActiveItem(item);
+      } 
+    };
 
   const validate = () => {
     let validationErrors = {};
@@ -195,24 +213,23 @@ const Education = () => {
 
       {/* Header Section */}
       <div className="relative text-center my-10">
-        <Link to="/createapplication/family" className="absolute left-0 top-1/2 transform -translate-y-1/2">
-          <button className="text-[#345e34] hover:text-green-900">
+      <button 
+            onClick={() => handleSecondClick('/family')}
+            className="absolute left-0 top-1/2 transform -translate-y-1/2text-[#345e34] hover:text-green-900">
             <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-        </Link>
         <h1 className="text-3xl font-extrabold text-[#001800]">Education Information</h1>
-        <Link to="/createapplication/requirements" className="absolute right-0 top-1/2 transform -translate-y-1/2">
-          <button
-            className={`text-[#345e34] hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
-            disabled={isNextButtonDisabled}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </Link>
+        <button
+          onClick={() => handleFirstClick('/requirements')}
+          className={`absolute right-0 top-1/2 transform -translate-y-1/2 text-[#345e34] hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+          disabled={isNextButtonDisabled}
+         >
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">

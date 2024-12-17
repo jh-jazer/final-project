@@ -9,7 +9,6 @@ html, body {
 
 #root {
   height: 100%;
-  overflow-y: auto; /* Ensure scroll is enabled */
 }
 
 
@@ -158,5 +157,52 @@ html, body {
   .mainButton span {
     font-size: 30px;
   }
+}
+.sidebar {
+  width: 200px;
+  background-color: #f4f4f4;
+}
+
+button {
+  margin-bottom: 10px;
+ 
+}
+
+nav ul {
+  list-style-type: none;
+}
+
+nav li {
+
+}
+
+nav li.active {
+  background-color:#107d16;
+  color: white;
+}
+
+
+
+.sidebar {
+  width: 200px;
+  background-color: #f4f4f4;
+}
+
+button {
+  margin-bottom: 10px;
+ 
+}
+
+nav ul {
+  list-style-type: none;
+}
+
+nav li {
+
+}
+
+nav li.active {
+  background-color:#107d16;
+  color: white;
 }
 

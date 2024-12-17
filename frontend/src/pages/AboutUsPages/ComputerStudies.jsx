@@ -49,7 +49,7 @@ const ComputerStudies = () => {
   {/* Program Chair, CS */}
   <div className="flex flex-col items-center space-y-2 bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-200">
     <div className="text-2xl font-semibold text-green-800">Program Chair, CS</div>
-    <div className="bg-gray-50 p-6 rounded-lg w-full sm:w-[400px] text-center shadow-md hover:shadow-xl transition-shadow duration-200">
+    <div className="bg-gray-50 p-6 rounded-lg w-full sm:w-[100%] sm:w-[400px] text-center shadow-md hover:shadow-xl transition-shadow duration-200">
       <strong className="text-lg text-green-800">Ely Rose L. Pangabinan-Briones, MIT</strong>
     </div>
   </div>
@@ -57,7 +57,7 @@ const ComputerStudies = () => {
   {/* Program Chair, IT */}
   <div className="flex flex-col items-center space-y-2 bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-200">
     <div className="text-2xl font-semibold text-green-800">Program Chair, IT</div>
-    <div className="bg-gray-50 p-6 rounded-lg w-full sm:w-[400px] text-center shadow-md hover:shadow-xl transition-shadow duration-200">
+    <div className="bg-gray-50 p-6 rounded-lg w-full sm:w-[100%] sm:w-[400px] text-center shadow-md hover:shadow-xl transition-shadow duration-200">
       <strong className="text-lg text-green-800">Jovelyn D. Ocampo, MIT</strong>
     </div>
   </div>

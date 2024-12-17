@@ -3,6 +3,7 @@ import { useAppContext } from "../contexts/AppContext";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import Laya from "../assets/laya.png";
 import TopNav from './../components/Topnav';
+import { useActiveItem } from "../contexts/CreateAppContext";
 
 const Create = () => {
   const {
@@ -20,7 +21,8 @@ const Create = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
   const navigate = useNavigate(); // Hook to navigate programmatically
-
+  const { setActiveItem } = useActiveItem();
+  
     // Disable the submit button based on form state
     useEffect(() => {
       if (applicantType && preferredProgram) {
@@ -67,21 +69,21 @@ const Create = () => {
   };
 
   // Form Submission Handler
-  const handleSubmit = () => {
-    if (
-      ["shs", "grade12"].includes(applicantType) &&
-      !["stem", "ict"].includes(strand)
-    ) {
+  const handleSubmit = (item) => {
+    // Submission logic
+    if (["shs", "grade12"].includes(applicantType) && !["stem", "ict"].includes(strand)) {
       setErrorMessage(
         "You must be a STEM or ICT student to choose the selected program."
       );
       return;
     }
-
-    setErrorMessage("");
+  
+    setErrorMessage(""); // Clear any existing error messages
     alert("Application successfully created!");
     navigate("/createapplication"); // Redirect to details page upon successful submission
-  };
+    // Set the active item
+    setActiveItem(item);
+    };
 
   return (
     <div
@@ -245,7 +247,7 @@ const Create = () => {
             
               type="button"
               disabled={isButtonDisabled}
-              onClick={handleSubmit}
+              onClick={() => handleSubmit('/createapplication')}
               className="w-full py-2 bg-[#C61A01] text-white font-bold rounded-lg  disabled:bg-gray-400"
             >
               Continue to Details

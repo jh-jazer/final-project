@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-
+import { useNavigate } from 'react-router-dom';
+import { useActiveItem } from "../../contexts/CreateAppContext";
 const Family = () => {
   const [successMessage, setSuccessMessage] = useState(""); 
   const [errors, setErrors] = useState({});
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true); // Tracks if 'Next' button is disabled after form update
   const [formUpdated, setFormUpdated] = useState(false); // Tracks if the form has been successfully updated
   const divRef = useRef(null);
+  const navigate = useNavigate();
+  
 
   // State to manage form data
   const [formData, setFormData] = useState({
@@ -29,9 +32,11 @@ const Family = () => {
   // UseEffect to track form data changes and enable/disable submit button
    // Effect to enable or disable the button based on form completion
    useEffect(() => {
-    const isFormValid = validate(); // Checks if the form is valid based on `validate` function
-    setIsNextButtonDisabled(!(isFormValid && formUpdated)); // Enables "Next" only if valid and updated
-  }, [formData, formUpdated]);
+    const isFormValid = validate(); // Validate the form every time formData changes
+    setIsNextButtonDisabled(!isFormValid); // Disable Next button if form is not valid
+}, [formData]);
+
+    const { setActiveItem } = useActiveItem();
 
   // Input field change handler
   const handleInputChange = (e) => {
@@ -42,6 +47,19 @@ const Family = () => {
     }));
   };
 
+  const handleFirstClick = (item) => {
+    if (!isNextButtonDisabled) {
+      navigate('/createapplication/education');// Navigate to the desired route
+      setActiveItem(item);
+    } 
+  };
+
+  const handleSecondClick = (item) => {
+    if (isNextButtonDisabled) {
+      navigate('/createapplication/personal');// Navigate to the desired route
+      setActiveItem(item);
+    } 
+  };
 
   useEffect(() => {
     const isFormValid = validate(); // Checks if the form is valid based on `validate` function
@@ -135,6 +153,7 @@ const Family = () => {
         divRef.current.scrollIntoView({ behavior: "smooth" });
         setSuccessMessage("Application updated successfully!"); 
         setTimeout(() => setSuccessMessage(""), 3000); // Hide message after 3 seconds
+        
     } else {
         divRef.current.scrollIntoView({ behavior: "smooth" });
         // If invalid, clear success message and notify the user
@@ -157,24 +176,26 @@ const Family = () => {
 
       {/* Header Section */}
       <div className="relative text-center my-10">
-        <Link to="/createapplication" className="absolute left-0 top-1/2 transform -translate-y-1/2">
-          <button className="text-[#345e34] hover:text-green-900">
+          <button 
+            onClick={() => handleSecondClick('/personal')}
+            className="absolute left-0 top-1/2 transform -translate-y-1/2text-[#345e34] hover:text-green-900">
             <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-        </Link>
+        
         <h1 className="text-3xl font-extrabold text-[#001800]">Family Information</h1>
-        <Link to="/createapplication/family" className="absolute right-0 top-1/2 transform -translate-y-1/2">
-          <button
-            className={`text-[#345e34] hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
-            disabled={isNextButtonDisabled}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </Link>
+        
+        <button
+           onClick={() => handleFirstClick('/education')}
+          className={`absolute right-0 top-1/2 transform -translate-y-1/2 text-[#345e34] hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+          disabled={isNextButtonDisabled}
+         >
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+        
       </div>
 
 

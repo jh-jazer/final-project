@@ -51,6 +51,8 @@ const AdmissionsPage = () => {
     cs: "Bachelor of Science in Computer Science",
   };
 
+  
+
   const handleLogout = () => {
     const confirmLogout = window.confirm("Are you sure you want to logout?");
     if (confirmLogout) {
@@ -68,7 +70,7 @@ const AdmissionsPage = () => {
       >
         <div className="p-6 flex flex-col items-center border-b border-gray-700">
           <h2
-            className="text-xl font-semibold pt-8"
+            className="text-xl font-semibold py-3"
             onClick={() => setIsSidebarOpen(false)}
           >
             {user.applicantId}
@@ -85,8 +87,8 @@ const AdmissionsPage = () => {
               <>
                 <li className={activeItem === '/createapplication' ? 'active' : ''}>
                   <button
-                    className=" px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg
-                    cursor-not-allowed text-white"
+                    className=" px-4 py-2 flex items-center space-x-3 rounded-lg cursor-default
+                     text-white"
                   >
                     <span className="text-xl font-semibold">1.</span>
                     <span>Application Details</span>
@@ -94,8 +96,8 @@ const AdmissionsPage = () => {
                 </li>
                 <li className={activeItem === '/personal' ? 'active' : ''}>
                   <button
-                    className=" px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg
-                    cursor-not-allowed text-white"
+                    className=" px-4 py-2 flex items-center space-x-3  rounded-lg cursor-default
+                     text-white"
                   >
                     <span className="text-xl font-semibold">2.</span>
                     <span>Personal Info</span>
@@ -103,8 +105,8 @@ const AdmissionsPage = () => {
                 </li>
                 <li className={activeItem === '/family' ? 'active' : ''}>
                   <button
-                    className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg
-                    cursor-not-allowed text-white"
+                    className="px-4 py-2 flex items-center space-x-3  rounded-lg cursor-default
+                     text-white"
                   >
                     <span className="text-xl font-semibold">3.</span>
                     <span>Family Profile</span>
@@ -112,8 +114,8 @@ const AdmissionsPage = () => {
                 </li>
                 <li className={activeItem === '/education' ? 'active' : ''}>
                   <button
-                    className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg
-                    cursor-not-allowed text-white"
+                    className="px-4 py-2 flex items-center space-x-3  rounded-lg cursor-default
+                     text-white"
                   >
                     <span className="text-xl font-semibold">4.</span>
                     <span>Educational Info</span>
@@ -121,8 +123,8 @@ const AdmissionsPage = () => {
                 </li>
                 <li className={activeItem === '/requirements' ? 'active' : ''}>
                   <button
-                    className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg
-                    cursor-not-allowed text-white"
+                    className="px-4 py-2 flex items-center space-x-3  rounded-lg cursor-default
+                     text-white"
                   >
                     <span className="text-xl font-semibold">5.</span>
                     <span>Upload Requirements</span>
@@ -130,8 +132,8 @@ const AdmissionsPage = () => {
                 </li>
                 <li className={activeItem === '/appointment' ? 'active' : ''}>
                   <button
-                    className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg
-                    cursor-not-allowed text-white"
+                    className="px-4 py-2 flex items-center space-x-3  rounded-lg cursor-default
+                     text-white"
                   >
                     <span className="text-xl font-semibold">6.</span>
                     <span>Schecule Appointment</span>
@@ -146,8 +148,8 @@ const AdmissionsPage = () => {
               <>
                 <li className={activeItem === '/document-verification' ? 'active' : ''}>
                   <button
-                    className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg
-                    cursor-not-allowed text-white"
+                    className="px-4 py-2 flex items-center space-x-3  rounded-lg cursor-default
+                     text-white"
                   >
                     <span className="text-xl font-semibold">7.</span>
                     <span>Document Verification</span>
@@ -155,8 +157,8 @@ const AdmissionsPage = () => {
                 </li>
                 <li className={activeItem === '/entrance-examination' ? 'active' : ''}>
                   <button
-                    className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg
-                    cursor-not-allowed text-white"
+                    className="px-4 py-2 flex items-center space-x-3  rounded-lg cursor-default
+                     text-white"
                   >
                     <span className="text-xl font-semibold">8.</span>
                     <span>Entrance Examination</span>
@@ -164,8 +166,8 @@ const AdmissionsPage = () => {
                 </li>
                 <li className={activeItem === '/document-submission' ? 'active' : ''}>
                   <button
-                    className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg
-                    cursor-not-allowed text-white"
+                    className="px-4 py-2 flex items-center space-x-3  rounded-lg cursor-default
+                     text-white"
                   >
                     <span className="text-xl font-semibold">9.</span>
                     <span>Document Submission</span>
@@ -173,8 +175,8 @@ const AdmissionsPage = () => {
                 </li>
                 <li className={activeItem === '/applicant-society-payment' ? 'active' : ''}>
                   <button
-                    className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg
-                    cursor-not-allowed text-white"
+                    className="px-4 py-2 flex items-center space-x-3  rounded-lg cursor-default
+                     text-white"
                   >
                     <span className="text-xl font-semibold">10.</span>
                     <span>Society Payment</span>
@@ -182,8 +184,8 @@ const AdmissionsPage = () => {
                 </li>
                 <li className={activeItem === '/applicant-society-payment' ? 'active' : ''}>
                   <button
-                    className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg
-                    cursor-not-allowed text-white"
+                    className="px-4 py-2 flex items-center space-x-3  rounded-lg cursor-default
+                     text-white"
                    >
                     <span className="text-xl font-semibold">11.</span>
                     <span>Advising</span>
@@ -191,8 +193,8 @@ const AdmissionsPage = () => {
                 </li>
                 <li className={activeItem === '/enrollment-completed' ? 'active' : ''}>
                   <button
-                    className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg
-                    cursor-not-allowed text-white"
+                    className="px-4 py-2 flex items-center space-x-3  rounded-lg cursor-default
+                     text-white"
                   >
                     <span className="text-xl font-semibold">12.</span>
                     <span>Enrollment Completed</span>
@@ -204,7 +206,7 @@ const AdmissionsPage = () => {
 
             {/* Toggle Button */}
             <div className="flex justify-center items-center">
-              <button onClick={toggleSection} className="p-4 text-white">
+              <button onClick={toggleSection} className="p-1 text-white">
                 <FontAwesomeIcon icon={icon} />
               </button>
             </div>
@@ -215,7 +217,7 @@ const AdmissionsPage = () => {
             <li>
               <button
                 onClick={handleLogout}
-                className="w-full px-4 py-2 flex items-center space-x-3 hover:bg-red-600 rounded-lg cursor-pointer mt-auto"
+                className="w-full px-4 py-2 flex items-center space-x-3 hover:bg-red-600 rounded-lg cursor-default cursor-pointer mt-auto"
               >
                 <FaSignOutAlt />
                 <span>Logout</span>

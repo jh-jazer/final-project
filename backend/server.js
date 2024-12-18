@@ -28,7 +28,8 @@ const db = mysql.createPool({
   database: 'enrollmentsystem',
   port: 4000,
   ssl: {
-    ca: process.env.DB_CERT // Path to the certificate
+    ca: process.env.DB_CERT, // Path to the certificate
+    rejectUnauthorized: false,
   }
 });
 
@@ -205,6 +206,47 @@ app.post('/resetpassword', async (req, res) => {
     console.error('Error resetting password:', err.message);
     res.status(500).json({ message: 'Internal server error' });
   }
+});
+
+
+
+
+
+// ----------------------------------- application Route
+app.post("/api/create-application", (req, res) => {
+  const { applicantType, seniorHighTrack, strand, preferredProgram, googleUserData } = req.body;
+
+  // Validate required fields
+  if (!applicantType || !preferredProgram || !googleUserData?.email) {
+    return res.status(400).json({ message: "Invalid or missing required data." });
+  }
+
+  // Prepare the SQL query
+  const sql = `
+    INSERT INTO application (email, name, profile_picture, applicant_type, program, hs_track, hs_strand)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  // Prepare the values
+  const values = [
+    googleUserData.email,        // Email of the applicant
+    googleUserData.name || "",   // Name (default to empty string if undefined)
+    googleUserData.picture || "", // Profile picture (default to empty string if undefined)
+    applicantType,               // Applicant type (e.g., SHS, Grade 12)
+    preferredProgram,            // Preferred program
+    seniorHighTrack || "",       // Senior High Track (default to empty string if undefined)
+    strand || "",                // Strand (default to empty string if undefined)
+  ];
+
+  // Execute the query
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ message: "Database error.", error: err });
+    }
+
+    res.status(201).json({ message: "Application created successfully.", result });
+  });
 });
 
 

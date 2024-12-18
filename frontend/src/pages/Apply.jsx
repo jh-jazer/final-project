@@ -10,7 +10,17 @@ const AdmissionPortal = () => {
   const handleLoginSuccess = (response) => {
     // console.log('Login Success:', response.credential);
     const decodedToken = JSON.parse(atob(response.credential.split('.')[1]));
-    console.log('Decoded JWT:', decodedToken);
+    const name = decodedToken.name
+    const email = decodedToken.email
+    const picture = decodedToken.picture
+    const googleInfo = {
+      name: name,
+      email: email,
+      picture: picture,
+    };
+  
+  // Save to localStorage or sessionStorage
+  localStorage.setItem("formData", JSON.stringify(googleInfo));
     // get credentials from google and send to db
     // !!!
     setRedirect(true);

@@ -217,7 +217,7 @@ const AdmissionsPage = () => {
             <li>
               <button
                 onClick={handleLogout}
-                className="w-full px-4 py-2 flex items-center space-x-3 hover:bg-red-600 rounded-lg cursor-default cursor-pointer mt-auto"
+                className="w-full px-4 py-2 flex items-center space-x-3 hover:bg-red-600 rounded-lg cursor-default mt-auto"
               >
                 <FaSignOutAlt />
                 <span>Logout</span>

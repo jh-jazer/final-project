@@ -14,7 +14,7 @@ import {
 } from "react-icons/fa";
 import LogoutConfirmationModal from "./LogoutConfirmationModal"; // Import the modal
 
-const AdminDashboard = () => {
+const EmployeeDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarMinimized, setIsSidebarMinimized] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
@@ -57,20 +57,23 @@ const AdminDashboard = () => {
         
           {!isSidebarMinimized && (
             <>
-              <h2
+             <Link
+                to="/employeedb"
+              
                 className="text-xl font-semibold cursor-pointer mt-10"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 {user.name}
-              </h2>
+                </Link>
               <p className="text-sm text-gray-400">{user.role}</p> {/* Display employee type */}
-            </>
+              </>
           )}
         </div>
 
         {/* Navigation Links */}
         <nav className="flex-1 mt-4">
           <ul className="space-y-2">
+           
             <li>
               <Link
                 to="employee-profile"
@@ -81,6 +84,49 @@ const AdminDashboard = () => {
                 {!isSidebarMinimized && <span>Profile</span>}
               </Link>
             </li>
+
+             {/* Conditionally render links based on user role */}
+             {user.role == "Adviser" && (
+              <>
+            
+            <hr className="my-6 border-t-2 border-gray-700" />
+            <li>
+              <Link
+                to="academic-records"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaUser />
+                {!isSidebarMinimized && <span>Academic Records</span>}
+              </Link>
+            </li>
+                    {/* Manage Enrollment Section */}
+             <li>
+             <Link
+                to="manage-enrollment"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaClipboardList />
+                {!isSidebarMinimized && <span>Manage Enrollment</span>}
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="manage-applications"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaClipboardList />
+                {!isSidebarMinimized && <span>Manage Applications</span>}
+              </Link>
+            </li>
+            </>
+            )}
+            
+             {/* Conditionally render links based on user role */}
+             {user.role == "Register" && (
+              <>
             
             <hr className="my-6 border-t-2 border-gray-700" />
             <li>
@@ -133,6 +179,7 @@ const AdminDashboard = () => {
                 {!isSidebarMinimized && <span>Manage Applications</span>}
               </Link>
             </li>
+             
             {/* Manage Enrollment Section */}
             <li>
               <Link
@@ -166,6 +213,9 @@ const AdminDashboard = () => {
                 {!isSidebarMinimized && <span>Manage Sections</span>}
               </Link>
             </li>
+            </>
+            )}
+
             <hr className="my-6 border-t-2 border-gray-700" />
             <li>
               <button
@@ -176,6 +226,7 @@ const AdminDashboard = () => {
                 {!isSidebarMinimized && <span>Logout</span>}
               </button>
             </li>
+            
           </ul>
         </nav>
       </aside>
@@ -215,4 +266,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default EmployeeDashboard;

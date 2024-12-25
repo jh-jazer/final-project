@@ -28,8 +28,8 @@ const db = mysql.createPool({
   database: 'enrollmentsystem',
   port: 4000,
   ssl: {
-    ca: process.env.DB_CERT // Path to the certificate
-  }
+    ca: fs.readFileSync(process.env.DB_CERT, 'utf8'), // Path to the CA certificate
+  },
 });
 
 const testDatabaseConnection = async () => {

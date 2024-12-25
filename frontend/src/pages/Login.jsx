@@ -26,7 +26,7 @@ const Login = () => {
       setErrorMessage('');
 
       // Backend API call
-      const response = await axios.post('https://cvsu-system-backend.vercel.app/login', { login_id, password });
+      const response = await axios.post('https://final-project-lqbc.vercel.app/login', { login_id, password });
 
       if (response.status === 200) {
         navigate('/studentdb/profile');
@@ -61,13 +61,13 @@ const Login = () => {
         {/* Login Card */}
         <div className="w-full max-w-md p-8 bg-white bg-opacity-95 shadow-lg rounded-lg">
           {/* Header */}
-          <div className="flex flex-col items-center">
-            <img src={Logo} alt="University Logo" className="w-20 h-20 mb-4" />
-            <h2 className="text-3xl font-extrabold text-[#C61A01]">Login</h2>
-          </div>
+           <div className="flex items-center gap-4 justify-self-center ">
+                  <img src={Logo} alt="University Logo" className="w-[60px] h-[60px]" />
+                  <h2 className="text-3xl font-extrabold text-[#C61A01]">Login </h2>
+                </div>
 
           {/* Login Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="mt-5 space-y-4">
             {/* Login ID Input */}
             <div>
               <label htmlFor="login_id" className="block text-sm font-medium text-gray-700">
@@ -77,7 +77,7 @@ const Login = () => {
                 type="text"
                 id="login_id"
                 name="login_id"
-                className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                className="w-full px-4 py-2 mt-1 bg-gray-200 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
                 placeholder="Enter your Login ID"
                 value={login_id}
                 onChange={(e) => setLoginId(e.target.value)}
@@ -94,14 +94,14 @@ const Login = () => {
                   type={showPassword ? 'text' : 'password'}
                   id="password"
                   name="password"
-                  className="w-full px-4 py-2 mt-1 bg-gray-100 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
+                  className="w-full px-4 py-2 mt-1 bg-gray-200 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C61A01]"
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 px-4 text-gray-500"
+                  className="absolute inset-y-0 right-0 px-4 pt-3 text-gray-500"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? 'Hide' : 'Show'}
@@ -123,8 +123,8 @@ const Login = () => {
           </form>
 
           {/* Forgot Password */}
-          <div className="text-center">
-            <Link to="/forgotpassword" className="text-sm text-[#C61A01] p-2 hover:underline">
+          <div className="text-center mt-3">
+            <Link to="/forgotpassword" className="text-sm text-[#C61A01]  p-2 hover:underline">
               Forgot password?
             </Link>
           </div>

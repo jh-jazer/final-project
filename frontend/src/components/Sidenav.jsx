@@ -109,16 +109,16 @@ const Sidenav = ({ homeRef, aboutRef, newsRef, contactRef }) => {
         showTopNav ? 'translate-y-0' : '-translate-y-full'
       }`}
     >
-      <div className="flex justify-between items-center px-3 pr-5 py-3">
+      <div className="flex justify-between items-center px-5 pr-7 py-3">
         <div className="logo transition-transform duration-300 hover:scale-110">
           <img src={logo} alt="Logo" className="h-[80px]" />
         </div>
-        <div className="hidden md:flex space-x-12 pr-5">
+        <div className="hidden md:flex space-x-12 pr-5 pt-5">
           {/* Dropdown Menus */}
           {[
             { label: 'About Us', options: [{label: 'University History', path:'university'}, {label:'Department of Computer Studies',path:'comstudy'}, {label:'Mission and Vision',path:'missionvision'}] },
             { label: 'Admission', options: [{ label: 'Admission Procedures', path: '/procedures' }, { label: 'Admission Page', path: '/apply' }] },
-            { label: 'CvSU Portal', options: [{ label: 'Login', path: '/login' }, { label: 'Register', path: '/register' }], },
+            { label: 'CvSU Portal', options: [{ label: 'Login', path: '/login' }, { label: 'Apply', path: '/apply' }], },
           ].map((menu) => (
             <div key={menu.label} className="relative">
               <button

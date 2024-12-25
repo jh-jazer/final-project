@@ -82,6 +82,60 @@ app.post('/login', async (req, res) => {
 
 
 
+// --------------------------------Check if email exists
+app.post('/check-email', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // Query to check if email exists in the users table
+    const [rows] = await promisePool.execute(
+      'SELECT 1 FROM users WHERE email = ? LIMIT 1',
+      [email]
+    );
+
+    if (rows.length > 0) {
+      // Email exists
+      return res.json({ exists: true });
+    } else {
+      // Email doesn't exist
+      return res.json({ exists: false });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'An error occurred' });
+  }
+});
+
+
+// --------------------------------This endpoint will insert the enrollment data (including the user’s ID, enrollment ID, program, and strand) into the database
+app.post('/save-enrollment', async (req, res) => {
+  const { email, enrollmentId, applicantType, preferredProgram, strand } = req.body;
+
+  try {
+    // First, fetch the user ID using the email
+    const [userRows] = await promisePool.execute(
+      'SELECT id FROM users WHERE email = ? LIMIT 1',
+      [email]
+    );
+
+    if (userRows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const userId = userRows[0].id;
+
+    // Insert the enrollment data into the enrollments table
+    const [result] = await promisePool.execute(
+      'INSERT INTO enrollments (user_id, enrollment_id, applicant_type, preferred_program, strand) VALUES (?, ?, ?, ?, ?)',
+      [userId, enrollmentId, applicantType, preferredProgram, strand]
+    );
+
+    return res.json({ success: true, enrollmentId });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'An error occurred while saving enrollment data' });
+  }
+});
 
 
 

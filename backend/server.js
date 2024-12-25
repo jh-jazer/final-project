@@ -6,7 +6,6 @@ import nodemailer from 'nodemailer';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
-import fs from "fs";
 
 dotenv.config();
 
@@ -28,8 +27,8 @@ const db = mysql.createPool({
   database: 'enrollmentsystem',
   port: 4000,
   ssl: {
-    ca: fs.readFileSync(process.env.DB_CERT, 'utf8'), // Path to the CA certificate
-  },
+    ca: process.env.DB_CERT // Path to the certificate
+  }
 });
 
 const testDatabaseConnection = async () => {

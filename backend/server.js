@@ -113,7 +113,7 @@ app.post('/save-enrollment', async (req, res) => {
 
   try {
     // First, fetch the user ID using the email
-    const [userRows] = await promisePool.execute(
+    const [userRows] = await db.execute(
       'SELECT id FROM users WHERE email = ? LIMIT 1',
       [email]
     );
@@ -125,7 +125,7 @@ app.post('/save-enrollment', async (req, res) => {
     const userId = userRows[0].id;
 
     // Insert the enrollment data into the enrollments table
-    const [result] = await promisePool.execute(
+    const [result] = await db.execute(
       'INSERT INTO enrollments (user_id, enrollment_id, applicant_type, preferred_program, strand) VALUES (?, ?, ?, ?, ?)',
       [userId, enrollmentId, applicantType, preferredProgram, strand]
     );

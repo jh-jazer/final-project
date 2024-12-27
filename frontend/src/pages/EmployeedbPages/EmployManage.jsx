@@ -271,7 +271,7 @@ const ApplicationManagement = () => {
 
         {/* Tab Navigation */}
         <div className="mb-4">
-          <div className="flex space-x-4 border-b border-gray-300">
+          <div className="flex space-x-4 border-b border-gray-300 overflow-x-auto">
             <button
               className={`px-4 py-2 text-lg ${selectedTab === 'requirementValidation' ? 'font-semibold border-b-2 border-blue-500' : ''}`}
               onClick={() => setSelectedTab('requirementValidation')}

@@ -233,7 +233,7 @@ const Checklist = () => {
   
   return (
     <div className="min-h-screen bg-gray-100 p-8">
-      <div className="bg-white shadow-md rounded-lg p-6">
+      <div className="bg-white shadow-md rounded-lg p-6 mx-auto max-w-full sm:max-w-6xl overflow-x-auto">
       
       {/* Student Basic Information Section */}
       {user && (

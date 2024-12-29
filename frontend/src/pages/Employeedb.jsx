@@ -8,23 +8,71 @@ import {
   FaAngleDoubleLeft,
   FaClipboardList,
   FaBook,
-  FaBell,
-  FaCog,
   FaSignOutAlt,
+  FaChevronDown,
+  FaChevronUp,
 } from "react-icons/fa";
 import LogoutConfirmationModal from "./LogoutConfirmationModal"; // Import the modal
 
 const EmployeeDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarMinimized, setIsSidebarMinimized] = useState(false);
+  const [isStudentDropdownOpen, setIsStudentDropdownOpen] = useState(false);
+  const [isApplicationDropdownOpen, setIsApplicationDropdownOpen] = useState(false);
+  const [isSocietyDropdownOpen, setIsSocietyDropdownOpen] = useState(false);
+  const [isCoursesDropdownOpen, setIsCoursesDropdownOpen] = useState(false);
+  const [isAdminDropdownOpen, setIsAdminDropdownOpen] = useState(false);
+
+
+
+
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
   const navigate = useNavigate();
 
   const user = {
     name: "Admin Doe",
-    role: "Register", // Employee type (Role/Position)
+    role: "Registrar", // Employee type (Role/Position)
     avatar: "https://via.placeholder.com/100",
   };
+
+  const toggleStudentDropdown = () => { 
+
+    setIsApplicationDropdownOpen(false);
+    setIsCoursesDropdownOpen(false);
+    setIsAdminDropdownOpen(false);
+    setIsStudentDropdownOpen((prev) => !prev);
+  };
+
+  const toggleApplicationDropdown = () => { 
+
+    setIsStudentDropdownOpen(false);
+    setIsCoursesDropdownOpen(false);
+    setIsAdminDropdownOpen(false);
+    setIsApplicationDropdownOpen((prev) => !prev);
+  };
+  const toggleCoursesDropdown = () => { 
+
+    setIsApplicationDropdownOpen(false);
+    setIsStudentDropdownOpen(false);
+    setIsAdminDropdownOpen(false);
+    setIsCoursesDropdownOpen((prev) => !prev);
+  };
+    const toggleAdminDropdown = () => { 
+
+    setIsApplicationDropdownOpen(false);
+    setIsCoursesDropdownOpen(false);
+    setIsStudentDropdownOpen(false);
+    setIsAdminDropdownOpen((prev) => !prev);
+  };
+
+  const toggleSocietyDropdown = () => setIsSocietyDropdownOpen((prev) => !prev);
+
+
+
+  const handleNavigateToPayment = () => {
+    navigate("/employeedb/payment-records", { state: { user: user } });
+  };
+
 
   // Handle logout confirmation
   const handleLogout = () => {
@@ -84,6 +132,38 @@ const EmployeeDashboard = () => {
                 {!isSidebarMinimized && <span>Profile</span>}
               </Link>
             </li>
+             {/* Conditionally Render Society Task */}
+             {user.role === "Society Officer" && (
+              <li>
+                <button
+                  className={`w-full px-4 py-2 flex items-center pl-4 justify-between hover:bg-gray-700 rounded-lg cursor-pointer ${
+                    isSidebarMinimized ? "justify-center" : ""
+                  }`}
+                  onClick={toggleSocietyDropdown}
+                >
+                  <div className="flex items-center space-x-3">
+                    {isSocietyDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
+                    {!isSidebarMinimized && <span>Society Task</span>}
+                  </div>
+                </button>
+                {isSocietyDropdownOpen && (
+                  <ul className="mt-2 space-y-2 pl-4">
+                        {/* Enroll - Use the handler here */}
+                    <li>
+                      <button
+                        onClick={handleNavigateToPayment} 
+                        className={`px-4 py-2  w-full flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer ${
+                          isSidebarMinimized ? "justify-center" : ""
+                        }`}
+                      >
+                        <FaClipboardList />
+                        {!isSidebarMinimized && <span>Payment Records</span>}
+                      </button>
+                    </li>
+                  </ul>
+                )}
+              </li>
+            )}
 
              {/* Conditionally render links based on user role */}
              {user.role == "Adviser" && (
@@ -100,76 +180,10 @@ const EmployeeDashboard = () => {
                 {!isSidebarMinimized && <span>Academic Records</span>}
               </Link>
             </li>
-                    {/* Manage Enrollment Section */}
-             <li>
-             <Link
-                to="manage-enrollment"
-                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaClipboardList />
-                {!isSidebarMinimized && <span>Manage Enrollment</span>}
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="manage-applications"
-                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaClipboardList />
-                {!isSidebarMinimized && <span>Manage Applications</span>}
-              </Link>
-            </li>
-            </>
-            )}
-            
-             {/* Conditionally render links based on user role */}
-             {user.role == "Register" && (
-              <>
-            
-            <hr className="my-6 border-t-2 border-gray-700" />
-            <li>
-              <Link
-                to="academic-records"
-                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaUser />
-                {!isSidebarMinimized && <span>Academic Records</span>}
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="student-informations"
-                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaUser />
-                {!isSidebarMinimized && <span>Student Records</span>}
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="employee-instructors"
-                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaUser />
-                {!isSidebarMinimized && <span>Manage Instructors</span>}
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="manage-accounts"
-                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaBook />
-                {!isSidebarMinimized && <span>Manage Accounts</span>}
-              </Link>
-            </li>
-            <li>
+            {isApplicationDropdownOpen && (
+                  <ul className="mt-2 space-y-2 pl-4">
+                        {/* Enroll - Use the handler here */}
+                        <li>
               <Link
                 to="manage-applications"
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
@@ -191,7 +205,127 @@ const EmployeeDashboard = () => {
                 {!isSidebarMinimized && <span>Manage Enrollment</span>}
               </Link>
             </li>
-             {/* Manage Enrollment Section */}
+                
+                  </ul>
+                )}
+            </>
+            )}
+            
+            
+             {/* Conditionally render links based on user role */}
+             {user.role == "Registrar" && (
+              <>
+            
+            <hr className="my-6 border-t-2 border-gray-700" />
+            <li>
+            
+                <button
+                  className={`w-full px-4 py-2 flex items-center pl-4 justify-between hover:bg-gray-700 rounded-lg cursor-pointer ${
+                    isSidebarMinimized ? "justify-center" : ""
+                  }`}
+                  onClick={toggleStudentDropdown}
+                >
+                  <div className="flex items-center space-x-3">
+                    {isStudentDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
+                    {!isSidebarMinimized && <span>Students</span>}
+                  </div>
+                </button>
+                {isStudentDropdownOpen && (
+                  <ul className="mt-2 space-y-2 pl-4">
+                        {/* Enroll - Use the handler here */}
+                    <li>
+              <Link
+                to="academic-records"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaUser />
+                {!isSidebarMinimized && <span>Academic Records</span>}
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="student-informations"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaUser />
+                {!isSidebarMinimized && <span>Student Informations</span>}
+              </Link>
+            </li>
+                  </ul>
+                )}
+              </li>
+              <li>
+            
+                <button
+                  className={`w-full px-4 py-2 flex items-center pl-4 justify-between hover:bg-gray-700 rounded-lg cursor-pointer ${
+                    isSidebarMinimized ? "justify-center" : ""
+                  }`}
+                  onClick={toggleApplicationDropdown}
+                >
+                  <div className="flex items-center space-x-3">
+                    {isApplicationDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
+                    {!isSidebarMinimized && <span>Enrollment & Applications</span>}
+                  </div>
+                </button>
+                {isApplicationDropdownOpen && (
+                  <ul className="mt-2 space-y-2 pl-4">
+                        {/* Enroll - Use the handler here */}
+                        <li>
+              <Link
+                to="manage-applications"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaClipboardList />
+                {!isSidebarMinimized && <span>Manage Applications</span>}
+              </Link>
+            </li>
+             
+            {/* Manage Enrollment Section */}
+            <li>
+              <Link
+                to="manage-enrollment"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaClipboardList />
+                {!isSidebarMinimized && <span>Manage Enrollment</span>}
+              </Link>
+            </li>
+                
+                  </ul>
+                )}
+              </li>
+              <li>
+            
+                <button
+                  className={`w-full px-4 py-2 flex items-center pl-4 justify-between hover:bg-gray-700 rounded-lg cursor-pointer ${
+                    isSidebarMinimized ? "justify-center" : ""
+                  }`}
+                  onClick={toggleCoursesDropdown}
+                >
+                  <div className="flex items-center space-x-3">
+                    {isCoursesDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
+                    {!isSidebarMinimized && <span>Manage Programs</span>}
+                  </div>
+                </button>
+                {isCoursesDropdownOpen && (
+                  <ul className="mt-2 space-y-2 pl-4">
+                             <li>
+              <Link
+                to="employee-instructors"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaUser />
+                {!isSidebarMinimized && <span>Manage Instructors</span>}
+              </Link>
+            </li>
+         
+        
+             {/* Manage Classes Section */}
              <li>
               <Link
                 to="manage-classes"
@@ -213,6 +347,179 @@ const EmployeeDashboard = () => {
                 {!isSidebarMinimized && <span>Manage Sections</span>}
               </Link>
             </li>
+                   
+                  </ul>
+                )}
+              </li>
+            </>
+            )}
+                {/* Conditionally render links based on user role */}
+                {user.role == "Admin" && (
+              <>
+            
+            <hr className="my-6 border-t-2 border-gray-700" />
+            <li>
+            
+                <button
+                  className={`w-full px-4 py-2 flex items-center pl-4 justify-between hover:bg-gray-700 rounded-lg cursor-pointer ${
+                    isSidebarMinimized ? "justify-center" : ""
+                  }`}
+                  onClick={toggleStudentDropdown}
+                >
+                  <div className="flex items-center space-x-3">
+                    {isStudentDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
+                    {!isSidebarMinimized && <span>Students</span>}
+                  </div>
+                </button>
+                {isStudentDropdownOpen && (
+                  <ul className="mt-2 space-y-2 pl-4">
+                        {/* Enroll - Use the handler here */}
+                    <li>
+              <Link
+                to="academic-records"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaUser />
+                {!isSidebarMinimized && <span>Academic Records</span>}
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="student-informations"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaUser />
+                {!isSidebarMinimized && <span>Student Informations</span>}
+              </Link>
+            </li>
+                  </ul>
+                )}
+              </li>
+              <li>
+            
+                <button
+                  className={`w-full px-4 py-2 flex items-center pl-4 justify-between hover:bg-gray-700 rounded-lg cursor-pointer ${
+                    isSidebarMinimized ? "justify-center" : ""
+                  }`}
+                  onClick={toggleApplicationDropdown}
+                >
+                  <div className="flex items-center space-x-3">
+                    {isApplicationDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
+                    {!isSidebarMinimized && <span>Enrollment & Applications</span>}
+                  </div>
+                </button>
+                {isApplicationDropdownOpen && (
+                  <ul className="mt-2 space-y-2 pl-4">
+                        {/* Enroll - Use the handler here */}
+                        <li>
+              <Link
+                to="manage-applications"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaClipboardList />
+                {!isSidebarMinimized && <span>Manage Applications</span>}
+              </Link>
+            </li>
+             
+            {/* Manage Enrollment Section */}
+            <li>
+              <Link
+                to="manage-enrollment"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaClipboardList />
+                {!isSidebarMinimized && <span>Manage Enrollment</span>}
+              </Link>
+            </li>
+                
+                  </ul>
+                )}
+              </li>
+              <li>
+            
+                <button
+                  className={`w-full px-4 py-2 flex items-center pl-4 justify-between hover:bg-gray-700 rounded-lg cursor-pointer ${
+                    isSidebarMinimized ? "justify-center" : ""
+                  }`}
+                  onClick={toggleCoursesDropdown}
+                >
+                  <div className="flex items-center space-x-3">
+                    {isCoursesDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
+                    {!isSidebarMinimized && <span>Manage Programs</span>}
+                  </div>
+                </button>
+                {isCoursesDropdownOpen && (
+                  <ul className="mt-2 space-y-2 pl-4">
+                             <li>
+              <Link
+                to="employee-instructors"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaUser />
+                {!isSidebarMinimized && <span>Manage Instructors</span>}
+              </Link>
+            </li>
+         
+        
+             {/* Manage Classes Section */}
+             <li>
+              <Link
+                to="manage-classes"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaClipboardList />
+                {!isSidebarMinimized && <span>Manage Classes</span>}
+              </Link>
+            </li>
+             {/* Manage Enrollment Section */}
+             <li>
+              <Link
+                to="manage-sections"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaClipboardList />
+                {!isSidebarMinimized && <span>Manage Sections</span>}
+              </Link>
+            </li>
+                   
+                  </ul>
+                )}
+              </li>
+              <li>
+                <button
+                  className={`w-full px-4 py-2 flex items-center pl-4 justify-between hover:bg-gray-700 rounded-lg cursor-pointer ${
+                    isSidebarMinimized ? "justify-center" : ""
+                  }`}
+                  onClick={toggleAdminDropdown}
+                >
+                  <div className="flex items-center space-x-3">
+                    {isAdminDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
+                    {!isSidebarMinimized && <span>Society Task</span>}
+                  </div>
+                </button>
+                {isAdminDropdownOpen && (
+                  <ul className="mt-2 space-y-2 pl-4">
+                          <li>
+              <Link
+                to="manage-accounts"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaBook />
+                {!isSidebarMinimized && <span>Manage Accounts</span>}
+              </Link>
+            </li>
+                
+                  </ul>
+                )}
+              </li>
             </>
             )}
 

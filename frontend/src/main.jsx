@@ -223,10 +223,7 @@ const router = createBrowserRouter([
         path: "enroll",
         element: <Enroll />, // Component to render when /studentdb/courses is visited
       }, 
-      {
-        path: "payment-records",
-        element: <SocietyPayment />, // Component to render when /studentdb/courses is visited
-      },
+  
       {
         path: "settings",
         element: <Settings />, // Component for /studentdb/settings
@@ -276,6 +273,10 @@ const router = createBrowserRouter([
       {
         path: "manage-sections",
         element: <ManageSections />, // Component to render when /studentdb/courses is visited
+      },
+      {
+        path: "payment-records",
+        element: <SocietyPayment />, // Component to render when /studentdb/courses is visited
       },
     ],
   },

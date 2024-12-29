@@ -6,10 +6,7 @@ import {
   FaUser,
   FaClipboardList,
   FaBook,
-  FaCog,
   FaSignOutAlt,
-  FaChevronDown,
-  FaChevronUp,
   FaAngleDoubleLeft,
   FaAngleDoubleRight,
 } from "react-icons/fa";
@@ -33,16 +30,13 @@ const StudentDashboard = () => {
   const handleNavigateToEnroll = () => {
     navigate("/studentdb/enroll", { state: { status: user.status } });
   };
-  const handleNavigateToPayment = () => {
-    navigate("/studentdb/payment-records", { state: { user: user } });
-  };
+
   const handleNavigateToChecklist = () => {
     navigate("/studentdb/checklist", { state: { user: user } });
   };
   
   
 
-  const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
 
   // Handle logout confirmation
   const handleLogout = () => setIsModalOpen(true);
@@ -130,54 +124,9 @@ const StudentDashboard = () => {
               </button>
             </li>
 
-            {/* Conditionally Render Society Task */}
-            {user.role !== "Student" && (
-              <li>
-                <button
-                  className={`w-full px-4 py-2 flex items-center pl-4 justify-between hover:bg-gray-700 rounded-lg cursor-pointer ${
-                    isSidebarMinimized ? "justify-center" : ""
-                  }`}
-                  onClick={toggleDropdown}
-                >
-                  <div className="flex items-center space-x-3">
-                    {isDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
-                    {!isSidebarMinimized && <span>Society Task</span>}
-                  </div>
-                </button>
-                {isDropdownOpen && (
-                  <ul className="mt-2 space-y-2 pl-4">
-                        {/* Enroll - Use the handler here */}
-                    <li>
-                      <button
-                        onClick={handleNavigateToPayment} 
-                        className={`px-4 py-2  w-full flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer ${
-                          isSidebarMinimized ? "justify-center" : ""
-                        }`}
-                      >
-                        <FaClipboardList />
-                        {!isSidebarMinimized && <span>Payment Records</span>}
-                      </button>
-                    </li>
-                  </ul>
-                )}
-              </li>
-            )}
+           
 
             <hr className="border-gray-600 my-4" />
-
-            {/* Settings */}
-            <li>
-              <Link
-                to="settings"
-                className={`px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer ${
-                  isSidebarMinimized ? "justify-center" : ""
-                }`}
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaCog />
-                {!isSidebarMinimized && <span>Settings</span>}
-              </Link>
-            </li>
 
             {/* Logout */}
             <li>

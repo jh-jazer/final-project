@@ -25,10 +25,15 @@ console.log('GMAIL_PASS:', process.env.GMAIL_PASS ? '*****' : 'Not Set');
 const app = express();
 const port = process.env.PORT || 5005;
 
-// Get the certificate path from environment variables or fallback to a default path
+const fs = require('fs');
+const path = require('path');
+
+const fs = require('fs');
+const path = require('path');
+
+// Ensure the path is correctly set for the certificate
 const certificatePath = process.env.CERT_PATH || path.join(__dirname, 'certs', 'certificate.pem');
 
-// Log the certificate path for debugging
 console.log('Certificate Path:', certificatePath);
 
 try {
@@ -38,6 +43,7 @@ try {
   console.error('Error loading certificate:', err.message);
   process.exit(1); // Exit if certificate loading fails
 }
+
 
 // Middleware
 app.use(cors());

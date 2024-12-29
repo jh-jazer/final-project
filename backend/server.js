@@ -26,9 +26,11 @@ const app = express();
 const port = process.env.PORT || 5005;
 
 
-// Ensure the path is correctly set for the certificate
-const certificatePath = process.env.CERT_PATH || path.join(__dirname, 'certs', 'certificate.pem');
+const certsDir = path.join(__dirname, 'certs');
+console.log('Certs directory:', certsDir);
+console.log('Certs files:', fs.readdirSync(certsDir)); // Log files in the certs directory
 
+const certificatePath = process.env.CERT_PATH || path.join(certsDir, 'certificate.pem');
 console.log('Certificate Path:', certificatePath);
 
 try {
@@ -36,8 +38,9 @@ try {
   console.log('SSL Certificate Loaded!');
 } catch (err) {
   console.error('Error loading certificate:', err.message);
-  process.exit(1); // Exit if certificate loading fails
+  process.exit(1);
 }
+
 
 
 // Middleware

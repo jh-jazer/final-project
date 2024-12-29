@@ -270,8 +270,7 @@ const db = mysql.createPool({
   database: 'enrollmentsystem',
   port: 4000,
   ssl: {
-    ca: process.env.DB_CERT // Path to the certificate
-  }
+    rejectUnauthorized: false  }
 });
 
 const testDatabaseConnection = async () => {

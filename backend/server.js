@@ -267,7 +267,7 @@ const db = mysql.createPool({
   host: 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com',
   user: '3n4es3nK7WN2Li9.root',
   password: 'EftaeZlyZ4F96UoG',
-  database: 'enrollmentsystem',
+  database: 'enrollment_system',
   port: 4000,
   ssl: {
     rejectUnauthorized: false  }

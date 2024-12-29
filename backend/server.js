@@ -25,6 +25,20 @@ console.log('GMAIL_PASS:', process.env.GMAIL_PASS ? '*****' : 'Not Set');
 const app = express();
 const port = process.env.PORT || 5005;
 
+// Get the certificate path from environment variables or fallback to a default path
+const certificatePath = process.env.CERT_PATH || path.join(__dirname, 'certs', 'certificate.pem');
+
+// Log the certificate path for debugging
+console.log('Certificate Path:', certificatePath);
+
+try {
+  const sslCertificate = fs.readFileSync(certificatePath);
+  console.log('SSL Certificate Loaded!');
+} catch (err) {
+  console.error('Error loading certificate:', err.message);
+  process.exit(1); // Exit if certificate loading fails
+}
+
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());

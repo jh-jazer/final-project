@@ -309,7 +309,7 @@ app.post('/login', async (req, res) => {
     const user = results[0];
     console.log('User fetched:', user);
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, user.login_password);
     if (isMatch) {
       return res.status(200).json({ message: 'Login successful' });
     } else {

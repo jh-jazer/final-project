@@ -25,9 +25,6 @@ console.log('GMAIL_PASS:', process.env.GMAIL_PASS ? '*****' : 'Not Set');
 const app = express();
 const port = process.env.PORT || 5005;
 
-const fs = require('fs');
-const path = require('path');
-
 
 // Ensure the path is correctly set for the certificate
 const certificatePath = process.env.CERT_PATH || path.join(__dirname, 'certs', 'certificate.pem');

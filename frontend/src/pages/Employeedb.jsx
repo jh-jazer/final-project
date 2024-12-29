@@ -22,7 +22,7 @@ const EmployeeDashboard = () => {
 
   const user = {
     name: "Admin Doe",
-    role: "Adviser", // Employee type (Role/Position)
+    role: "Admin", // Employee type (Role/Position)
     avatar: "https://via.placeholder.com/100",
   };
 

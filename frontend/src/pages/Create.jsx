@@ -20,12 +20,18 @@ const Create = () => {
   } = useAppContext();
 
   const location = useLocation();
+  const [loading, setLoading] = useState(false);
+
+
+
   const { userData } = location.state || {};
 
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const toggleDropdown = () => {
     setDropdownVisible((prevState) => !prevState);
   };
+
+  
   
   const [errorMessage, setErrorMessage] = useState("");
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
@@ -152,6 +158,10 @@ const Create = () => {
   
  
   const handleSubmit = async () => {
+    setLoading(true); // Start loading
+    // your code logic for handle submit
+    setLoading(false); // End loading
+
     if (["shs", "grade12"].includes(applicantType) && !["stem", "ict"].includes(strand)) {
       setErrorMessage("You must be a STEM or ICT student to choose the selected program.");
       return;
@@ -219,7 +229,7 @@ const Create = () => {
 
                   {/* Dropdown Menu */}
                   {dropdownVisible && (
-              <div className="absolute left-0 top-full mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-20">
+              <div className="profile-dropdown absolute  left-0 top-full mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-20">
                 <ul className="py-1">
                   <li>
                     <button
@@ -395,15 +405,15 @@ const Create = () => {
         {/* Submit Button */}
        
           <div className="mt-6">
-            <button
-            
-              type="button"
-              disabled={isButtonDisabled}
-              onClick={() => handleSubmit('/createapplication')}
-              className="w-full py-2 bg-[#C61A01] text-white font-bold rounded-lg  disabled:bg-gray-400"
-            >
-              Continue to Details
-            </button>
+          <button
+            type="button"
+            disabled={isButtonDisabled || loading}
+            onClick={handleSubmit}
+            className="w-full py-2 bg-[#C61A01] text-white font-bold rounded-lg disabled:bg-gray-400"
+          >
+            {loading ? 'Submitting...' : 'Continue to Details'}
+          </button>
+
           </div>
       
       </div>

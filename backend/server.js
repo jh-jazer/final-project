@@ -30,7 +30,7 @@ const certsDir = path.join(__dirname, 'certs');
 console.log('Certs directory:', certsDir);
 console.log('Certs files:', fs.readdirSync(certsDir)); // Log files in the certs directory
 
-const certificatePath = process.env.CERT_PATH || path.join(certsDir, 'certificate.pem');
+const certificatePath = process.env.CERT_PATH || path.join(__dirname, 'certs', 'certificate.pem');
 console.log('Certificate Path:', certificatePath);
 
 try {

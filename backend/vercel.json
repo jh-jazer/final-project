@@ -10,9 +10,6 @@
         "use": "@vercel/static"
       }
     ],
-    "files": [
-      "certs/**/*"
-    ],
     "routes": [
       {
         "src": "/(.*)",

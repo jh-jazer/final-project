@@ -6,6 +6,7 @@ import nodemailer from 'nodemailer';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
+import fs from 'fs';
 
 dotenv.config();
 
@@ -24,10 +25,10 @@ const db = mysql.createPool({
   host: 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com',
   user: '3n4es3nK7WN2Li9.root',
   password: 'EftaeZlyZ4F96UoG',
-  database: 'enrollmentsystem',
+  database: 'enrollment_system',
   port: 4000,
   ssl: {
-    ca: process.env.DB_CERT // Path to the certificate
+    ca: fs.readFileSync(process.env.DB_CERT) // Path to the certificate
   }
 });
 
@@ -67,7 +68,7 @@ app.post('/login', async (req, res) => {
     const user = results[0];
     console.log('User fetched:', user);
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, user.login_password);
     if (isMatch) {
       return res.status(200).json({ message: 'Login successful' });
     } else {

@@ -39,8 +39,7 @@ const db = mysql.createPool({
   database: 'enrollment_system',
   port: 4000,
   ssl: {
-    ca: fs.readFileSync(process.env.DB_CERT) // Path to the certificate
-  }
+    ca: fs.readFileSync(process.env.DB_CERT || path.join(__dirname, 'certs', 'certificate.pem'))  }
 });
 
 // Test Database Connection

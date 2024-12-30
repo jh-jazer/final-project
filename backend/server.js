@@ -7,6 +7,7 @@ import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import fs from 'fs';
+import path from 'path';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // MySQL Connection Pool
+const certificatePath = path.resolve(__dirname, 'certificate.pem');  // Ensure the certificate file is beside server.js
 const db = mysql.createPool({
   host: 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com',
   user: '3n4es3nK7WN2Li9.root',
@@ -25,17 +27,17 @@ const db = mysql.createPool({
   database: 'enrollment_system',
   port: 4000,
   ssl: {
-    ca: fs.readFileSync(process.env.DB_CERT), // Path to the certificate
+    ca: fs.readFileSync(certificatePath),  // Use the relative path for the certificate
   },
 });
 
 const testDatabaseConnection = async () => {
   try {
     const connection = await db.getConnection();
-    console.log('Connected to tiDB!');
+    console.log('Connected to TiDB!');
   } catch (error) {
     console.error('Database connection failed:', error.stack);
-    process.exit(1); // Exit if connection fails
+    process.exit(1);
   }
 };
 

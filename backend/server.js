@@ -112,7 +112,7 @@ app.post('/forgot-password', async (req, res) => {
       if (mailErr) {
         return res.status(500).json({ message: 'Failed to send email' });
       }
-      res.status(200).json({ message: 'Password reset link has been sent to your email' });
+      res.status(200).json({ message: 'The Password reset link has been sent to your email' });
     });
   } catch (err) {
     console.error('Error handling forgot password:', err);

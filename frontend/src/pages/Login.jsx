@@ -37,6 +37,8 @@ const Login = () => {
           setErrorMessage('Please fill in both login ID and password fields');
         } else if (error.response.status === 401) {
           setErrorMessage('Invalid login ID or password');
+        } else if (error.response.status === 500) {
+          setErrorMessage('Server error. Please try again later.');
         } else {
           setErrorMessage('An error occurred. Please try again.');
         }

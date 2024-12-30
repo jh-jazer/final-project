@@ -8,7 +8,9 @@ import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
+// Initialize dotenv to load environment variables
 dotenv.config();
 
 const app = express();
@@ -19,10 +21,17 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Get the directory of the current module using import.meta.url
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Path to the certificate
-const certificatePath = path.resolve(__dirname, 'certificate.pem');
+const certificatePath = path.join(__dirname, 'certificate.pem');
+
+// Check if the certificate file exists
+if (fs.existsSync(certificatePath)) {
+  console.log('Certificate file exists.');
+} else {
+  console.error('Certificate file does not exist at the given path:', certificatePath);
+}
 
 // MySQL Connection Pool
 const db = mysql.createPool({
@@ -32,10 +41,11 @@ const db = mysql.createPool({
   database: 'enrollment_system',
   port: 4000,
   ssl: {
-    ca: fs.readFileSync(certificatePath),  // Use the relative path for the certificate
+    ca: fs.readFileSync(certificatePath),  // Use the correct path for the certificate
   },
 });
 
+// Test the database connection
 const testDatabaseConnection = async () => {
   try {
     const connection = await db.getConnection();
@@ -48,7 +58,84 @@ const testDatabaseConnection = async () => {
 
 testDatabaseConnection();
 
-// Nodemailer Transporter
+// Employee Routes
+// Get all employees
+app.get('/api/employees', async (req, res) => {
+  try {
+    const [employees] = await db.query('SELECT * FROM employees');
+    res.status(200).json(employees);
+  } catch (err) {
+    console.error('Error fetching employees:', err);
+    res.status(500).json({ message: 'Error fetching employees' });
+  }
+});
+
+// Add a new employee
+app.post('/api/employees', async (req, res) => {
+  const { full_name, role, email, phone_number, address, dob, emergency_contact, status } = req.body;
+  
+  if (!full_name || !role || !email) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
+
+  try {
+    const [result] = await db.query(
+      'INSERT INTO employees (full_name, role, email, phone_number, address, dob, emergency_contact, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [full_name, role, email, phone_number, address, dob, emergency_contact, status]
+    );
+    res.status(201).json({ id: result.insertId, full_name, role, email });
+  } catch (err) {
+    console.error('Error adding employee:', err);
+    res.status(500).json({ message: 'Error adding employee' });
+  }
+});
+
+// Update an employee's details
+app.put('/api/employees/:id', async (req, res) => {
+  const { id } = req.params;
+  const { full_name, role, email, phone_number, address, dob, emergency_contact, status } = req.body;
+
+  if (!full_name || !role || !email) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
+
+  try {
+    const [result] = await db.query(
+      'UPDATE employees SET full_name = ?, role = ?, email = ?, phone_number = ?, address = ?, dob = ?, emergency_contact = ?, status = ? WHERE id = ?',
+      [full_name, role, email, phone_number, address, dob, emergency_contact, status, id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    res.status(200).json({ message: 'Employee updated successfully' });
+  } catch (err) {
+    console.error('Error updating employee:', err);
+    res.status(500).json({ message: 'Error updating employee' });
+  }
+});
+
+// Delete an employee
+app.delete('/api/employees/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const [result] = await db.query('DELETE FROM employees WHERE id = ?', [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    res.status(200).json({ message: 'Employee deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting employee:', err);
+    res.status(500).json({ message: 'Error deleting employee' });
+  }
+});
+
+
+// Nodemailer Transporter setup
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 587,
@@ -61,6 +148,42 @@ const transporter = nodemailer.createTransport({
   debug: true,
 });
 
+app.get("/", (_, res) => {
+	res.json("good mourning.");
+});
+
+app.post('/login', async (req, res) => {
+  const { login_id, password } = req.body;
+
+  if (!login_id || !password) {
+    return res.status(400).json({ message: 'Missing login ID or password' });
+  }
+
+  try {
+    const [results] = await db.query('SELECT * FROM login WHERE login_id = ?', [login_id.trim()]);
+    if (results.length === 0) {
+      console.log('No user found for login ID:', login_id);
+      return res.status(401).json({ message: 'Invalid login credentials' });  // General message for security
+    }
+
+    const user = results[0];
+    console.log('User fetched:', user);
+
+    const isMatch = await bcrypt.compare(password, user.login_password);
+    if (isMatch) {
+      // Optionally, generate a session or JWT token here
+      return res.status(200).json({ message: 'Login successful' });
+    } else {
+      return res.status(401).json({ message: 'Invalid login credentials' }); // General message for security
+    }
+  } catch (err) {
+    console.error('Error during login:', err.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
+// Verify the email server is ready to send emails
 const verifyEmailServer = async () => {
   try {
     await transporter.verify();
@@ -167,5 +290,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server running at cvsu-system-backend.vercel.app`);
+  console.log(`Server running at https://cvsu-backend-system.vercel.app/login`);
 });

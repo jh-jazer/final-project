@@ -6,12 +6,9 @@ import nodemailer from 'nodemailer';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
-import fs from "fs";
+import fs from 'fs';
 
 dotenv.config();
-
-console.log('GMAIL_USER:', process.env.GMAIL_USER);
-console.log('GMAIL_PASS:', process.env.GMAIL_PASS ? '*****' : 'Not Set');
 
 const app = express();
 const port = process.env.PORT || 5005;
@@ -28,13 +25,13 @@ const db = mysql.createPool({
   database: 'enrollment_system',
   port: 4000,
   ssl: {
-    ca: process.env.DB_CERT // Path to the certificate
-  }
+    ca: fs.readFileSync(process.env.DB_CERT), // Path to the certificate
+  },
 });
 
 const testDatabaseConnection = async () => {
   try {
-    const connection = await db.getConnection(); // Test database connection
+    const connection = await db.getConnection();
     console.log('Connected to tiDB!');
   } catch (error) {
     console.error('Database connection failed:', error.stack);
@@ -44,49 +41,7 @@ const testDatabaseConnection = async () => {
 
 testDatabaseConnection();
 
-
-
-
-
-
-
-// ----------------------------------- Login Route
-app.post('/login', async (req, res) => {
-  const { login_id, password } = req.body;
-
-  if (!login_id || !password) {
-    return res.status(400).json({ message: 'Missing login ID or password' });
-  }
-
-  try {
-    const [results] = await db.query('SELECT * FROM login WHERE login_id = ?', [login_id.trim()]);
-    if (results.length === 0) {
-      console.log('No user found for login ID:', login_id);
-      return res.status(401).json({ message: 'Invalid login ID or password' });
-    }
-
-    const user = results[0];
-    console.log('User fetched:', user);
-
-    const isMatch = await bcrypt.compare(password, user.login_password);
-    if (isMatch) {
-      return res.status(200).json({ message: 'Login successful' });
-    } else {
-      return res.status(401).json({ message: 'Invalid login ID or password' });
-    }
-  } catch (err) {
-    console.error('Error during login:', err.message);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
-
-
-
-
-
-
-// ----------------------------------- Nodemailer Transporter
+// Nodemailer Transporter
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 587,
@@ -99,19 +54,18 @@ const transporter = nodemailer.createTransport({
   debug: true,
 });
 
-try {
-  await transporter.verify();
-  console.log('SMTP Server is ready to send emails.');
-} catch (error) {
-  console.error('Email server verification failed:', error);
-}
+const verifyEmailServer = async () => {
+  try {
+    await transporter.verify();
+    console.log('SMTP Server is ready to send emails.');
+  } catch (error) {
+    console.error('Email server verification failed:', error);
+  }
+};
 
+verifyEmailServer();
 
-
-
-
-
-// ----------------------------------- Forgot Password Route
+// Forgot Password Route
 app.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
 
@@ -135,7 +89,6 @@ app.post('/forgot-password', async (req, res) => {
     );
 
     const resetUrl = `https://cvsu-bacoor-system.vercel.app/resetpassword?token=${resetToken}`;
-    console.log(`Generated Reset URL: ${resetUrl}`);
     const mailOptions = {
       from: process.env.GMAIL_USER,
       to: email,
@@ -150,10 +103,8 @@ app.post('/forgot-password', async (req, res) => {
 
     transporter.sendMail(mailOptions, (mailErr, info) => {
       if (mailErr) {
-        console.error('Nodemailer Error:', mailErr);
         return res.status(500).json({ message: 'Failed to send email' });
       }
-      console.log('Email sent successfully:', info.response);
       res.status(200).json({ message: 'Password reset link has been sent to your email' });
     });
   } catch (err) {
@@ -162,12 +113,7 @@ app.post('/forgot-password', async (req, res) => {
   }
 });
 
-
-
-
-
-
-// ----------------------------------- Reset Password Route
+// Reset Password Route
 app.post('/resetpassword', async (req, res) => {
   const { token, newPassword } = req.body;
 
@@ -185,35 +131,34 @@ app.post('/resetpassword', async (req, res) => {
       return res.status(400).json({ message: 'Invalid or expired token' });
     }
 
-    const user = results.find((u) => bcrypt.compareSync(token, u.reset_token));
+    const user = await Promise.all(
+      results.map(async (u) => {
+        const isTokenValid = await bcrypt.compare(token, u.reset_token);
+        return isTokenValid ? u : null;
+      })
+    ).then((users) => users.filter(Boolean))[0];
+
     if (!user) {
       return res.status(400).json({ message: 'Invalid or expired token' });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    const [updateResult] = await db.query(
+    await db.query(
       'UPDATE login SET password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE email = ?',
       [hashedPassword, user.email]
     );
 
-    if (updateResult.affectedRows === 0) {
-      return res.status(500).json({ message: 'Failed to update password' });
-    }
-
     res.status(200).json({ message: 'Password reset successful' });
   } catch (err) {
-    console.error('Error resetting password:', err.message);
+    console.error('Error resetting password:', err);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
-
 
 app.get('/', (req, res) => {
   res.send('Welcome to the API!');
 });
 
-
-// ----------------------------------- Start Server
 app.listen(port, () => {
   console.log(`Server running at cvsu-system-backend.vercel.app`);
 });

@@ -18,8 +18,13 @@ const port = process.env.PORT || 5005;
 app.use(cors());
 app.use(bodyParser.json());
 
+// Get the directory of the current module using import.meta.url
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
+// Path to the certificate
+const certificatePath = path.resolve(__dirname, 'certificate.pem');
+
 // MySQL Connection Pool
-const certificatePath = path.resolve(__dirname, 'certificate.pem');  // Ensure the certificate file is beside server.js
 const db = mysql.createPool({
   host: 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com',
   user: '3n4es3nK7WN2Li9.root',

@@ -36,8 +36,6 @@ const EmployeeAccountManagement = () => {
     emergency_contact: '',
     status: '',
     password: '',
-    confirmPassword: '', // Add confirmPassword here
-
   });
   const [isEditing, setIsEditing] = useState(false);
 
@@ -45,25 +43,10 @@ const EmployeeAccountManagement = () => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-  
 
   const closeModal = () => {
-    setFormData({
-      employee_id: '',
-      full_name: '',
-      role: '',
-      email: '',
-      phone_number: '',
-      address: '',
-      dob: '',
-      emergency_contact: '',
-      status: '',
-      password: '',
-      confirmPassword: '', // Reset the confirm password field
-    });
     setModalOpen(false);
   };
-  
 
   // Fetch employees when the component mounts
   useEffect(() => {
@@ -106,14 +89,9 @@ const EmployeeAccountManagement = () => {
     }
     setModalOpen(true); // Open the modal
   };
+  
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-  
-    // Check if the passwords match
-    if (formData.password !== formData.confirmPassword) {
-      setStatusMessage('Passwords do not match');
-      return;
-    }
   
     // If a password is provided, hash it; if not, skip hashing
     const hashedPassword = formData.password
@@ -367,42 +345,22 @@ const EmployeeAccountManagement = () => {
                   <option value="Active">Active</option>
                 </select>
                 <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'} // Toggle between text and password input
-                  placeholder="Password"
-                  className="w-full px-4 py-2 mb-2 border"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  required={!isEditing} // Password required only for new employees
-                />
-                <button
-                  type="button"
-                  onClick={togglePasswordVisibility}
-                  className="absolute right-3 top-3 text-gray-500"
-                >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />} {/* Show/hide icon */}
-                </button>
-
-              </div>
-              <div className="relative">
-              <input
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Confirm Password"
-                  className="w-full px-4 py-2 mb-2 border"
-                  value={formData.confirmPassword}
-                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                  required={!isEditing} // Confirm password required only for new employees
-                />
-                <button
-                  type="button"
-                  onClick={togglePasswordVisibility}
-                  className="absolute right-3 top-3 text-gray-500"
-                >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />} {/* Show/hide icon */}
-                </button>
-
-              </div>
-                             
+        <input
+          type={showPassword ? 'text' : 'password'} // Toggle between text and password input
+          placeholder="Password"
+          className="w-full px-4 py-2 mb-2 border"
+          value={formData.password}
+          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+          required={!isEditing} // Password required only for new employees
+        />
+        <button
+          type="button"
+          onClick={togglePasswordVisibility}
+          className="absolute right-3 top-3 text-gray-500"
+        >
+          {showPassword ? <FaEyeSlash /> : <FaEye />} {/* Show/hide icon */}
+        </button>
+      </div>
                 <div className="flex justify-between mt-4">
                   <button
                     type="button"

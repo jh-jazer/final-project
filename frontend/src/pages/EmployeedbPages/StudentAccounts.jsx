@@ -52,7 +52,7 @@ const EmployeeAccountManagement = () => {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const result = await apiRequest('http://localhost:5005/api/employees', 'GET');
+        const result = await apiRequest('https://cvsu-backend-system.vercel.app/api/employees', 'GET');
         setEmployees(result);
       } catch (error) {
         setStatusMessage('Failed to fetch employee data.');
@@ -111,8 +111,8 @@ const EmployeeAccountManagement = () => {
     payload.dob = formattedDob;
   
     const url = isEditing
-      ? `http://localhost:5005/api/employees/${formData.employee_id}` // Use employee ID for update
-      : 'http://localhost:5005/api/employees'; // Use POST for new employees
+      ? `https://cvsu-backend-system.vercel.app/api/employees/${formData.employee_id}` // Use employee ID for update
+      : 'https://cvsu-backend-system.vercel.app/api/employees'; // Use POST for new employees
     const method = isEditing ? 'PUT' : 'POST'; // Use PUT for updates, POST for new employee
   
     try {
@@ -139,7 +139,7 @@ const EmployeeAccountManagement = () => {
   const handleDelete = async (employee_id) => {
     if (window.confirm('Are you sure you want to delete this employee?')) {
       try {
-        await apiRequest(`http://localhost:5005/api/employees/${employee_id}`, 'DELETE');
+        await apiRequest(`https://cvsu-backend-system.vercel.app/api/employees/${employee_id}`, 'DELETE');
         setStatusMessage('Employee deleted successfully');
   
         // Update the employees state locally
@@ -156,7 +156,7 @@ const EmployeeAccountManagement = () => {
     const updatedStatus = employee.status === 'Active' ? 'Inactive' : 'Active';
     try {
       await apiRequest(
-        `http://localhost:5005/api/employees/${employee.employee_id}`,
+        `https://cvsu-backend-system.vercel.app/api/employees${employee.employee_id}`,
         'PUT',
         { ...employee, status: updatedStatus }
       );

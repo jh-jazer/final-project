@@ -158,10 +158,17 @@ app.get('/api/students', async (req, res) => {
 
 // Add a new Student
 app.post('/api/students', async (req, res) => {
-  const { student_id, full_name, student_type, program, email, phone_number,  dob, emergency_contact, status, password } = req.body;
+  const { student_id, full_name, student_type, program, email, phone_number, dob, emergency_contact, status, password } = req.body;
   
-  if (!full_name || !student_type || !program) {
-    return res.status(400).json({ message: 'Missing required fields' });
+  // Check for required fields
+  if (!full_name || !student_type || !program || !email) {
+    return res.status(400).json({ message: 'Missing required fields: full_name, student_type, program, and email are required.' });
+  }
+
+  // Optional validation for email format (basic example)
+  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ message: 'Invalid email format.' });
   }
 
   try {
@@ -169,12 +176,18 @@ app.post('/api/students', async (req, res) => {
       'INSERT INTO students (student_id, full_name, student_type, program, email, phone_number, dob, emergency_contact, status, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       [student_id, full_name, student_type, program, email, phone_number, dob, emergency_contact, status, password]
     );
+
+    if (result.affectedRows === 0) {
+      return res.status(500).json({ message: 'Failed to insert student into the database.' });
+    }
+
     res.status(201).json({ student_id: result.insertId, full_name, student_type, program });
   } catch (err) {
     console.error('Error adding student:', err);
-    res.status(500).json({ message: 'Error adding Student' });
+    res.status(500).json({ message: `Error adding student: ${err.message}` });
   }
 });
+
 
 // Update a student's details
 app.put('/api/students/:student_id', async (req, res) => {

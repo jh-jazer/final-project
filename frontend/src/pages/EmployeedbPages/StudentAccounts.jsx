@@ -197,11 +197,11 @@ const StudentAccountManagement = () => {
             className="px-4 py-2 bg-blue-500 text-white rounded-md"
             onClick={() => openModal()}
           >
-            Add New student
+            Add New Student
           </button>
           <input
             type="text"
-            placeholder="Search by name or ID"
+            placeholder="Search by Name or ID"
             className="px-4 py-2 border rounded-md"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -281,7 +281,7 @@ const StudentAccountManagement = () => {
               <form onSubmit={handleFormSubmit}>
                 <input
                   type="text"
-                  placeholder="student ID"
+                  placeholder="Student ID"
                   className="w-full px-4 py-2 mb-2 border"
                   value={formData.student_id}
                   onChange={(e) => setFormData({ ...formData, student_id: e.target.value })}

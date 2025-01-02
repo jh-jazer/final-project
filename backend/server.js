@@ -158,32 +158,32 @@ app.get('/api/students', async (req, res) => {
 
 // Add a new Student
 app.post('/api/students', async (req, res) => {
-  const { student_id, full_name, role, email, phone_number, address, dob, emergency_contact, status, password } = req.body;
+  const { student_id, full_name, student_type, program, email, phone_number,  dob, emergency_contact, status, password } = req.body;
   
-  if (!full_name || !role || !email) {
+  if (!full_name || !student_type || !program) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
 
   try {
     const [result] = await db.query(
-      'INSERT INTO students (student_id, full_name, role, email, phone_number, address, dob, emergency_contact, status, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [student_id, full_name, role, email, phone_number, address, dob, emergency_contact, status, password]
+      'INSERT INTO students (student_id, full_name, student_type, program, email, phone_number, dob, emergency_contact, status, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [student_id, full_name, student_type, program, email, phone_number, dob, emergency_contact, status, password]
     );
-    res.status(201).json({ student_id: result.insertId, full_name, role, email });
+    res.status(201).json({ student_id: result.insertId, full_name, student_type, program });
   } catch (err) {
     console.error('Error adding student:', err);
     res.status(500).json({ message: 'Error adding Student' });
   }
 });
 
-// Update an student's details
+// Update a student's details
 app.put('/api/students/:student_id', async (req, res) => {
   const { student_id } = req.params;
-  const { full_name, role, email, phone_number, address, dob, emergency_contact, status } = req.body;
+  const { full_name, student_type, program, email, phone_number, dob, emergency_contact, status } = req.body;
 
   // Basic field validation
-  if (!full_name || !role || !email) {
-    return res.status(400).json({ message: 'Missing required fields: full_name, role, and email are required.' });
+  if (!full_name || !student_type || !email) {
+    return res.status(400).json({ message: 'Missing required fields: full_name, student_type, and email are required.' });
   }
 
   // Optional validation for email format (basic example, improve as needed)
@@ -195,8 +195,8 @@ app.put('/api/students/:student_id', async (req, res) => {
   try {
     // Update student details in the database
     const [result] = await db.query(
-      'UPDATE students SET full_name = ?, role = ?, email = ?, phone_number = ?, address = ?, dob = ?, emergency_contact = ?, status = ? WHERE student_id = ?',
-      [full_name, role, email, phone_number, address, dob, emergency_contact, status, student_id]
+      'UPDATE students SET full_name = ?, student_type = ?, program = ?, email = ?,  phone_number = ?, dob = ?, emergency_contact = ?, status = ? WHERE student_id = ?',
+      [full_name, student_type, program, email, phone_number,  dob, emergency_contact, status, student_id]
     );
 
     // Check if the student exists and was updated

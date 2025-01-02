@@ -29,10 +29,10 @@ const StudentAccountManagement = () => {
   const [formData, setFormData] = useState({
     student_id: '',
     full_name: '',
-    role: '',
+    student_type: '',
+    program: '',
     email: '',
     phone_number: '',
-    address: '',
     dob: '',
     emergency_contact: '',
     status: '',
@@ -87,10 +87,10 @@ const StudentAccountManagement = () => {
       setFormData({
         student_id: '',
         full_name: '',
-        role: '',
+        student_type: '',
+        program: '',
         email: '',
         phone_number: '',
-        address: '',
         dob: '',
         emergency_contact: '',
         status: '',
@@ -228,8 +228,8 @@ const StudentAccountManagement = () => {
             <tr>
               <th className="px-4 py-2 text-left">ID</th>
               <th className="px-4 py-2 text-left">Full Name</th>
-              <th className="px-4 py-2 text-left">Role</th>
-              <th className="px-4 py-2 text-left">Email</th>
+              <th className="px-4 py-2 text-left">Student Type</th>
+              <th className="px-4 py-2 text-left">Program</th>
               <th className="px-4 py-2 text-left">Phone</th>
               <th className="px-4 py-2 text-left">Status</th>
               <th className="px-4 py-2 text-left">Actions</th>
@@ -241,8 +241,8 @@ const StudentAccountManagement = () => {
                 <tr key={student.student_id} className="border-b hover:bg-gray-100">
                   <td className="px-4 py-2">{student.student_id}</td>
                   <td className="px-4 py-2">{student.full_name}</td>
-                  <td className="px-4 py-2">{student.role}</td>
-                  <td className="px-4 py-2">{student.email}</td>
+                  <td className="px-4 py-2">{student.student_type}</td>
+                  <td className="px-4 py-2">{student.program}</td>
                   <td className="px-4 py-2">{student.phone_number}</td>
                   <td className="px-4 py-2">{student.status}</td>
                   <td className="px-4 py-2">
@@ -297,19 +297,29 @@ const StudentAccountManagement = () => {
                 />
                 <select
                   className="w-full px-4 py-2 mb-2 border"
-                  value={formData.role}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                  value={formData.student_type}
+                  onChange={(e) => setFormData({ ...formData, student_type: e.target.value })}
                   required
                 >
-                  <option value="">Select Role</option>
-                  <option value="Admin">Admin</option>
-                  <option value="Registrar">Registrar</option>
-                  <option value="Society Officer">Society Officer</option>
-                  <option value="Adviser">Adviser</option>
+                  <option value="">Select Student Type</option>
+                  <option value="Regular">Regular</option>
+                  <option value="Irregular">Irregular</option>
+                
+                </select>
+                <select
+                  className="w-full px-4 py-2 mb-2 border"
+                  value={formData.program}
+                  onChange={(e) => setFormData({ ...formData, program: e.target.value })}
+                  required
+                >
+                  <option value="">Select Student Program </option>
+                  <option value="BSCS">BSCS</option>
+                  <option value="BSIT">BSIT</option>
+                
                 </select>
                 <input
                   type="email"
-                  placeholder="Email"
+                  placeholder="email"
                   className="w-full px-4 py-2 mb-2 border"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -323,14 +333,7 @@ const StudentAccountManagement = () => {
                   onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
                   required
                 />
-                <input
-                  type="text"
-                  placeholder="Address"
-                  className="w-full px-4 py-2 mb-2 border"
-                  value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  required
-                />
+                
                 <input
                   type="date"
                   className="w-full px-4 py-2 mb-2 border"

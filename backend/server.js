@@ -72,7 +72,7 @@ app.get('/api/employees', async (req, res) => {
 
 // Add a new employee
 app.post('/api/employees', async (req, res) => {
-  const { full_name, role, email, phone_number, address, dob, emergency_contact, status } = req.body;
+  const { employee_id, full_name, role, email, phone_number, address, dob, emergency_contact, status, password } = req.body;
   
   if (!full_name || !role || !email) {
     return res.status(400).json({ message: 'Missing required fields' });
@@ -80,10 +80,10 @@ app.post('/api/employees', async (req, res) => {
 
   try {
     const [result] = await db.query(
-      'INSERT INTO employees (full_name, role, email, phone_number, address, dob, emergency_contact, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [full_name, role, email, phone_number, address, dob, emergency_contact, status]
+      'INSERT INTO employees (employee_id, full_name, role, email, phone_number, address, dob, emergency_contact, status, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [employee_id, full_name, role, email, phone_number, address, dob, emergency_contact, status, password]
     );
-    res.status(201).json({ id: result.insertId, full_name, role, email });
+    res.status(201).json({ employee_id: result.insertId, full_name, role, email });
   } catch (err) {
     console.error('Error adding employee:', err);
     res.status(500).json({ message: 'Error adding employee' });
@@ -91,20 +91,29 @@ app.post('/api/employees', async (req, res) => {
 });
 
 // Update an employee's details
-app.put('/api/employees/:id', async (req, res) => {
-  const { id } = req.params;
+app.put('/api/employees/:employee_id', async (req, res) => {
+  const { employee_id } = req.params;
   const { full_name, role, email, phone_number, address, dob, emergency_contact, status } = req.body;
 
+  // Basic field validation
   if (!full_name || !role || !email) {
-    return res.status(400).json({ message: 'Missing required fields' });
+    return res.status(400).json({ message: 'Missing required fields: full_name, role, and email are required.' });
+  }
+
+  // Optional validation for email format (basic example, improve as needed)
+  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ message: 'Invalid email format.' });
   }
 
   try {
+    // Update employee details in the database
     const [result] = await db.query(
-      'UPDATE employees SET full_name = ?, role = ?, email = ?, phone_number = ?, address = ?, dob = ?, emergency_contact = ?, status = ? WHERE id = ?',
-      [full_name, role, email, phone_number, address, dob, emergency_contact, status, id]
+      'UPDATE employees SET full_name = ?, role = ?, email = ?, phone_number = ?, address = ?, dob = ?, emergency_contact = ?, status = ? WHERE employee_id = ?',
+      [full_name, role, email, phone_number, address, dob, emergency_contact, status, employee_id]
     );
 
+    // Check if the employee exists and was updated
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Employee not found' });
     }
@@ -116,12 +125,13 @@ app.put('/api/employees/:id', async (req, res) => {
   }
 });
 
+
 // Delete an employee
-app.delete('/api/employees/:id', async (req, res) => {
-  const { id } = req.params;
+app.delete('/api/employees/:employee_id', async (req, res) => {
+  const { employee_id } = req.params;
 
   try {
-    const [result] = await db.query('DELETE FROM employees WHERE id = ?', [id]);
+    const [result] = await db.query('DELETE FROM employees WHERE employee_id = ?', [employee_id]);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Employee not found' });

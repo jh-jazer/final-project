@@ -501,19 +501,29 @@ const EmployeeDashboard = () => {
                 >
                   <div className="flex items-center space-x-3">
                     {isAdminDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
-                    {!isSidebarMinimized && <span>Society Task</span>}
+                    {!isSidebarMinimized && <span>Manage Accounts</span>}
                   </div>
                 </button>
                 {isAdminDropdownOpen && (
                   <ul className="mt-2 space-y-2 pl-4">
                           <li>
               <Link
-                to="manage-accounts"
+                to="employee-accounts"
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <FaBook />
-                {!isSidebarMinimized && <span>Manage Accounts</span>}
+                {!isSidebarMinimized && <span> Employee Accounts</span>}
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="student-accounts"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaBook />
+                {!isSidebarMinimized && <span> Student Accounts</span>}
               </Link>
             </li>
                 

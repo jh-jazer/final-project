@@ -23,7 +23,6 @@ import Settings from "./pages/StudentdbPages/Settings.jsx";
 import Employeedb from './pages/Employeedb.jsx';
 import EmployProfile from './pages/EmployeedbPages/EmployProfile.jsx';
 import EmployEnroll from './pages/EmployeedbPages/EmployEnroll.jsx';
-import UserManage from "./pages/EmployeedbPages/UserManage.jsx";
 import ApplyManage from "./pages/EmployeedbPages/EmployManage.jsx";
 import EmployAcads from "./pages/EmployeedbPages/EmployAcads.jsx";
 import EmployStuds from "./pages/EmployeedbPages/EmployStuds.jsx";
@@ -31,6 +30,8 @@ import EmployHome from "./pages/EmployeedbPages/EmployHome.jsx";
 import EmployInstructors from "./pages/EmployeedbPages/EmployInstructors.jsx";
 import ManageCourses from "./pages/EmployeedbPages/ManageClass.jsx";
 import ManageSections from "./pages/EmployeedbPages/ManageSections.jsx";
+import EmployeeAccounts from "./pages/EmployeedbPages/EmployeeAccounts.jsx";
+import StudentAccounts from "./pages/EmployeedbPages/StudentAccounts.jsx";
 
 
 
@@ -255,10 +256,6 @@ const router = createBrowserRouter([
         element: <EmployAcads />, // Component to render when /studentdb/courses is visited
       },
       {
-        path: "manage-accounts",
-        element: <UserManage />, // Component to render when /studentdb/courses is visited
-      },
-      {
         path: "manage-applications",
         element: <ApplyManage />, // Component to render when /studentdb/courses is visited
       },
@@ -277,6 +274,14 @@ const router = createBrowserRouter([
       {
         path: "payment-records",
         element: <SocietyPayment />, // Component to render when /studentdb/courses is visited
+      },
+      {
+        path: "employee-accounts",
+        element: <EmployeeAccounts />, // Component to render when /studentdb/courses is visited
+      },
+      {
+        path: "student-accounts",
+        element: <StudentAccounts />, // Component to render when /studentdb/courses is visited
       },
     ],
   },

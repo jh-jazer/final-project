@@ -9,8 +9,6 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import emailValidator from 'email-validator';
-
 
 // Initialize dotenv to load environment variables
 dotenv.config();
@@ -60,7 +58,6 @@ const testDatabaseConnection = async () => {
 
 testDatabaseConnection();
 
-
 // Employee Routes
 // Get all employees
 app.get('/api/employees', async (req, res) => {
@@ -73,47 +70,18 @@ app.get('/api/employees', async (req, res) => {
   }
 });
 
+// Add a new employee
 app.post('/api/employees', async (req, res) => {
   const { employee_id, full_name, role, email, phone_number, address, dob, emergency_contact, status, password } = req.body;
   
-  // Check for missing required fields
-  if (!full_name || !role || !email || !password) {
+  if (!full_name || !role || !email) {
     return res.status(400).json({ message: 'Missing required fields' });
-  }
-
-  // Validate email format
-  if (!emailValidator.validate(email)) {
-    return res.status(400).json({ message: 'Invalid email format' });
-  }
-
-  // Validate phone number format (assuming a basic numeric check for simplicity)
-  if (!/^\d{10,15}$/.test(phone_number)) {
-    return res.status(400).json({ message: 'Invalid phone number format' });
-  }
-
-  // Validate date of birth format (YYYY-MM-DD)
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(dob)) {
-    return res.status(400).json({ message: 'Invalid date of birth format. Expected format: YYYY-MM-DD' });
-  }
-
-  // Ensure password length (minimum 6 characters for example)
-  if (password.length < 6) {
-    return res.status(400).json({ message: 'Password must be at least 6 characters long' });
-  }
-
-  // Validate the status field
-  const validStatuses = ['Active', 'Inactive'];
-  const employeeStatus = validStatuses.includes(status) ? status : 'Inactive'; // Default to 'Active' if invalid
-
-  // Optional: Check if employee_id is provided and valid if required
-  if (!employee_id) {
-    return res.status(400).json({ message: 'Employee ID is required' });
   }
 
   try {
     const [result] = await db.query(
       'INSERT INTO employees (employee_id, full_name, role, email, phone_number, address, dob, emergency_contact, status, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [employee_id, full_name, role, email, phone_number, address, dob, emergency_contact, employeeStatus, password]
+      [employee_id, full_name, role, email, phone_number, address, dob, emergency_contact, status, password]
     );
     res.status(201).json({ employee_id: result.insertId, full_name, role, email });
   } catch (err) {
@@ -188,59 +156,23 @@ app.get('/api/students', async (req, res) => {
   }
 });
 
+// Add a new Student
 app.post('/api/students', async (req, res) => {
-  const { student_id, full_name, student_type, program, email, phone_number, dob, emergency_contact, status, password } = req.body;
-
-  // Check for missing required fields
-  if (!full_name || !student_type || !program || !email || !password) {
+  const { student_id, full_name, student_type, program, email, phone_number,  dob, emergency_contact, status, password } = req.body;
+  
+  if (!full_name || !student_type || !program) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
-
-  // Validate email format
-  if (!emailValidator.validate(email)) {
-    return res.status(400).json({ message: 'Invalid email format' });
-  }
-
-  // Validate phone number format (assuming a basic numeric check for simplicity)
-  if (!/^\d{10,15}$/.test(phone_number)) {
-    return res.status(400).json({ message: 'Invalid phone number format' });
-  }
-
-  // Validate date of birth format (YYYY-MM-DD)
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(dob)) {
-    return res.status(400).json({ message: 'Invalid date of birth format. Expected format: YYYY-MM-DD' });
-  }
-
-  // Ensure password length (minimum 6 characters for example)
-  if (password.length < 6) {
-    return res.status(400).json({ message: 'Password must be at least 6 characters long' });
-  }
-
-  // Validate the student_type field (example: 'Regular', 'ALS', etc.)
-  const validStudentTypes = ['Regular', 'ALS']; // Add any other valid student types
-  if (!validStudentTypes.includes(student_type)) {
-    return res.status(400).json({ message: 'Invalid student type' });
-  }
-
-  // Validate the program field (ensure it is a valid program, if required)
-  const validPrograms = ['Engineering', 'Science', 'Arts', 'Business']; // List of valid programs
-  if (!validPrograms.includes(program)) {
-    return res.status(400).json({ message: 'Invalid program' });
-  }
-
-  // Validate the status field
-  const validStatuses = ['Active', 'Inactive'];
-  const studentStatus = validStatuses.includes(status) ? status : 'Active'; // Default to 'Active' if invalid
 
   try {
     const [result] = await db.query(
       'INSERT INTO students (student_id, full_name, student_type, program, email, phone_number, dob, emergency_contact, status, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [student_id, full_name, student_type, program, email, phone_number, dob, emergency_contact, studentStatus, password]
+      [student_id, full_name, student_type, program, email, phone_number, dob, emergency_contact, status, password]
     );
     res.status(201).json({ student_id: result.insertId, full_name, student_type, program });
   } catch (err) {
     console.error('Error adding student:', err);
-    res.status(500).json({ message: 'Error adding student' });
+    res.status(500).json({ message: 'Error adding Student' });
   }
 });
 

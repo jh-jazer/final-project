@@ -9,6 +9,8 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import emailValidator from 'email-validator';
+
 
 // Initialize dotenv to load environment variables
 dotenv.config();
@@ -58,7 +60,6 @@ const testDatabaseConnection = async () => {
 
 testDatabaseConnection();
 
-const emailValidator = require('email-validator'); // You can use an external library for email validation
 
 // Employee Routes
 // Get all employees

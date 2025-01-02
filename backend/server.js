@@ -144,6 +144,92 @@ app.delete('/api/employees/:employee_id', async (req, res) => {
   }
 });
 
+// Student Routes
+// Get all students
+app.get('/api/students', async (req, res) => {
+  try {
+    const [students] = await db.query('SELECT * FROM students');
+    res.status(200).json(students);
+  } catch (err) {
+    console.error('Error fetching students:', err);
+    res.status(500).json({ message: 'Error fetching students' });
+  }
+});
+
+// Add a new Student
+app.post('/api/students', async (req, res) => {
+  const { student_id, full_name, role, email, phone_number, address, dob, emergency_contact, status, password } = req.body;
+  
+  if (!full_name || !role || !email) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
+
+  try {
+    const [result] = await db.query(
+      'INSERT INTO students (student_id, full_name, role, email, phone_number, address, dob, emergency_contact, status, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [student_id, full_name, role, email, phone_number, address, dob, emergency_contact, status, password]
+    );
+    res.status(201).json({ student_id: result.insertId, full_name, role, email });
+  } catch (err) {
+    console.error('Error adding student:', err);
+    res.status(500).json({ message: 'Error adding Student' });
+  }
+});
+
+// Update an student's details
+app.put('/api/students/:student_id', async (req, res) => {
+  const { student_id } = req.params;
+  const { full_name, role, email, phone_number, address, dob, emergency_contact, status } = req.body;
+
+  // Basic field validation
+  if (!full_name || !role || !email) {
+    return res.status(400).json({ message: 'Missing required fields: full_name, role, and email are required.' });
+  }
+
+  // Optional validation for email format (basic example, improve as needed)
+  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ message: 'Invalid email format.' });
+  }
+
+  try {
+    // Update student details in the database
+    const [result] = await db.query(
+      'UPDATE students SET full_name = ?, role = ?, email = ?, phone_number = ?, address = ?, dob = ?, emergency_contact = ?, status = ? WHERE student_id = ?',
+      [full_name, role, email, phone_number, address, dob, emergency_contact, status, student_id]
+    );
+
+    // Check if the student exists and was updated
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    res.status(200).json({ message: 'Student updated successfully' });
+  } catch (err) {
+    console.error('Error updating Student:', err);
+    res.status(500).json({ message: 'Error updating student' });
+  }
+});
+
+
+// Delete a Student
+app.delete('/api/students/:student_id', async (req, res) => {
+  const { student_id } = req.params;
+
+  try {
+    const [result] = await db.query('DELETE FROM students WHERE student_id = ?', [student_id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    res.status(200).json({ message: 'Student deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting Student:', err);
+    res.status(500).json({ message: 'Error deleting Student' });
+  }
+});
+
 
 // Nodemailer Transporter setup
 const transporter = nodemailer.createTransport({
@@ -159,7 +245,7 @@ const transporter = nodemailer.createTransport({
 });
 
 app.get("/", (_, res) => {
-	res.json("good mourning.");
+	res.json("di ako natutuwa.");
 });
 
 app.post('/login', async (req, res) => {

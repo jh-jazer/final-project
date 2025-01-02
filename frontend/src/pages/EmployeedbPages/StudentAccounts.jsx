@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import bcrypt from 'bcryptjs';
 import { FaEdit, FaTrashAlt, FaEye, FaEyeSlash } from 'react-icons/fa';
 
+
 const apiRequest = async (url, method, body = null) => {
   try {
     const response = await fetch(url, {
@@ -18,7 +19,7 @@ const apiRequest = async (url, method, body = null) => {
   }
 };
 
-const EmployeeAccountManagement = () => {
+const StudentAccountManagement = () => {
   const [employees, setEmployees] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('Active');
@@ -43,6 +44,16 @@ const EmployeeAccountManagement = () => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+  useEffect(() => {
+    if (statusMessage) {
+      const timer = setTimeout(() => {
+        setStatusMessage(''); // Clears the status message after 5 seconds
+      }, 5000);
+
+      // Cleanup the timeout if the component unmounts or the message changes
+      return () => clearTimeout(timer);
+    }
+  }, [statusMessage]);
 
   const closeModal = () => {
     setModalOpen(false);
@@ -178,7 +189,7 @@ const EmployeeAccountManagement = () => {
   return (
     <div className="p-6 bg-green-500 min-h-screen">
       <div className="bg-white shadow-lg rounded-lg p-6 mx-auto max-w-7xl">
-        <h2 className="text-2xl font-semibold text-gray-700 mb-4">Employee Data</h2>
+        <h2 className="text-2xl font-semibold text-gray-700 mb-4">Student Accounts</h2>
         {statusMessage && <div className="mb-4 text-center text-red-600">{statusMessage}</div>}
 
         <div className="mb-4 flex justify-between items-center">
@@ -385,4 +396,4 @@ const EmployeeAccountManagement = () => {
   );
 };
 
-export default EmployeeAccountManagement;
+export default StudentAccountManagement;

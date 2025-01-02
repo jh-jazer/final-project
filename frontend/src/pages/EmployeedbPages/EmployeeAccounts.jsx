@@ -341,6 +341,7 @@ const EmployeeAccountManagement = () => {
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                   required
                 >
+                  <option value="">Select Account Status </option>
                   <option value="Inactive">Inactive</option>
                   <option value="Active">Active</option>
                 </select>

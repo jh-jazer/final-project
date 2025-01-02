@@ -355,6 +355,7 @@ const StudentAccountManagement = () => {
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                   required
                 >
+                  <option value="">Select Account Status </option>
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
                 </select>

@@ -29,12 +29,12 @@ const Login = () => {
       const response = await axios.post('https://cvsu-backend-system.vercel.app/api/login', { login_id, password });
   
       if (response.status === 200) {
-        const { role } = response.data.user; // Extract role from the response
+        const { user } = response.data; // Extract user data from the response
   
-        if (role === 'Student') {
-          navigate('/studentdb'); // Navigate to the student dashboard
-        } else if (role === 'Employee') {
-          navigate('/employeedb'); // Navigate to the employee dashboard
+        if (user.role === 'Student') {
+          navigate('/studentdb', { state: { ...user } }); // Pass user data to Student Dashboard
+        } else if (user.role === 'Employee') {
+          navigate('/employeedb', { state: { ...user } }); // Pass user data to Employee Dashboard
         } else {
           setErrorMessage('Unknown user role. Please contact support.');
         }

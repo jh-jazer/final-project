@@ -283,6 +283,8 @@ app.post('/api/login', async (req, res) => {
             id: student.student_id,
             full_name: student.full_name,
             role: 'Student',
+            type: student.student_type,
+            other: student.program,
           },
         });
       } else {
@@ -304,6 +306,9 @@ app.post('/api/login', async (req, res) => {
             id: employee.employee_id,
             full_name: employee.full_name,
             role: 'Employee',
+            type: employee.employee_type,
+            other: employee.email,
+
           },
         });
       } else {

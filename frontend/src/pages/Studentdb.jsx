@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import {
   FaBars,
   FaTimes,
@@ -10,33 +10,25 @@ import {
   FaAngleDoubleLeft,
   FaAngleDoubleRight,
 } from "react-icons/fa";
-import LogoutConfirmationModal from "./LogoutConfirmationModal"; // Import the modal
+import LogoutConfirmationModal from "./LogoutConfirmationModal";
 
 const StudentDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarMinimized, setIsSidebarMinimized] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
-  const user = {
-    id: "202212345", // Change the name to default ID
-    course: "BSCS", // Add course information
-    status: "Irregular", // Add status information (Regular or Irregular)
-    role: "Student", // Update the role as needed
-    avatar: "https://via.placeholder.com/100",
-  };
+  // Retrieve passed state from navigation
+  const location = useLocation();
+  const user = location.state || {}; // Use the passed state or fallback to an empty object
 
   const handleNavigateToEnroll = () => {
-    navigate("/studentdb/enroll", { state: { status: user.status } });
+    navigate("/studentdb/enroll", { state: { user } });
   };
 
   const handleNavigateToChecklist = () => {
-    navigate("/studentdb/checklist", { state: { user: user } });
+    navigate("/studentdb/checklist", { state: { user } });
   };
-  
-  
-
 
   // Handle logout confirmation
   const handleLogout = () => setIsModalOpen(true);
@@ -57,25 +49,24 @@ const StudentDashboard = () => {
         {/* Sidebar Header */}
         <div className="p-6 flex flex-col items-center border-b border-gray-700">
           <Link to="/studentdb">
-            <img
-              src={user.avatar}
-              alt="Profile"
-              className={`rounded-full w-20 h-20 mb-3 border-4 border-white cursor-pointer ${
-                isSidebarMinimized ? "w-12 h-12" : ""
-              }`}
-              onClick={() => setIsSidebarOpen(false)}
-            />
+            
           </Link>
           {!isSidebarMinimized && (
             <>
-              <h2
+             <h2
                 className="text-xl font-semibold cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >
-                {user.id}
+                {user.full_name || "Unknown Name"}
               </h2>
+              <h3
+                className="text-xl font-semibold cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                {user.id || "Unknown ID"}
+              </h3>
               <p className="text-sm text-gray-400">
-                {user.course} | {user.status} | {user.role}
+                {user.other || "Unknown Program"} | {user.type || "Unknown Student Type"} | {user.role || "Unknown Role"}
               </p>
             </>
           )}
@@ -100,21 +91,21 @@ const StudentDashboard = () => {
 
             {/* Checklist */}
             <li>
-                      <button
-                        onClick={handleNavigateToChecklist} 
-                        className={`px-4 py-2  w-full flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer ${
-                          isSidebarMinimized ? "justify-center" : ""
-                        }`}
-                      >
-                        <FaBook />
-                        {!isSidebarMinimized && <span>Checklist</span>}
-                      </button>
-                    </li>
+              <button
+                onClick={handleNavigateToChecklist}
+                className={`px-4 py-2 w-full flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer ${
+                  isSidebarMinimized ? "justify-center" : ""
+                }`}
+              >
+                <FaBook />
+                {!isSidebarMinimized && <span>Checklist</span>}
+              </button>
+            </li>
 
-            {/* Enroll - Use the handler here */}
+            {/* Enroll */}
             <li>
               <button
-                onClick={handleNavigateToEnroll} 
+                onClick={handleNavigateToEnroll}
                 className={`px-4 py-2 w-full flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer ${
                   isSidebarMinimized ? "justify-center" : ""
                 }`}
@@ -123,8 +114,6 @@ const StudentDashboard = () => {
                 {!isSidebarMinimized && <span>Enroll</span>}
               </button>
             </li>
-
-           
 
             <hr className="border-gray-600 my-4" />
 

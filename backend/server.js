@@ -269,45 +269,62 @@ app.post('/api/login', async (req, res) => {
   }
 
   try {
-    // Check if the ID exists in the students or employees table
-    const query = `
-      SELECT * FROM students WHERE student_id = ? 
-      UNION
-      SELECT * FROM employees WHERE employee_id = ?;
-    `;
-    
-    const [results] = await db.query(query, [student_id, student_id]);
+    // First, check the students table for the student_id
+    const queryStudents = 'SELECT * FROM students WHERE student_id = ?';
+    const [studentResults] = await db.query(queryStudents, [student_id]);
 
-    if (results.length === 0) {
-      return res.status(404).json({ message: 'User not found.' });
+    if (studentResults.length > 0) {
+      // If the student is found, check the password
+      const student = studentResults[0];
+      const isPasswordCorrect = await bcrypt.compare(password, student.password);
+
+      if (!isPasswordCorrect) {
+        return res.status(401).json({ message: 'Invalid credentials.' });
+      }
+
+      // Return student info upon successful login
+      return res.status(200).json({
+        message: 'Login successful',
+        user: {
+          id: student.student_id,
+          full_name: student.full_name,
+          role: 'Student',
+        },
+      });
     }
 
-    // Check password for the found record
-    const user = results[0]; // Assuming the user is found in either the students or employees table
+    // If student is not found, check the employees table
+    const queryEmployees = 'SELECT * FROM employees WHERE employee_id = ?';
+    const [employeeResults] = await db.query(queryEmployees, [student_id]);
 
-    // Verify password (assuming hashed passwords in the database)
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (employeeResults.length > 0) {
+      // If the employee is found, check the password
+      const employee = employeeResults[0];
+      const isPasswordCorrect = await bcrypt.compare(password, employee.password);
 
-    if (!isPasswordCorrect) {
-      return res.status(401).json({ message: 'Invalid credentials.' });
+      if (!isPasswordCorrect) {
+        return res.status(401).json({ message: 'Invalid credentials.' });
+      }
+
+      // Return employee info upon successful login
+      return res.status(200).json({
+        message: 'Login successful',
+        user: {
+          id: employee.employee_id,
+          full_name: employee.full_name,
+          role: 'Employee',
+        },
+      });
     }
 
-    // If authentication is successful, return the user info
-    return res.status(200).json({
-      message: 'Login successful',
-      user: {
-        id: user.student_id || user.employee_id, // You can return either student_id or employee_id
-        full_name: user.full_name,
-        role: user.role || 'Student', // If an employee, return 'employee' role
-      },
-    });
+    // If no user is found in either table
+    return res.status(404).json({ message: 'User not found.' });
 
   } catch (err) {
     console.error('Login error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });
-
 
 // Verify the email server is ready to send emails
 const verifyEmailServer = async () => {

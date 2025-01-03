@@ -271,7 +271,8 @@ app.get("/", (_, res) => {
 	res.json("di ako natutuwa.");
 });
 
-app.post('/api/login', async (req, res) => {
+app.post('/api/login', cors(), async (req, res) => {
+
   const { login_id, password } = req.body;
 
   if (!student_id || !password) {

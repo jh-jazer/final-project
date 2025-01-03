@@ -428,5 +428,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server running at https://cvsu-backend-system.vercel.app/login`);
+  console.log(`Server running at https://cvsu-backend-system.vercel.app`);
 });

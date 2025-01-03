@@ -262,7 +262,7 @@ app.get("/", (_, res) => {
 });
 
 app.post('/api/login', async (req, res) => {
-  const { student_id, password } = req.body;
+  const { login_id, password } = req.body;
 
   if (!student_id || !password) {
     return res.status(400).json({ message: 'Student ID and password are required.' });
@@ -271,7 +271,7 @@ app.post('/api/login', async (req, res) => {
   try {
     // First, check the students table for the student_id
     const queryStudents = 'SELECT * FROM students WHERE student_id = ?';
-    const [studentResults] = await db.query(queryStudents, [student_id]);
+    const [studentResults] = await db.query(queryStudents, [login_id]);
 
     if (studentResults.length > 0) {
       // If the student is found, check the password
@@ -295,7 +295,7 @@ app.post('/api/login', async (req, res) => {
 
     // If student is not found, check the employees table
     const queryEmployees = 'SELECT * FROM employees WHERE employee_id = ?';
-    const [employeeResults] = await db.query(queryEmployees, [student_id]);
+    const [employeeResults] = await db.query(queryEmployees, [login_id]);
 
     if (employeeResults.length > 0) {
       // If the employee is found, check the password

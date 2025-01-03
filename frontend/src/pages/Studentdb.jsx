@@ -44,33 +44,30 @@ const StudentDashboard = () => {
       <aside
         className={`w-64 bg-[#081708] text-white flex flex-col fixed top-0 left-0 h-full z-50 transform ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } ${isSidebarMinimized ? "w-16" : "w-64"} transition-all duration-300 lg:relative lg:translate-x-0`}
+        } ${isSidebarMinimized ? "w-[60px]" : "w-64"} transition-all duration-300 lg:relative lg:translate-x-0`}
       >
-        {/* Sidebar Header */}
-        <div className="p-6 flex flex-col items-center border-b border-gray-700">
-          <Link to="/studentdb">
-            
-          </Link>
-          {!isSidebarMinimized && (
+         <div
+          className={`p-6 flex flex-col items-center border-b border-gray-700 ${
+            isSidebarMinimized ? "items-center" : "items-start"
+          }`}
+        >
+         {!isSidebarMinimized && (
             <>
-             <h2
-                className="text-xl font-semibold cursor-pointer"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                {user.full_name || "Unknown Name"}
-              </h2>
-              <h3
-                className="text-xl font-semibold cursor-pointer"
+             <Link
+                to="/studentdb"
+              
+                className="text-xl font-semibold cursor-pointer mt-10"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 {user.id || "Unknown ID"}
-              </h3>
-              <p className="text-sm text-gray-400">
+                </Link>
+                <p className="text-sm text-gray-400">
                 {user.other || "Unknown Program"} | {user.type || "Unknown Student Type"} | {user.role || "Unknown Role"}
-              </p>
-            </>
+              </p>              
+              </>
           )}
-        </div>
+          </div>
+      
 
         {/* Sidebar Navigation */}
         <nav className="flex-1 mt-4">

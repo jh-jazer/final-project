@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 
 const Checklist = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [course, setCourse] = useState('CS'); // Add state to determine the course (CS or IT)
+  const [course, setCourse] = useState('BSCS'); // Add state to determine the course (CS or IT)
   const location = useLocation();
   const { user } = location.state || {};  // Safely access user data
   
@@ -216,11 +216,11 @@ const Checklist = () => {
     },
   ];
   
-  const currentSemester = course === 'CS' ? csSemesters[currentIndex] : itSemesters[currentIndex];
+  const currentSemester = course === 'BSCS' ? csSemesters[currentIndex] : itSemesters[currentIndex];
 
   // Function to handle semester navigation
   const goToNextSemester = () => {
-    if (currentIndex < (course === 'CS' ? csSemesters.length : itSemesters.length) - 1) {
+    if (currentIndex < (course === 'BSCS' ? csSemesters.length : itSemesters.length) - 1) {
       setCurrentIndex(currentIndex + 1);
     }
   };
@@ -239,10 +239,9 @@ const Checklist = () => {
       {user && (
         <div className="student-info" style={{ marginBottom: '20px', padding: '10px', border: '1px solid #ccc', borderRadius: '8px' }}>
           <h3>Student Information</h3>
-          <p><strong>Name:</strong> {user.name}</p>
+          <p><strong>Name:</strong> {user.full_name}</p>
           <p><strong>ID:</strong> {user.id}</p>
-          <p><strong>Email:</strong> {user.email}</p>
-          <p><strong>Course:</strong> {course}</p>
+          <p><strong>Course:</strong> {user.program}</p>
         </div>
       )}
         <div className="flex justify-between items-center mb-6">
@@ -257,7 +256,7 @@ const Checklist = () => {
             </button>
             <button
               onClick={goToNextSemester}
-              disabled={currentIndex === (course === 'CS' ? csSemesters.length : itSemesters.length) - 1}
+              disabled={currentIndex === (course === 'BSCS' ? csSemesters.length : itSemesters.length) - 1}
               className="bg-blue-500 text-white px-4 py-2 rounded disabled:bg-gray-300"
             >
               Next

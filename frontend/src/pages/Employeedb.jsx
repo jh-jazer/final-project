@@ -96,7 +96,6 @@ const EmployeeDashboard = () => {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } ${isSidebarMinimized ? "w-[60px]" : "w-64"} transition-all duration-300 lg:relative lg:translate-x-0`}
       >
-        {/* Profile Section */}
         <div
           className={`p-6 flex flex-col items-center border-b border-gray-700 ${
             isSidebarMinimized ? "items-center" : "items-start"

@@ -17,7 +17,12 @@ const app = express();
 const port = process.env.PORT || 5005;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'https://cvsu-system.vercel.app', // Allow only your frontend
+  methods: 'GET,POST,PUT,DELETE', // Specify allowed methods
+  allowedHeaders: 'Content-Type,Authorization', // Specify allowed headers
+}));
+
 app.use(bodyParser.json());
 
 // Get the directory of the current module using import.meta.url

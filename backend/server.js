@@ -16,12 +16,17 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5005;
 
-// Middleware
+// Enable CORS with more options for handling preflight requests
 app.use(cors({
-  origin: 'https://cvsu-system.vercel.app', // Allow only your frontend
-  methods: 'GET,POST,PUT,DELETE', // Specify allowed methods
-  allowedHeaders: 'Content-Type,Authorization', // Specify allowed headers
+  origin: 'https://cvsu-system.vercel.app', // Allow your frontend domain
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
+  credentials: true, // Allow cookies to be sent
 }));
+
+// Handle preflight OPTIONS requests (for methods and headers)
+app.options('*', cors()); // This will handle all OPTIONS requests
+
 
 app.use(bodyParser.json());
 

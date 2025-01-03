@@ -28,7 +28,7 @@ const EmployeeAccountManagement = () => {
   const [formData, setFormData] = useState({
     employee_id: '',
     full_name: '',
-    role: '',
+    employee_type: '',
     email: '',
     phone_number: '',
     address: '',
@@ -76,7 +76,7 @@ const EmployeeAccountManagement = () => {
       setFormData({
         employee_id: '',
         full_name: '',
-        role: '',
+        employee_type: '',
         email: '',
         phone_number: '',
         address: '',
@@ -217,7 +217,7 @@ const EmployeeAccountManagement = () => {
             <tr>
               <th className="px-4 py-2 text-left">ID</th>
               <th className="px-4 py-2 text-left">Full Name</th>
-              <th className="px-4 py-2 text-left">Role</th>
+              <th className="px-4 py-2 text-left">Employee Type</th>
               <th className="px-4 py-2 text-left">Email</th>
               <th className="px-4 py-2 text-left">Phone</th>
               <th className="px-4 py-2 text-left">Status</th>
@@ -230,7 +230,7 @@ const EmployeeAccountManagement = () => {
                 <tr key={employee.employee_id} className="border-b hover:bg-gray-100">
                   <td className="px-4 py-2">{employee.employee_id}</td>
                   <td className="px-4 py-2">{employee.full_name}</td>
-                  <td className="px-4 py-2">{employee.role}</td>
+                  <td className="px-4 py-2">{employee.employee_type}</td>
                   <td className="px-4 py-2">{employee.email}</td>
                   <td className="px-4 py-2">{employee.phone_number}</td>
                   <td className="px-4 py-2">{employee.status}</td>
@@ -286,11 +286,11 @@ const EmployeeAccountManagement = () => {
                 />
                 <select
                   className="w-full px-4 py-2 mb-2 border"
-                  value={formData.role}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                  value={formData.employee_type}
+                  onChange={(e) => setFormData({ ...formData, employee_type: e.target.value })}
                   required
                 >
-                  <option value="">Select Role</option>
+                  <option value="">Select Employee Type</option>
                   <option value="Admin">Admin</option>
                   <option value="Registrar">Registrar</option>
                   <option value="Society Officer">Society Officer</option>

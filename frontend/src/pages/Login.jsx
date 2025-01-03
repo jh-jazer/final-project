@@ -25,11 +25,16 @@ const Login = () => {
       setIsLoading(true);
       setErrorMessage('');
 
-      // Backend API call
+      // Backend API call for login (student or employee)
       const response = await axios.post('https://cvsu-backend-system.vercel.app/login', { login_id, password });
 
       if (response.status === 200) {
-        navigate('/studentdb/profile');
+        // Navigate based on user role (either student or employee)
+        if (response.data.role === 'Student') {
+          navigate('/studentdb/profile');
+        } else if (response.data.role === 'Employee') {
+          navigate('/employeedb/employee-profile');
+        }
       }
     } catch (error) {
       if (error.response) {
@@ -63,10 +68,10 @@ const Login = () => {
         {/* Login Card */}
         <div className="w-full max-w-md p-8 bg-white bg-opacity-95 shadow-lg rounded-lg">
           {/* Header */}
-           <div className="flex items-center gap-4 justify-self-center ">
-                  <img src={Logo} alt="University Logo" className="w-[60px] h-[60px]" />
-                  <h2 className="text-3xl font-extrabold text-[#C61A01]">Login </h2>
-                </div>
+          <div className="flex items-center gap-4 justify-self-center">
+            <img src={Logo} alt="University Logo" className="w-[60px] h-[60px]" />
+            <h2 className="text-3xl font-extrabold text-[#C61A01]">Login</h2>
+          </div>
 
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="mt-5 space-y-4">
@@ -126,7 +131,7 @@ const Login = () => {
 
           {/* Forgot Password */}
           <div className="text-center mt-3">
-            <Link to="/forgotpassword" className="text-sm text-[#C61A01]  p-2 hover:underline">
+            <Link to="/forgotpassword" className="text-sm text-[#C61A01] p-2 hover:underline">
               Forgot password?
             </Link>
           </div>

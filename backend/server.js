@@ -72,18 +72,18 @@ app.get('/api/employees', async (req, res) => {
 
 // Add a new employee
 app.post('/api/employees', async (req, res) => {
-  const { employee_id, full_name, role, email, phone_number, address, dob, emergency_contact, status, password } = req.body;
+  const { employee_id, full_name, employee_type, email, phone_number, address, dob, emergency_contact, status, password } = req.body;
   
-  if (!full_name || !role || !email) {
+  if (!full_name || !employee_type || !email) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
 
   try {
     const [result] = await db.query(
-      'INSERT INTO employees (employee_id, full_name, role, email, phone_number, address, dob, emergency_contact, status, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [employee_id, full_name, role, email, phone_number, address, dob, emergency_contact, status, password]
+      'INSERT INTO employees (employee_id, full_name, employee_type, email, phone_number, address, dob, emergency_contact, status, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [employee_id, full_name, employee_type, email, phone_number, address, dob, emergency_contact, status, password]
     );
-    res.status(201).json({ employee_id: result.insertId, full_name, role, email });
+    res.status(201).json({ employee_id: result.insertId, full_name, employee_type, email });
   } catch (err) {
     console.error('Error adding employee:', err);
     res.status(500).json({ message: 'Error adding employee' });
@@ -93,11 +93,11 @@ app.post('/api/employees', async (req, res) => {
 // Update an employee's details
 app.put('/api/employees/:employee_id', async (req, res) => {
   const { employee_id } = req.params;
-  const { full_name, role, email, phone_number, address, dob, emergency_contact, status } = req.body;
+  const { full_name, employee_type, email, phone_number, address, dob, emergency_contact, status } = req.body;
 
   // Basic field validation
-  if (!full_name || !role || !email) {
-    return res.status(400).json({ message: 'Missing required fields: full_name, role, and email are required.' });
+  if (!full_name || !employee_type || !email) {
+    return res.status(400).json({ message: 'Missing required fields: full_name, employee_type, and email are required.' });
   }
 
   // Optional validation for email format (basic example, improve as needed)
@@ -109,8 +109,8 @@ app.put('/api/employees/:employee_id', async (req, res) => {
   try {
     // Update employee details in the database
     const [result] = await db.query(
-      'UPDATE employees SET full_name = ?, role = ?, email = ?, phone_number = ?, address = ?, dob = ?, emergency_contact = ?, status = ? WHERE employee_id = ?',
-      [full_name, role, email, phone_number, address, dob, emergency_contact, status, employee_id]
+      'UPDATE employees SET full_name = ?, employee_type = ?, email = ?, phone_number = ?, address = ?, dob = ?, emergency_contact = ?, status = ? WHERE employee_id = ?',
+      [full_name, employee_type, email, phone_number, address, dob, emergency_contact, status, employee_id]
     );
 
     // Check if the employee exists and was updated
@@ -261,33 +261,62 @@ app.get("/", (_, res) => {
 	res.json("di ako natutuwa.");
 });
 
-app.post('/login', async (req, res) => {
+app.post('/api/login', async (req, res) => {
   const { login_id, password } = req.body;
 
   if (!login_id || !password) {
-    return res.status(400).json({ message: 'Missing login ID or password' });
+    return res.status(400).json({ message: 'Login ID and password are required.' });
   }
 
   try {
-    const [results] = await db.query('SELECT * FROM login WHERE login_id = ?', [login_id.trim()]);
-    if (results.length === 0) {
-      console.log('No user found for login ID:', login_id);
-      return res.status(401).json({ message: 'Invalid login credentials' });  // General message for security
+    // Check the students table first
+    const [studentResults] = await db.query('SELECT * FROM students WHERE student_id = ?', [login_id]);
+
+    if (studentResults.length > 0) {
+      const student = studentResults[0];
+      const isPasswordCorrect = await bcrypt.compare(password, student.password);
+      
+      if (isPasswordCorrect) {
+        return res.status(200).json({
+          message: 'Login successful',
+          user: {
+            id: student.student_id,
+            full_name: student.full_name,
+            role: 'Student',
+          },
+        });
+      } else {
+        return res.status(401).json({ message: 'Invalid credentials.' });
+      }
     }
 
-    const user = results[0];
-    console.log('User fetched:', user);
+    // Check the employees table if not found in students
+    const [employeeResults] = await db.query('SELECT * FROM employees WHERE employee_id = ?', [login_id]);
 
-    const isMatch = await bcrypt.compare(password, user.login_password);
-    if (isMatch) {
-      // Optionally, generate a session or JWT token here
-      return res.status(200).json({ message: 'Login successful' });
-    } else {
-      return res.status(401).json({ message: 'Invalid login credentials' }); // General message for security
+    if (employeeResults.length > 0) {
+      const employee = employeeResults[0];
+      const isPasswordCorrect = await bcrypt.compare(password, employee.password);
+      
+      if (isPasswordCorrect) {
+        return res.status(200).json({
+          message: 'Login successful',
+          user: {
+            id: employee.employee_id,
+            full_name: employee.full_name,
+            role: 'Employee',
+          },
+        });
+      } else {
+        return res.status(401).json({ message: 'Invalid credentials.' });
+      }
     }
-  } catch (err) {
-    console.error('Error during login:', err.message);
-    res.status(500).json({ message: 'Internal server error' });
+
+    // If login_id is not found in either table
+    return res.status(404).json({ message: 'User not found.' });
+
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 

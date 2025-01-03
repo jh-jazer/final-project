@@ -26,7 +26,7 @@ const Login = () => {
       setErrorMessage('');
 
       // Backend API call for login (student or employee)
-      const response = await axios.post('https://cvsu-backend-system.vercel.app/login', { login_id, password });
+      const response = await axios.post('https://cvsu-backend-system.vercel.app/api/login', { login_id, password });
 
       if (response.status === 200) {
         // Navigate based on user role (either student or employee)

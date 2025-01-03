@@ -15,22 +15,29 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!login_id.trim() || !password.trim()) {
       setErrorMessage('Please fill in both login ID and password fields');
       return;
     }
-
+  
     try {
       setIsLoading(true);
       setErrorMessage('');
-
+  
       // Backend API call
       const response = await axios.post('https://cvsu-backend-system.vercel.app/api/login', { login_id, password });
-
+  
       if (response.status === 200) {
-        // If successful, navigate to profile page
-        navigate('/studentdb/profile');
+        const { role } = response.data.user; // Extract role from the response
+  
+        if (role === 'Student') {
+          navigate('/studentdb'); // Navigate to the student dashboard
+        } else if (role === 'Employee') {
+          navigate('/employeedb'); // Navigate to the employee dashboard
+        } else {
+          setErrorMessage('Unknown user role. Please contact support.');
+        }
       }
     } catch (error) {
       if (error.response) {
@@ -51,6 +58,7 @@ const Login = () => {
       setIsLoading(false);
     }
   };
+  
 
   return (
     <div>

@@ -16,18 +16,8 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5005;
 
-// Enable CORS with more options for handling preflight requests
-app.use(cors({
-  origin: 'https://cvsu-system.vercel.app', // Allow your frontend domain
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods
-  allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
-  credentials: true, // Allow cookies to be sent
-}));
-
-// Handle preflight OPTIONS requests (for methods and headers)
-app.options('*', cors()); // This will handle all OPTIONS requests
-
-
+// Middleware
+app.use(cors());
 app.use(bodyParser.json());
 
 // Get the directory of the current module using import.meta.url
@@ -82,18 +72,18 @@ app.get('/api/employees', async (req, res) => {
 
 // Add a new employee
 app.post('/api/employees', async (req, res) => {
-  const { employee_id, full_name, employee_type, email, phone_number, address, dob, emergency_contact, status, password } = req.body;
+  const { employee_id, full_name, role, email, phone_number, address, dob, emergency_contact, status, password } = req.body;
   
-  if (!full_name || !employee_type || !email) {
+  if (!full_name || !role || !email) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
 
   try {
     const [result] = await db.query(
-      'INSERT INTO employees (employee_id, full_name, employee_type, email, phone_number, address, dob, emergency_contact, status, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [employee_id, full_name, employee_type, email, phone_number, address, dob, emergency_contact, status, password]
+      'INSERT INTO employees (employee_id, full_name, role, email, phone_number, address, dob, emergency_contact, status, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [employee_id, full_name, role, email, phone_number, address, dob, emergency_contact, status, password]
     );
-    res.status(201).json({ employee_id: result.insertId, full_name, employee_type, email });
+    res.status(201).json({ employee_id: result.insertId, full_name, role, email });
   } catch (err) {
     console.error('Error adding employee:', err);
     res.status(500).json({ message: 'Error adding employee' });
@@ -103,11 +93,11 @@ app.post('/api/employees', async (req, res) => {
 // Update an employee's details
 app.put('/api/employees/:employee_id', async (req, res) => {
   const { employee_id } = req.params;
-  const { full_name, employee_type, email, phone_number, address, dob, emergency_contact, status } = req.body;
+  const { full_name, role, email, phone_number, address, dob, emergency_contact, status } = req.body;
 
   // Basic field validation
-  if (!full_name || !employee_type || !email) {
-    return res.status(400).json({ message: 'Missing required fields: full_name, employee_type, and email are required.' });
+  if (!full_name || !role || !email) {
+    return res.status(400).json({ message: 'Missing required fields: full_name, role, and email are required.' });
   }
 
   // Optional validation for email format (basic example, improve as needed)
@@ -119,8 +109,8 @@ app.put('/api/employees/:employee_id', async (req, res) => {
   try {
     // Update employee details in the database
     const [result] = await db.query(
-      'UPDATE employees SET full_name = ?, employee_type = ?, email = ?, phone_number = ?, address = ?, dob = ?, emergency_contact = ?, status = ? WHERE employee_id = ?',
-      [full_name, employee_type, email, phone_number, address, dob, emergency_contact, status, employee_id]
+      'UPDATE employees SET full_name = ?, role = ?, email = ?, phone_number = ?, address = ?, dob = ?, emergency_contact = ?, status = ? WHERE employee_id = ?',
+      [full_name, role, email, phone_number, address, dob, emergency_contact, status, employee_id]
     );
 
     // Check if the employee exists and was updated
@@ -271,71 +261,36 @@ app.get("/", (_, res) => {
 	res.json("di ako natutuwa.");
 });
 
-app.post('/api/login', cors(), async (req, res) => {
-
+app.post('/login', async (req, res) => {
   const { login_id, password } = req.body;
 
-  if (!student_id || !password) {
-    return res.status(400).json({ message: 'Student ID and password are required.' });
+  if (!login_id || !password) {
+    return res.status(400).json({ message: 'Missing login ID or password' });
   }
 
   try {
-    // First, check the students table for the student_id
-    const queryStudents = 'SELECT * FROM students WHERE student_id = ?';
-    const [studentResults] = await db.query(queryStudents, [login_id]);
-
-    if (studentResults.length > 0) {
-      // If the student is found, check the password
-      const student = studentResults[0];
-      const isPasswordCorrect = await bcrypt.compare(password, student.password);
-
-      if (!isPasswordCorrect) {
-        return res.status(401).json({ message: 'Invalid credentials.' });
-      }
-
-      // Return student info upon successful login
-      return res.status(200).json({
-        message: 'Login successful',
-        user: {
-          id: student.student_id,
-          full_name: student.full_name,
-          role: 'Student',
-        },
-      });
+    const [results] = await db.query('SELECT * FROM login WHERE login_id = ?', [login_id.trim()]);
+    if (results.length === 0) {
+      console.log('No user found for login ID:', login_id);
+      return res.status(401).json({ message: 'Invalid login credentials' });  // General message for security
     }
 
-    // If student is not found, check the employees table
-    const queryEmployees = 'SELECT * FROM employees WHERE employee_id = ?';
-    const [employeeResults] = await db.query(queryEmployees, [login_id]);
+    const user = results[0];
+    console.log('User fetched:', user);
 
-    if (employeeResults.length > 0) {
-      // If the employee is found, check the password
-      const employee = employeeResults[0];
-      const isPasswordCorrect = await bcrypt.compare(password, employee.password);
-
-      if (!isPasswordCorrect) {
-        return res.status(401).json({ message: 'Invalid credentials.' });
-      }
-
-      // Return employee info upon successful login
-      return res.status(200).json({
-        message: 'Login successful',
-        user: {
-          id: employee.employee_id,
-          full_name: employee.full_name,
-          role: 'Employee',
-        },
-      });
+    const isMatch = await bcrypt.compare(password, user.login_password);
+    if (isMatch) {
+      // Optionally, generate a session or JWT token here
+      return res.status(200).json({ message: 'Login successful' });
+    } else {
+      return res.status(401).json({ message: 'Invalid login credentials' }); // General message for security
     }
-
-    // If no user is found in either table
-    return res.status(404).json({ message: 'User not found.' });
-
   } catch (err) {
-    console.error('Login error:', err);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error during login:', err.message);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 // Verify the email server is ready to send emails
 const verifyEmailServer = async () => {

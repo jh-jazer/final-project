@@ -223,6 +223,7 @@ const StudentAccountManagement = () => {
           </button>
         </div>
 
+        <div className='overflow-x-auto'>
         <table className="min-w-full bg-white border-collapse shadow-md">
           <thead className="bg-gray-800 text-white">
             <tr>
@@ -272,6 +273,7 @@ const StudentAccountManagement = () => {
             )}
           </tbody>
         </table>
+        </div>
 
         {/* Modal for adding/editing an student */}
         {modalOpen && (

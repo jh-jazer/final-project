@@ -107,23 +107,23 @@ const StudentInformation = () => {
         />
 
         {/* Tabs for Applicant, Enrolled, and Alumni */}
-        <div className="mb-4">
-          <div className="flex space-x-4 border-b-2">
+        <div className="mb-4 flex flex-wrap">
+          <div className="space-x-1 sm:space-x-6 md:space-x-8">
             <button
               onClick={() => setActiveTab('Applicants')}
-              className={`${activeTab === 'Applicants' ? 'text-blue-600 font-semibold' : 'text-gray-600'} px-4 py-2`}
+              className={`${activeTab === 'Applicants' ? 'text-blue-600 font-semibold' : 'text-gray-600'} px-4 py-2 flex-wrap`}
             >
               Applicants
             </button>
             <button
               onClick={() => setActiveTab('Enrolled')}
-              className={`${activeTab === 'Enrolled' ? 'text-blue-600 font-semibold' : 'text-gray-600'} px-4 py-2`}
+              className={`${activeTab === 'Enrolled' ? 'text-blue-600 font-semibold' : 'text-gray-600'} px-4 py-2 flex-wrap`}
             >
               Enrolled Students
             </button>
             <button
               onClick={() => setActiveTab('Graduated')}
-              className={`${activeTab === 'Graduated' ? 'text-blue-600 font-semibold' : 'text-gray-600'} px-4 py-2`}
+              className={`${activeTab === 'Graduated' ? 'text-blue-600 font-semibold' : 'text-gray-600'} px-4 py-2 flex-wrap`}
             >
               Alumni
             </button>

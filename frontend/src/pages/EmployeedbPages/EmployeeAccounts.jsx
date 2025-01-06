@@ -212,6 +212,7 @@ const EmployeeAccountManagement = () => {
           </button>
         </div>
 
+        <div className='overflow-x-auto'>
         <table className="min-w-full bg-white border-collapse shadow-md">
           <thead className="bg-gray-800 text-white">
             <tr>
@@ -261,6 +262,7 @@ const EmployeeAccountManagement = () => {
             )}
           </tbody>
         </table>
+        </div>
 
         {/* Modal for adding/editing an employee */}
         {modalOpen && (

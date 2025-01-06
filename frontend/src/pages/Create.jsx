@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useAppContext } from "../contexts/AppContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import logo from "../assets/cvsulogo.png";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Laya from "../assets/laya.png";
 import { useActiveItem } from "../contexts/CreateAppContext";
 import { FaSignOutAlt } from "react-icons/fa"; // Import logout icon
@@ -21,24 +21,16 @@ const Create = () => {
 
   const location = useLocation();
   const [loading, setLoading] = useState(false);
-
-
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const navigate = useNavigate();
+  const { setActiveItem } = useActiveItem();
 
   const { userData } = location.state || {};
 
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const toggleDropdown = () => {
-    setDropdownVisible((prevState) => !prevState);
-  };
+  const toggleDropdown = () => setDropdownVisible(prev => !prev);
 
-  
-  
-  const [errorMessage, setErrorMessage] = useState("");
-  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-  const navigate = useNavigate(); // Hook to navigate programmatically
-  const { setActiveItem } = useActiveItem();
-
-  // Disable the submit button based on form state
   useEffect(() => {
     if (applicantType && preferredProgram) {
       setIsButtonDisabled(false);
@@ -47,13 +39,11 @@ const Create = () => {
     }
   }, [applicantType, preferredProgram]);
 
-  // Handle logout by clearing localStorage and navigating to the login page
   const handleLogout = () => {
     localStorage.removeItem("userData");
     navigate("/apply");
   };
 
-  // Config for strands and programs
   const strandOptions = {
     Academic: [
       { value: "stem", label: "Science, Technology, Engineering, and Mathematics (STEM)" },
@@ -67,12 +57,8 @@ const Create = () => {
       { value: "ia", label: "Industrial Arts (IA)" },
       { value: "ict", label: "Information and Communications Technology (ICT)" },
     ],
-    "Arts and Design": [
-      { value: "ad", label: "Arts and Design" },
-    ],
-    Sports: [
-      { value: "sports", label: "Sports" },
-    ],
+    "Arts and Design": [{ value: "ad", label: "Arts and Design" }],
+    Sports: [{ value: "sports", label: "Sports" }],
   };
 
   const programOptions = {
@@ -84,54 +70,44 @@ const Create = () => {
     he: ["Bachelor of Science in Computer Science", "Bachelor of Science in Information Technology"],
     ia: ["Bachelor of Science in Computer Science", "Bachelor of Science in Information Technology"],
     ict: ["Bachelor of Science in Computer Science", "Bachelor of Science in Information Technology"],
-    ad: ["Bachelor of Science in Computer Science", "Bachelor of Science in Information Technology"], 
-    sports: ["Bachelor of Science in Computer Science", "Bachelor of Science in Information Technology"], 
+    ad: ["Bachelor of Science in Computer Science", "Bachelor of Science in Information Technology"],
+    sports: ["Bachelor of Science in Computer Science", "Bachelor of Science in Information Technology"],
   };
-
 
   const checkEmailExists = async (email) => {
     try {
-      const response = await fetch("https://final-project-lqbc.vercel.app/check-email", {
+      const response = await fetch("https://cvsu-backend-system.vercel.app/check-email", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-  
-      // Assuming the response contains a field `exists` to indicate whether the email already exists
       const data = await response.json();
-  
-      return data.exists; // Returns `true` if email exists, otherwise `false`
+      return data.exists;
     } catch (error) {
       console.error("Error checking email:", error);
       return false;
     }
   };
-  
+
   const saveEnrollmentData = async (enrollmentData) => {
     try {
-      const response = await fetch("https://final-project-lqbc.vercel.app/save-enrollment", {
+      const response = await fetch("https://cvsu-backend-system.vercel.app/save-enrollment", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(enrollmentData), // Send the form data as JSON
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(enrollmentData),
       });
-  
       const data = await response.json();
-      return data; // Assuming the API returns a result object with a `success` property
+      return data;
     } catch (error) {
       console.error("Error saving enrollment data:", error);
       return { success: false };
     }
   };
-  
 
-  const generateEnrollmentId = (applicantType, preferredProgram) => {
+  const generateUniqueEnrollmentId = (applicantType, preferredProgram) => {
     // Get initials from applicantType (first 2 characters) and program (first 3 characters)
     const applicantTypeInitial = applicantType.slice(0, 2).toUpperCase(); // First 2 letters of applicant type
-    const programInitial = preferredProgram ? preferredProgram.split(" ")[0].slice(0, 3).toUpperCase() : ""; // First 3 letters of program
+    const programInitialValue = programInitial(preferredProgram); // Get program initials based on custom logic
     
     // Get the current timestamp in milliseconds
     const timestamp = Date.now().toString().slice(-6); // Last 6 digits of the timestamp (for uniqueness)
@@ -140,60 +116,58 @@ const Create = () => {
     const randomPart = Math.floor(Math.random() * 10000); // Random 4-digit number
   
     // Combine everything into a single enrollment ID
-    return `${applicantTypeInitial}${programInitial}${timestamp}${randomPart}`;
+    return `${applicantTypeInitial}${programInitialValue}${timestamp}${randomPart}`;
   };
 
-  const generateUniqueEnrollmentId = async (applicantType, preferredProgram) => {
-    let enrollmentId = generateEnrollmentId(applicantType, preferredProgram);
-  
-    // Check if the enrollment ID already exists in the database
-    const exists = await checkEnrollmentIdExists(enrollmentId); // Assume this function checks the DB
-    if (exists) {
-      // If ID exists, regenerate the ID
-      return generateUniqueEnrollmentId(applicantType, preferredProgram);
+  const programInitial = preferredProgram => {
+    if (preferredProgram === "Bachelor of Science in Computer Science") {
+      return "CS"; // For Computer Science
+    } else if (preferredProgram === "Bachelor of Science in Information Technology") {
+      return "IT"; // For Information Technology
+    } else {
+      return preferredProgram ? preferredProgram.split(" ")[0].slice(0, 3).toUpperCase() : ""; // Default behavior
     }
-    return enrollmentId;
   };
-  
-  
- 
+
   const handleSubmit = async () => {
-    setLoading(true); // Start loading
-    // your code logic for handle submit
-    setLoading(false); // End loading
+    setLoading(true);
+    setErrorMessage("");
 
     if (["shs", "grade12"].includes(applicantType) && !["stem", "ict"].includes(strand)) {
       setErrorMessage("You must be a STEM or ICT student to choose the selected program.");
+      setLoading(false);
       return;
     }
-  
-    // Generate a unique Enrollment ID
+
     const enrollmentId = await generateUniqueEnrollmentId(applicantType, preferredProgram);
-  
-    // Check if the email already exists in the database
     const emailExists = await checkEmailExists(userData.email);
-  
+
     if (emailExists) {
-      navigate("/createapplication"); // Redirect if email already exists
-    } else {
-      // Save the data with the generated unique enrollment ID
-      const result = await saveEnrollmentData({
-        email: userData.email,
-        enrollmentId,
-        applicantType,
-        preferredProgram,
-        strand,
-      });
-      
-      if (result.success) {
-        alert("Application successfully created!");
-        navigate("/createapplication"); // Redirect to details page
-      } else {
-        setErrorMessage("An error occurred while creating your application. Please try again.");
-      }
+      setErrorMessage("This email is already registered. Please use a different one.");
+      setLoading(false);
+      return;
     }
+
+    const enrollmentData = {
+      email: userData.email,
+      enrollmentId,
+      applicantType,
+      preferredProgram,
+      strand,
+      seniorHighTrack,
+    };
+
+    const result = await saveEnrollmentData(enrollmentData);
+
+    if (result.success) {
+      alert("Application successfully created!");
+      navigate("/createapplication");
+    } else {
+      setErrorMessage("An error occurred while creating your application. Please try again.");
+    }
+
+    setLoading(false);
   };
-  
   return (
     <div
       className="flex items-center justify-center min-h-screen bg-fixed bg-cover bg-center pb-[70px] pt-[70px]"

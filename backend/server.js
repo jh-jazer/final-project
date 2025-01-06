@@ -58,6 +58,65 @@ const testDatabaseConnection = async () => {
 
 testDatabaseConnection();
 
+// Endpoint to check if email already exists
+app.post("/check-email", async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const existingUser = await db.execute('SELECT * FROM enrollments WHERE email = ?', [email]);
+    if (existingUser[0].length > 0) {
+      return res.json({ exists: true });
+    } else {
+      return res.json({ exists: false });
+    }
+  } catch (err) {
+    console.error("Error checking email:", err);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Endpoint to check if enrollmentId already exists
+app.post('/check-enrollment-id', async (req, res) => {
+  const { enrollmentId } = req.body;
+  try {
+    // Query the database to check if the enrollmentId already exists
+    const [rows] = await db.execute('SELECT COUNT(*) as count FROM enrollments WHERE enrollment_id = ?', [enrollmentId]);
+    const exists = rows[0].count > 0;
+    res.json({ exists });
+  } catch (error) {
+    console.error('Error checking enrollment ID:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Endpoint to save the enrollment data
+app.post("/save-enrollment", async (req, res) => {
+  const { email, enrollmentId, applicantType, preferredProgram, strand, seniorHighTrack } = req.body;
+
+  // Validate required fields
+  if (!email || !enrollmentId || !applicantType || !preferredProgram || !strand || !seniorHighTrack) {
+    return res.status(400).json({ success: false, message: "All fields are required" });
+  }
+
+  try {
+    // Check if enrollmentId already exists (optional validation)
+    const [existingEnrollment] = await db.execute('SELECT * FROM enrollments WHERE enrollment_id = ?', [enrollmentId]);
+    if (existingEnrollment.length > 0) {
+      return res.status(400).json({ success: false, message: "Enrollment ID already exists" });
+    }
+
+    // Insert the new enrollment data into the database
+    await db.execute('INSERT INTO enrollments (email, enrollment_id, applicant_type, preferred_program, strand, senior_high_track) VALUES (?, ?, ?, ?, ?, ?)', 
+      [email, enrollmentId, applicantType, preferredProgram, strand, seniorHighTrack]);
+
+    return res.json({ success: true, message: "Enrollment saved successfully!" });
+  } catch (err) {
+    console.error("Error saving enrollment:", err);
+    return res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+});
+
+
 // Employee Routes
 // Get all employees
 app.get('/api/employees', async (req, res) => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import Logo from '../assets/university-logo.png';
@@ -13,28 +13,46 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Check for existing user data in localStorage
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user) {
+      // Redirect based on user role
+      if (user.role === 'Student') {
+        navigate('/studentdb', { state: { ...user } });
+      } else if (user.role === 'Employee') {
+        navigate('/employeedb', { state: { ...user } });
+      }
+    }
+  }, []);  // The empty dependency array ensures this runs only once, when the component mounts
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!login_id.trim() || !password.trim()) {
       setErrorMessage('Please fill in both login ID and password fields');
       return;
     }
-  
+
     try {
       setIsLoading(true);
       setErrorMessage('');
-  
+
       // Backend API call
       const response = await axios.post('https://cvsu-backend-system.vercel.app/api/login', { login_id, password });
-  
+
       if (response.status === 200) {
         const { user } = response.data; // Extract user data from the response
-  
+
+        // Store user data in localStorage
+        localStorage.setItem('user', JSON.stringify(user));
+
+        // Redirect based on user role
         if (user.role === 'Student') {
-          navigate('/studentdb', { state: { ...user } }); // Pass user data to Student Dashboard
+          navigate('/studentdb', { state: { ...user } });
         } else if (user.role === 'Employee') {
-          navigate('/employeedb', { state: { ...user } }); // Pass user data to Employee Dashboard
+          navigate('/employeedb', { state: { ...user } });
         } else {
           setErrorMessage('Unknown user role. Please contact support.');
         }
@@ -58,7 +76,6 @@ const Login = () => {
       setIsLoading(false);
     }
   };
-  
 
   return (
     <div>

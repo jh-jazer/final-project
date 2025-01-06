@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import {
   FaBars,
@@ -22,18 +22,22 @@ const EmployeeDashboard = () => {
   const [isSocietyDropdownOpen, setIsSocietyDropdownOpen] = useState(false);
   const [isCoursesDropdownOpen, setIsCoursesDropdownOpen] = useState(false);
   const [isAdminDropdownOpen, setIsAdminDropdownOpen] = useState(false);
+  const [user, setUser] = useState(null); // Store user data locally
 
-
-
+  const userType = user?.type;
 
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
   const navigate = useNavigate();
 
-  const user = {
-    name: "Admin Doe",
-    role: "Admin", // Employee type (Role/Position)
-    avatar: "https://via.placeholder.com/100",
-  };
+ // Load user data from localStorage on component mount
+   useEffect(() => {
+     const storedUser = JSON.parse(localStorage.getItem("user"));
+     if (!storedUser) {
+       navigate("/login"); // Redirect to login if user data is not available
+     } else {
+       setUser(storedUser);
+     }
+   }, [navigate]);
 
   const toggleStudentDropdown = () => { 
 
@@ -74,19 +78,16 @@ const EmployeeDashboard = () => {
   };
 
 
-  // Handle logout confirmation
-  const handleLogout = () => {
-    setIsModalOpen(true); // Open the modal
-  };
+ // Handle logout confirmation
+ const handleLogout = () => setIsModalOpen(true);
+ const confirmLogout = () => {
+   setIsModalOpen(false);
+   localStorage.removeItem("user"); // Remove user data from localStorage
+   navigate("/login"); // Redirect to the login page
+ };
+ const cancelLogout = () => setIsModalOpen(false);
 
-  const confirmLogout = () => {
-    setIsModalOpen(false); // Close the modal
-    navigate("/login"); // Redirect to the login page
-  };
-
-  const cancelLogout = () => {
-    setIsModalOpen(false); // Close the modal
-  };
+ 
 
   return (
     <div className="h-screen flex overflow-hidden bg-gray-100">
@@ -102,20 +103,22 @@ const EmployeeDashboard = () => {
           }`}
         >
         
-          {!isSidebarMinimized && (
+        {!isSidebarMinimized && (
             <>
-             <Link
-                to="/employeedb"
-              
+              <Link
+                to="/studentdb"
                 className="text-xl font-semibold cursor-pointer mt-10"
                 onClick={() => setIsSidebarOpen(false)}
               >
-                {user.name}
-                </Link>
-              <p className="text-sm text-gray-400">{user.role}</p> {/* Display employee type */}
-              </>
+                {user?.id || "Unknown ID"}  {/* Use optional chaining to prevent errors */}
+  </Link>
+              <p className="text-sm text-gray-400">
+                {user?.other || "Unknown Program"} | {user?.type || "Unknown Employee Type"} 
+                
+              </p>
+            </>
           )}
-        </div>
+          </div>
 
         {/* Navigation Links */}
         <nav className="flex-1 mt-4">
@@ -132,7 +135,7 @@ const EmployeeDashboard = () => {
               </Link>
             </li>
              {/* Conditionally Render Society Task */}
-             {user.role === "Society Officer" && (
+             {userType === "Society Officer" && (
               <li>
                 <button
                   className={`w-full px-4 py-2 flex items-center pl-4 justify-between hover:bg-gray-700 rounded-lg cursor-pointer ${
@@ -165,7 +168,7 @@ const EmployeeDashboard = () => {
             )}
 
              {/* Conditionally render links based on user role */}
-             {user.role == "Adviser" && (
+             {userType === "Adviser" && (
               <>
             
             <hr className="my-6 border-t-2 border-gray-700" />
@@ -179,10 +182,24 @@ const EmployeeDashboard = () => {
                 {!isSidebarMinimized && <span>Academic Records</span>}
               </Link>
             </li>
+
+            <button
+                  className={`w-full px-4 py-2 flex items-center pl-4 justify-between hover:bg-gray-700 rounded-lg cursor-pointer ${
+                    isSidebarMinimized ? "justify-center" : ""
+                  }`}
+                  onClick={toggleApplicationDropdown}
+                >
+                  <div className="flex items-center space-x-3">
+                    {isApplicationDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
+                    {!isSidebarMinimized && <span>Manage Registration</span>}
+                  </div>
+                </button>
+
             {isApplicationDropdownOpen && (
                   <ul className="mt-2 space-y-2 pl-4">
                         {/* Enroll - Use the handler here */}
-                        <li>
+
+              <li>
               <Link
                 to="manage-applications"
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
@@ -204,6 +221,8 @@ const EmployeeDashboard = () => {
                 {!isSidebarMinimized && <span>Manage Enrollment</span>}
               </Link>
             </li>
+
+            
                 
                   </ul>
                 )}
@@ -212,7 +231,7 @@ const EmployeeDashboard = () => {
             
             
              {/* Conditionally render links based on user role */}
-             {user.role == "Registrar" && (
+             {userType === "Registrar" && (
               <>
             
             <hr className="my-6 border-t-2 border-gray-700" />
@@ -265,7 +284,7 @@ const EmployeeDashboard = () => {
                 >
                   <div className="flex items-center space-x-3">
                     {isApplicationDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
-                    {!isSidebarMinimized && <span>Enrollment & Applications</span>}
+                    {!isSidebarMinimized && <span>Manage Registration</span>}
                   </div>
                 </button>
                 {isApplicationDropdownOpen && (
@@ -353,7 +372,7 @@ const EmployeeDashboard = () => {
             </>
             )}
                 {/* Conditionally render links based on user role */}
-                {user.role == "Admin" && (
+                {userType === "Admin" && (
               <>
             
             <hr className="my-6 border-t-2 border-gray-700" />
@@ -406,7 +425,7 @@ const EmployeeDashboard = () => {
                 >
                   <div className="flex items-center space-x-3">
                     {isApplicationDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
-                    {!isSidebarMinimized && <span>Enrollment & Applications</span>}
+                    {!isSidebarMinimized && <span>Manage Registration</span>}
                   </div>
                 </button>
                 {isApplicationDropdownOpen && (

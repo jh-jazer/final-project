@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import {
   FaBars,
   FaTimes,
@@ -16,27 +16,37 @@ const StudentDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarMinimized, setIsSidebarMinimized] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [user, setUser] = useState(null); // Store user data locally
   const navigate = useNavigate();
 
-  // Retrieve passed state from navigation
-  const location = useLocation();
-  const user = location.state || {}; // Use the passed state or fallback to an empty object
+  // Load user data from localStorage on component mount
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (!storedUser) {
+      navigate("/login"); // Redirect to login if user data is not available
+    } else {
+      setUser(storedUser);
+    }
+  }, [navigate]);
 
   const handleNavigateToEnroll = () => {
-    navigate("/studentdb/enroll", { state: { user } });
+    navigate("/studentdb/enroll");
   };
 
   const handleNavigateToChecklist = () => {
-    navigate("/studentdb/checklist", { state: { user } });
+    navigate("/studentdb/checklist");
   };
 
   // Handle logout confirmation
   const handleLogout = () => setIsModalOpen(true);
   const confirmLogout = () => {
     setIsModalOpen(false);
+    localStorage.removeItem("user"); // Remove user data from localStorage
     navigate("/login"); // Redirect to the login page
   };
   const cancelLogout = () => setIsModalOpen(false);
+
+  if (!user) return null; // Render nothing until user data is loaded
 
   return (
     <div className="h-screen flex overflow-hidden bg-gray-100">
@@ -46,28 +56,27 @@ const StudentDashboard = () => {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } ${isSidebarMinimized ? "w-[60px]" : "w-64"} transition-all duration-300 lg:relative lg:translate-x-0`}
       >
-         <div
+        <div
           className={`p-6 flex flex-col items-center border-b border-gray-700 ${
             isSidebarMinimized ? "items-center" : "items-start"
           }`}
         >
-         {!isSidebarMinimized && (
+          {!isSidebarMinimized && (
             <>
-             <Link
+              <Link
                 to="/studentdb"
-              
                 className="text-xl font-semibold cursor-pointer mt-10"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 {user.id || "Unknown ID"}
-                </Link>
-                <p className="text-sm text-gray-400">
-                {user.other || "Unknown Program"} | {user.type || "Unknown Student Type"} | {user.role || "Unknown Role"}
-              </p>              
-              </>
+              </Link>
+              <p className="text-sm text-gray-400">
+                {user.other || "Unknown Program"} | {user.type || "Unknown Student Type"} |{" "}
+                {user.role || "Unknown Role"}
+              </p>
+            </>
           )}
-          </div>
-      
+        </div>
 
         {/* Sidebar Navigation */}
         <nav className="flex-1 mt-4">

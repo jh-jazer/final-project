@@ -183,7 +183,7 @@ const SocietyPayments = () => {
         </div>
 
         {/* Tab Navigation */}
-        <div className="mb-4 flex space-x-4">
+        <div className="mb-4 flex space-x-4 overflow-x-auto">
           <button
             onClick={() => setActiveTab('payment')}
             className={`px-4 py-2 rounded-md ${activeTab === 'payment' ? 'bg-blue-500 text-white' : 'bg-gray-300'}`}

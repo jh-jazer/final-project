@@ -40,7 +40,7 @@ const Login = () => {
       setErrorMessage('');
 
       // Backend API call
-      const response = await axios.post('https://cvsu-backend-system.vercel.app/api/login', { login_id, password });
+      const response = await axios.post('https://cvsu-system-backend.vercel.app/api/login', { login_id, password });
 
       if (response.status === 200) {
         const { user } = response.data; // Extract user data from the response

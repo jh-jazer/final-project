@@ -25,7 +25,7 @@ const ForgotPassword = () => {
       setSuccessMessage('');
 
       // Backend API call to initiate the password reset process
-      const response = await axios.post('https://cvsu-system-backend.vercel.app/api/forgotpassword', { email });
+      const response = await axios.post('https://cvsu-backend-system.vercel.app/api/forgotpassword', { email });
 
       if (response.status === 200) {
         setSuccessMessage('A password reset link has been sent to your email.');

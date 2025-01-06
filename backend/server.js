@@ -58,61 +58,49 @@ const testDatabaseConnection = async () => {
 
 testDatabaseConnection();
 
-// Endpoint to check if email already exists
-app.post("/check-email", async (req, res) => {
-  const { email } = req.body;
+app.get('/api/enrollments', (req, res) => {
+  const { email } = req.query;
 
-  try {
-    const existingUser = await db.execute('SELECT * FROM enrollments WHERE email = ?', [email]);
-    if (existingUser[0].length > 0) {
-      return res.json({ exists: true });
-    } else {
-      return res.json({ exists: false });
-    }
-  } catch (err) {
-    console.error("Error checking email:", err);
-    return res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-// Endpoint to check if enrollmentId already exists
-app.post('/check-enrollment-id', async (req, res) => {
-  const { enrollmentId } = req.body;
-  try {
-    // Query the database to check if the enrollmentId already exists
-    const [rows] = await db.execute('SELECT COUNT(*) as count FROM enrollments WHERE enrollment_id = ?', [enrollmentId]);
-    const exists = rows[0].count > 0;
-    res.json({ exists });
-  } catch (error) {
-    console.error('Error checking enrollment ID:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-// Endpoint to save the enrollment data
-app.post("/save-enrollment", async (req, res) => {
-  const { email, enrollmentId, applicantType, preferredProgram, strand, seniorHighTrack } = req.body;
-
-  // Validate required fields
-  if (!email || !enrollmentId || !applicantType || !preferredProgram || !strand || !seniorHighTrack) {
-    return res.status(400).json({ success: false, message: "All fields are required" });
+  if (!email) {
+    return res.status(400).json({ message: 'Email is required' });
   }
 
-  try {
-    // Check if enrollmentId already exists (optional validation)
-    const [existingEnrollment] = await db.execute('SELECT * FROM enrollments WHERE enrollment_id = ?', [enrollmentId]);
-    if (existingEnrollment.length > 0) {
-      return res.status(400).json({ success: false, message: "Enrollment ID already exists" });
+  // Query the database to get enrollment data for the given email
+  const query = 'SELECT * FROM enrollments WHERE email = ?';
+
+  db.query(query, [email], (err, results) => {
+    if (err) {
+      console.error('Database query error:', err);
+      return res.status(500).json({ message: 'Server error' });
     }
 
-    // Insert the new enrollment data into the database
-    await db.execute('INSERT INTO enrollments (email, enrollment_id, applicant_type, preferred_program, strand, senior_high_track) VALUES (?, ?, ?, ?, ?, ?)', 
-      [email, enrollmentId, applicantType, preferredProgram, strand, seniorHighTrack]);
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'No enrollment found for this email' });
+    }
 
-    return res.json({ success: true, message: "Enrollment saved successfully!" });
+    // Return the enrollment data
+    res.json(results[0]); // Assuming only one result for the given email
+  });
+});
+
+
+router.get('/api/enrollments', async (req, res) => {
+  const { email } = req.query;
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+
+  try {
+    const [rows] = await db.query('SELECT * FROM enrollments WHERE LOWER(email) = LOWER(?)', [email]);
+    if (rows.length === 0) {
+      console.log(`No enrollee found for email: ${email}`);
+      return res.status(404).json({ error: 'Enrollee not found' });
+    }
+    res.json(rows[0]);
   } catch (err) {
-    console.error("Error saving enrollment:", err);
-    return res.status(500).json({ success: false, message: "Internal Server Error" });
+    console.error("Database error:", err);
+    res.status(500).json({ error: 'Database error' });
   }
 });
 

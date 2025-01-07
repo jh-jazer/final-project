@@ -83,8 +83,7 @@ app.get('/api/enrollments', (req, res) => {
   });
 });
 
-
-router.get('/api/enrollments', async (req, res) => {
+app.get('/api/enrollments', async (req, res) => {
   const { email } = req.query;
 
   if (!email) {
@@ -191,7 +190,6 @@ app.delete('/api/employees/:employee_id', async (req, res) => {
   }
 });
 
-// Student Routes
 // Get all students
 app.get('/api/students', async (req, res) => {
   try {
@@ -205,11 +203,11 @@ app.get('/api/students', async (req, res) => {
 
 // Add a new Student
 app.post('/api/students', async (req, res) => {
-  const { student_id, full_name, student_type, program, email, phone_number, dob, emergency_contact, status, password } = req.body;
+  const { student_id, full_name, student_type, program_id, email, phone_number, dob, emergency_contact, status, password } = req.body;
   
   // Check for required fields
-  if (!full_name || !student_type || !program || !email) {
-    return res.status(400).json({ message: 'Missing required fields: full_name, student_type, program, and email are required.' });
+  if (!full_name || !student_type || !program_id || !email) {
+    return res.status(400).json({ message: 'Missing required fields: full_name, student_type, program_id, and email are required.' });
   }
 
   // Optional validation for email format (basic example)
@@ -219,44 +217,56 @@ app.post('/api/students', async (req, res) => {
   }
 
   try {
+    // Check if program_id exists in the programs table
+    const [programs] = await db.query('SELECT id FROM programs WHERE id = ?', [program_id]);
+    if (programs.length === 0) {
+      return res.status(400).json({ message: 'Invalid program_id. Program not found.' });
+    }
+
+    // Insert the student if the program exists
     const [result] = await db.query(
-      'INSERT INTO students (student_id, full_name, student_type, program, email, phone_number, dob, emergency_contact, status, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [student_id, full_name, student_type, program, email, phone_number, dob, emergency_contact, status, password]
+      'INSERT INTO students (student_id, full_name, student_type, program_id, email, phone_number, dob, emergency_contact, status, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [student_id, full_name, student_type, program_id, email, phone_number, dob, emergency_contact, status, password]
     );
 
     if (result.affectedRows === 0) {
       return res.status(500).json({ message: 'Failed to insert student into the database.' });
     }
 
-    res.status(201).json({ student_id: result.insertId, full_name, student_type, program });
+    res.status(201).json({ student_id: result.insertId, full_name, student_type, program_id });
   } catch (err) {
     console.error('Error adding student:', err);
     res.status(500).json({ message: `Error adding student: ${err.message}` });
   }
 });
 
-
 // Update a student's details
 app.put('/api/students/:student_id', async (req, res) => {
   const { student_id } = req.params;
-  const { full_name, student_type, program, email, phone_number, dob, emergency_contact, status } = req.body;
+  const { full_name, student_type, program_id, email, phone_number, dob, emergency_contact, status } = req.body;
 
   // Basic field validation
   if (!full_name || !student_type || !email) {
     return res.status(400).json({ message: 'Missing required fields: full_name, student_type, and email are required.' });
   }
 
-  // Optional validation for email format (basic example, improve as needed)
+  // Optional validation for email format
   const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
   if (!emailRegex.test(email)) {
     return res.status(400).json({ message: 'Invalid email format.' });
   }
 
   try {
+    // Check if program_id exists in the programs table before updating
+    const [programs] = await db.query('SELECT id FROM programs WHERE id = ?', [program_id]);
+    if (programs.length === 0) {
+      return res.status(400).json({ message: 'Invalid program_id. Program not found.' });
+    }
+
     // Update student details in the database
     const [result] = await db.query(
-      'UPDATE students SET full_name = ?, student_type = ?, program = ?, email = ?,  phone_number = ?, dob = ?, emergency_contact = ?, status = ? WHERE student_id = ?',
-      [full_name, student_type, program, email, phone_number,  dob, emergency_contact, status, student_id]
+      'UPDATE students SET full_name = ?, student_type = ?, program_id = ?, email = ?, phone_number = ?, dob = ?, emergency_contact = ?, status = ? WHERE student_id = ?',
+      [full_name, student_type, program_id, email, phone_number, dob, emergency_contact, status, student_id]
     );
 
     // Check if the student exists and was updated
@@ -266,11 +276,10 @@ app.put('/api/students/:student_id', async (req, res) => {
 
     res.status(200).json({ message: 'Student updated successfully' });
   } catch (err) {
-    console.error('Error updating Student:', err);
+    console.error('Error updating student:', err);
     res.status(500).json({ message: 'Error updating student' });
   }
 });
-
 
 // Delete a Student
 app.delete('/api/students/:student_id', async (req, res) => {
@@ -285,8 +294,8 @@ app.delete('/api/students/:student_id', async (req, res) => {
 
     res.status(200).json({ message: 'Student deleted successfully' });
   } catch (err) {
-    console.error('Error deleting Student:', err);
-    res.status(500).json({ message: 'Error deleting Student' });
+    console.error('Error deleting student:', err);
+    res.status(500).json({ message: 'Error deleting student' });
   }
 });
 
@@ -494,11 +503,6 @@ app.post('/api/resetpassword', async (req, res) => {
     res.status(500).json({ message: 'Internal server error.' });
   }
 });
-
-
-
-
-
 
 app.get('/', (req, res) => {
   res.send('Welcome to the API!');

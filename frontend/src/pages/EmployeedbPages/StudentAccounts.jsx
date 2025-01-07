@@ -30,7 +30,7 @@ const StudentAccountManagement = () => {
     student_id: '',
     full_name: '',
     student_type: '',
-    program: '',
+    program_id: '', // Change to program_id
     email: '',
     phone_number: '',
     dob: '',
@@ -38,6 +38,7 @@ const StudentAccountManagement = () => {
     status: '',
     password: '',
   });
+  
   const [isEditing, setIsEditing] = useState(false);
 
   // Toggle password visibility
@@ -74,7 +75,7 @@ const StudentAccountManagement = () => {
 
   const openModal = (student = null) => {
     if (student) {
-      // When editing an student, format the date and reset password to an empty string
+      // When editing a student, format the date and reset password to an empty string
       const formattedDob = new Date(student.dob).toISOString().slice(0, 10);
       setFormData({
         ...student,
@@ -88,7 +89,7 @@ const StudentAccountManagement = () => {
         student_id: '',
         full_name: '',
         student_type: '',
-        program: '',
+        program_id: '', // Set program_id to an empty string
         email: '',
         phone_number: '',
         dob: '',
@@ -146,6 +147,7 @@ const StudentAccountManagement = () => {
     }
   };
   
+  
 
   const handleDelete = async (student_id) => {
     if (window.confirm('Are you sure you want to delete this student?')) {
@@ -161,22 +163,6 @@ const StudentAccountManagement = () => {
     }
   };
   
-
-  // Toggle student status (Active/Inactive)
-  const toggleStatus = async (student) => {
-    const updatedStatus = student.status === 'Active' ? 'Inactive' : 'Active';
-    try {
-      await apiRequest(
-        `https://cvsu-backend-system.vercel.app/api/students${student.student_id}`,
-        'PUT',
-        { ...student, status: updatedStatus }
-      );
-      setStatusMessage('student status updated');
-      fetchStudents();
-    } catch (error) {
-      setStatusMessage('Error updating status');
-    }
-  };
 
   // Filter students based on search and active status
   const filteredStudents = students.filter(
@@ -243,7 +229,9 @@ const StudentAccountManagement = () => {
                   <td className="px-4 py-2">{student.student_id}</td>
                   <td className="px-4 py-2">{student.full_name}</td>
                   <td className="px-4 py-2">{student.student_type}</td>
-                  <td className="px-4 py-2">{student.program}</td>
+                  <td className="px-4 py-2">
+                    {student.program_id === 1 ? 'BSCS' : student.program_id === 2 ? 'BSIT' : 'Unknown Program'}
+                  </td>
                   <td className="px-4 py-2">{student.phone_number}</td>
                   <td className="px-4 py-2">{student.status}</td>
                   <td className="px-4 py-2">
@@ -309,16 +297,16 @@ const StudentAccountManagement = () => {
                 
                 </select>
                 <select
-                  className="w-full px-4 py-2 mb-2 border"
-                  value={formData.program}
-                  onChange={(e) => setFormData({ ...formData, program: e.target.value })}
-                  required
-                >
-                  <option value="">Select Student Program </option>
-                  <option value="BSCS">BSCS</option>
-                  <option value="BSIT">BSIT</option>
-                
-                </select>
+                className="w-full px-4 py-2 mb-2 border"
+                value={formData.program_id} // Bind to program_id
+                onChange={(e) => setFormData({ ...formData, program_id: parseInt(e.target.value, 10) })} // Parse as integer
+                required
+              >
+                <option value="">Select Student Program</option>
+                <option value="1">BSCS</option> {/* Assuming 1 is the ID for BSCS */}
+                <option value="2">BSIT</option> {/* Assuming 2 is the ID for BSIT */}
+              </select>
+
                 <input
                   type="email"
                   placeholder="email"

@@ -1,27 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PencilSquareIcon, TrashIcon, EyeIcon } from "@heroicons/react/24/solid";
 import { motion, AnimatePresence } from "framer-motion";
 
 const InstructorManagement = () => {
-  const [instructors, setInstructors] = useState([
-    {
-      id: 1,
-      name: "Prof. John Smith",
-      department: "Computer Science",
-      email: "john.smith@example.com",
-      phone: "123-456-7890",
-      courses: ["CS101A", "CS102B"],
-    },
-    {
-      id: 2,
-      name: "Prof. Jane Doe",
-      department: "Information Technology",
-      email: "jane.doe@example.com",
-      phone: "987-654-3210",
-      courses: ["IT202B", "IT203C"],
-    },
-  ]);
-
+  const [instructors, setInstructors] = useState([]);
   const [activeInstructor, setActiveInstructor] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -29,13 +11,36 @@ const InstructorManagement = () => {
   const [editingInstructor, setEditingInstructor] = useState(null);
   const [newInstructor, setNewInstructor] = useState({
     id: null,
-    name: "",
+    instructor_name: "",
     department: "",
     email: "",
     phone: "",
-    courses: [],
+    courses: "",
   });
 
+  // Fetch instructors from the backend
+  const fetchInstructors = async () => {
+    try {
+      const response = await fetch('https://cvsu-backend-system.vercel.app/api/get_instructor_info', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        setInstructors(data.instructors);
+      } else {
+        console.error("Error fetching instructors:", data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching instructors:", error);
+    }
+  };
+  useEffect(() => {
+    fetchInstructors();
+  }, []); // Runs only once after the initial render
+  
   const openModal = (instructorData) => {
     setActiveInstructor(instructorData);
     setIsModalOpen(true);
@@ -57,17 +62,62 @@ const InstructorManagement = () => {
   };
 
   const handleInputChange = (e) => {
-    setNewInstructor({ ...newInstructor, [e.target.name]: e.target.value });
-  };
+  setNewInstructor((prevInstructor) => ({
+    ...prevInstructor,
+    [e.target.name]: e.target.value
+  }));
+};
 
-  const saveInstructor = () => {
-    if (editingInstructor) {
-      setInstructors(instructors.map((i) => (i.id === editingInstructor.id ? newInstructor : i)));
-    } else {
-      setInstructors([...instructors, { ...newInstructor, id: instructors.length + 1 }]);
+
+  const saveInstructor = async (newInstructor) => {
+    try {
+      if (editingInstructor) {
+        // Making API call to update the instructor
+        const response = await fetch(`https://cvsu-backend-system.vercel.app/api/update_instructor`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newInstructor),
+        });
+        
+        if (!response.ok) {
+            throw new Error("Failed to update instructor");
+          }
+          
+          const updatedInstructor = await response.json();
+          
+          // Update the local state with the updated instructor
+          await fetchInstructors();
+          
+      } else {
+        // Making API call to add a new instructor
+        const response = await fetch("https://cvsu-backend-system.vercel.app/api/add_instructor", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newInstructor),
+        });
+  
+        if (!response.ok) {
+          throw new Error("Failed to add instructor");
+        }
+  
+        const addedInstructor = await response.json();
+  
+        // Update the local state with the new instructor
+        setInstructors([...instructors, addedInstructor]);
+        console.log("Added instructor:", addedInstructor);
+      }
+  
+      // Reset the form
+      resetForm();
+    } catch (error) {
+      console.error("Error:", error);
     }
-    resetForm();
   };
+  
 
   const resetForm = () => {
     setNewInstructor({
@@ -81,10 +131,30 @@ const InstructorManagement = () => {
     setEditingInstructor(null);
   };
 
-  const deleteInstructor = () => {
-    setInstructors(instructors.filter((i) => i.id !== instructorToDelete.id));
-    closeDeleteModal();
+  const deleteInstructor = async () => {
+    try {
+      const response = await fetch(`https://cvsu-backend-system.vercel.app/api/delete_instructor?id=${instructorToDelete.instructor_id}`, {
+        method: 'DELETE',
+      });
+  
+      if (response.ok) {
+        console.log("Instructor deleted successfully");
+  
+        // Refresh the instructor list and close the modal
+        await fetchInstructors();
+        closeDeleteModal();
+      } else {
+        const data = await response.json();
+        console.error("Error deleting instructor:", data.message);
+      }
+    } catch (error) {
+      console.error("Error deleting instructor:", error);
+    }
   };
+  
+  
+  
+  
 
   const startEditing = (instructorData) => {
     setEditingInstructor(instructorData);
@@ -104,9 +174,9 @@ const InstructorManagement = () => {
           <div className="grid grid-cols-2 gap-4">
             <input
               type="text"
-              name="name"
+              name="instructor_name"
               placeholder="Instructor Name"
-              value={newInstructor.name}
+              value={newInstructor.instructor_name}
               onChange={handleInputChange}
               className="border px-3 py-2 rounded-md"
             />
@@ -138,13 +208,13 @@ const InstructorManagement = () => {
               type="text"
               name="courses"
               placeholder="Courses (comma separated)"
-              value={newInstructor.courses.join(", ")}
+              value={newInstructor.courses}
               onChange={(e) => handleInputChange({ target: { name: "courses", value: e.target.value } })}
               className="border px-3 py-2 rounded-md"
             />
             <div className="col-span-2 flex gap-4">
               <button
-                onClick={saveInstructor}
+                onClick={() => saveInstructor(newInstructor)}
                 className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
               >
                 {editingInstructor ? "Save Changes" : "Add Instructor"}
@@ -177,13 +247,11 @@ const InstructorManagement = () => {
             <tbody>
               {instructors.map((instructorData) => (
                 <tr key={instructorData.id} className="hover:bg-gray-100">
-                  <td className="px-4 py-2 border border-gray-300">{instructorData.name}</td>
+                  <td className="px-4 py-2 border border-gray-300">{instructorData.instructor_name}</td>
                   <td className="px-4 py-2 border border-gray-300">{instructorData.department}</td>
                   <td className="px-4 py-2 border border-gray-300">{instructorData.email}</td>
                   <td className="px-4 py-2 border border-gray-300">{instructorData.phone}</td>
-                  <td className="px-4 py-2 border border-gray-300">
-                    {instructorData.courses.join(", ")}
-                  </td>
+                  <td className="px-4 py-2 border border-gray-300">{instructorData.courses}</td>
                   <td className="px-4 py-2 border border-gray-300 flex space-x-2">
                     <button onClick={() => openModal(instructorData)}>
                       <EyeIcon className="h-6 w-6 text-green-500" />
@@ -213,7 +281,7 @@ const InstructorManagement = () => {
                 <li>Email: {activeInstructor.email}</li>
                 <li>Phone: {activeInstructor.phone}</li>
                 <li>
-                  Courses: {activeInstructor.courses.join(", ")}
+                  Courses: {activeInstructor.courses}
                 </li>
               </ul>
               <button

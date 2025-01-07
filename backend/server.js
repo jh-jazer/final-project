@@ -504,6 +504,119 @@ app.post('/api/resetpassword', async (req, res) => {
   }
 });
 
+app.post('/api/get_instructor_info', async (req, res) => {
+  try {
+    // Query the database
+    const [rows] = await db.query('SELECT * FROM instructors');
+    
+    // Send the result back to the frontend
+    res.status(200).json({
+      message: 'Query successful',
+      instructors: rows
+    });
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+app.post("/api/add_instructor", async (req, res) => {
+  try {
+    const { instructor_name, department, email, phone, courses } = req.body;
+
+    // Insert the new instructor into the database
+    const sql = `
+      INSERT INTO instructors (instructor_name, department, email, phone, courses)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+
+    const [result] = await db.query(sql, [
+      instructor_name,
+      department,
+      email,
+      phone,
+      courses, // Store courses as a JSON string
+    ]);
+
+    // Send back the inserted instructor with the new ID
+    const newInstructor = {
+      id: result.insertId,
+      instructor_name,
+      department,
+      email,
+      phone,
+      courses,
+    };
+
+    res.status(201).json(newInstructor);
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+app.put("/api/update_instructor", async (req, res) => {
+  const { instructor_id, instructor_name, department, email, phone, courses } = req.body; // Get updated data from the request body
+  try {
+    // Update the instructor in the database
+    const sql = `
+      UPDATE instructors
+      SET instructor_name = ?, department = ?, email = ?, phone = ?, courses = ?
+      WHERE instructor_id = ?
+    `;
+
+    const [result] = await db.query(sql, [
+      instructor_name,
+      department,
+      email,
+      phone,
+      courses, // Store courses as a JSON string
+      instructor_id, // Use the ID to identify which record to update
+    ]);
+
+    if (result.affectedRows === 0) {
+      // If no rows were updated, return a 404 (instructor not found)
+      return res.status(404).json({ message: "Instructor not found" });
+    }
+
+    // Send back the updated instructor data
+    const updatedInstructor = {
+      id: instructor_id,
+      instructor_name,
+      department,
+      email,
+      phone,
+      courses,
+    };
+
+    res.status(200).json(updatedInstructor); // Send back the updated instructor
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+app.delete("/api/delete_instructor", async (req, res) => {
+  const { id } = req.query; // Get the instructor ID from the query parameter
+
+  try {
+    const sql = `DELETE FROM instructors WHERE instructor_id = ?`;
+    const [result] = await db.query(sql, [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Instructor not found" });
+    }
+
+    res.status(200).json({ message: "Instructor deleted successfully" });
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+
 app.get('/', (req, res) => {
   res.send('Welcome to the API!');
 });

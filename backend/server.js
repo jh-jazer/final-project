@@ -316,10 +316,6 @@ const transporter = nodemailer.createTransport({
   debug: true,
 });
 
-app.get("/", (_, res) => {
-	res.json("di ako natutuwa.");
-});
-
 app.post('/api/login', async (req, res) => {
   const { login_id, password } = req.body;
 
@@ -397,8 +393,9 @@ const verifyEmailServer = async () => {
 
 verifyEmailServer();
 
+
 // Forgot Password Route
-app.post('/forgot-password', async (req, res) => {
+app.post('/api/forgotpassword', async (req, res) => {
   const { email } = req.body;
 
   if (!email) {
@@ -406,19 +403,36 @@ app.post('/forgot-password', async (req, res) => {
   }
 
   try {
-    const [results] = await db.query('SELECT * FROM login WHERE email = ?', [email.trim()]);
+    console.log('Checking email:', email);
+
+    const [results] = await db.query(
+      `
+      SELECT 'students' AS table_name, email FROM students WHERE email = ?
+      UNION
+      SELECT 'employees' AS table_name, email FROM employees WHERE email = ?
+      `,
+      [email.trim(), email.trim()]
+    );
+
+    console.log('Query results:', results);
+
     if (results.length === 0) {
       return res.status(404).json({ message: 'No account found with this email address' });
     }
 
+    const tableName = results[0].table_name;
+    console.log('Table name identified:', tableName);
+
     const resetToken = crypto.randomBytes(32).toString('hex');
-    const resetTokenExpiry = Date.now() + 3600000; // Token valid for 1 hour
+    const resetTokenExpiry = new Date(Date.now() + 3600000).toISOString().slice(0, 19).replace('T', ' ');
     const hashedToken = await bcrypt.hash(resetToken, 10);
 
     await db.query(
-      'UPDATE login SET reset_token = ?, reset_token_expiry = ? WHERE email = ?',
+      `UPDATE ${tableName} SET reset_token = ?, reset_token_expiry = ? WHERE email = ?`,
       [hashedToken, resetTokenExpiry, email.trim()]
     );
+
+    console.log('Reset token updated in the database');
 
     const resetUrl = `https://cvsu-bacoor-system.vercel.app/resetpassword?token=${resetToken}`;
     const mailOptions = {
@@ -435,57 +449,68 @@ app.post('/forgot-password', async (req, res) => {
 
     transporter.sendMail(mailOptions, (mailErr, info) => {
       if (mailErr) {
+        console.error('Email sending failed:', mailErr);
         return res.status(500).json({ message: 'Failed to send email' });
       }
-      res.status(200).json({ message: 'The Password reset link has been sent to your email' });
+      res.status(200).json({ message: 'The password reset link has been sent to your email' });
     });
   } catch (err) {
-    console.error('Error handling forgot password:', err);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error('Error occurred:', err);
+    res.status(500).json({ message: `Internal server error: ${err.message}` });
   }
 });
 
-// Reset Password Route
-app.post('/resetpassword', async (req, res) => {
+
+//Reset Password Route
+app.post('/api/resetpassword', async (req, res) => {
   const { token, newPassword } = req.body;
 
   if (!token || !newPassword) {
-    return res.status(400).json({ message: 'Missing token or new password' });
+    return res.status(400).json({ message: 'Token and new password are required.' });
   }
 
   try {
-    const [results] = await db.query(
-      'SELECT * FROM login WHERE reset_token IS NOT NULL AND reset_token_expiry > ?',
-      [Date.now()]
-    );
+    const [results] = await db.query(`
+      SELECT 'students' AS table_name, email, reset_token 
+      FROM students 
+      WHERE reset_token_expiry > NOW() AND reset_token IS NOT NULL
+      UNION
+      SELECT 'employees' AS table_name, email, reset_token 
+      FROM employees 
+      WHERE reset_token_expiry > NOW() AND reset_token IS NOT NULL
+    `);
 
-    if (results.length === 0) {
-      return res.status(400).json({ message: 'Invalid or expired token' });
+    let user;
+    for (const result of results) {
+      if (await bcrypt.compare(token, result.reset_token)) {
+        user = result;
+        break;
+      }
     }
 
-    const user = await Promise.all(
-      results.map(async (u) => {
-        const isTokenValid = await bcrypt.compare(token, u.reset_token);
-        return isTokenValid ? u : null;
-      })
-    ).then((users) => users.filter(Boolean))[0];
-
     if (!user) {
-      return res.status(400).json({ message: 'Invalid or expired token' });
+      return res.status(400).json({ message: 'Invalid or expired token.' });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await db.query(
-      'UPDATE login SET password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE email = ?',
-      [hashedPassword, user.email]
-    );
 
-    res.status(200).json({ message: 'Password reset successful' });
+    await db.query(`
+      UPDATE ${user.table_name} 
+      SET password = ?, reset_token = NULL, reset_token_expiry = NULL 
+      WHERE email = ?
+    `, [hashedPassword, user.email]);
+
+    res.status(200).json({ message: 'Password reset successful.' });
   } catch (err) {
     console.error('Error resetting password:', err);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: 'Internal server error.' });
   }
 });
+
+
+
+
+
 
 app.get('/', (req, res) => {
   res.send('Welcome to the API!');

@@ -37,6 +37,10 @@ const EmployeeDashboard = () => {
      } else {
        setUser(storedUser);
      }
+
+     if (storedUser.role === "Student") {
+      navigate("/studentdb"); // Redirect to student dashboard if role is Employee
+    }
    }, [navigate]);
 
   const toggleStudentDropdown = () => { 

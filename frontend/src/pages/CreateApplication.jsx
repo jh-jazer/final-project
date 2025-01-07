@@ -13,7 +13,6 @@ const AdmissionsPage = () => {
 
   const { activeItem } = useActiveItem();
 
-
   // Handle button click to set the active item
   const navigate = useNavigate();
   const { applicantType, preferredProgram } = useAppContext();
@@ -25,9 +24,6 @@ const AdmissionsPage = () => {
       prevSection === 'First Section' ? 'Second Section' : 'First Section'
     );
   };
-
-  const { email } = location.state || {}; // Retrieve email from the state
-
 
   const user = {
     applicantId: "TCS12345",
@@ -75,12 +71,12 @@ const AdmissionsPage = () => {
         } transition-transform duration-300 lg:relative lg:translate-x-0`}
       >
         <div className="p-6 flex flex-col items-center border-b border-gray-700">
-       
-        {email ? (
-        <h2>{email}</h2> // Display the email
-      ) : (
-        <h2>No email provided</h2>
-      )}
+          <h2
+            className="text-xl font-semibold py-3"
+            onClick={() => setIsSidebarOpen(false)}
+          >
+            {user.applicantId}
+          </h2>
           <p className="text-sm text-center text-gray-400">{preferredProgram || "Not provided"}</p>
           <p className="text-sm text-center text-gray-400">
             {fullNames[applicantType] || applicantType || "Not provided"}

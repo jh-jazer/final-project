@@ -24,9 +24,15 @@ const StudentDashboard = () => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (!storedUser) {
       navigate("/login"); // Redirect to login if user data is not available
+      
     } else {
       setUser(storedUser);
     }
+
+    if (storedUser.role === "Employee") {
+      navigate("/employeedb"); // Redirect to employee dashboard if role is Employee
+    }
+
   }, [navigate]);
 
   const handleNavigateToEnroll = () => {
@@ -71,9 +77,11 @@ const StudentDashboard = () => {
                 {user.id || "Unknown ID"}
               </Link>
               <p className="text-sm text-gray-400">
-                {user.other || "Unknown Program"} | {user.type || "Unknown Student Type"} |{" "}
-                {user.role || "Unknown Role"}
-              </p>
+              {user.other === 1 ? "BSCS" : user.other === 2 ? "BSIT" : "Unknown Program"} |{" "}
+              {user.type || "Unknown Student Type"} |{" "}
+              {user.role || "Unknown Role"}
+            </p>
+
             </>
           )}
         </div>

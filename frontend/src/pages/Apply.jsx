@@ -7,34 +7,59 @@ import { Link, Navigate } from 'react-router-dom';
 
 const AdmissionPortal = () => {
   const [userData, setUserData] = useState(null); // State to store user data
-  const [redirect, setRedirect] = useState(false);
+  const [redirectToCreate, setRedirectToCreate] = useState(false); // Track redirection to /create
+  const [redirectToApplication, setRedirectToApplication] = useState(false); // Track redirection to /createapplication
+  const [emailExists, setEmailExists] = useState(false);
 
   // Check if user is already logged in by looking for user data in localStorage
   useEffect(() => {
     const storedUserData = localStorage.getItem('userData');
     if (storedUserData) {
-      setUserData(JSON.parse(storedUserData)); // If user is logged in, use stored data
-      setRedirect(true); // Trigger the redirect
+      const parsedUserData = JSON.parse(storedUserData);
+      setUserData(parsedUserData);
+      checkEmail(parsedUserData.email); // Check if email exists
     }
   }, []);
+
+  const checkEmail = async (email) => {
+    try {
+      const response = await fetch('http://localhost:5005/check-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json();
+      setEmailExists(data.exists); // Update the email existence state
+      if (data.exists) {
+        setRedirectToApplication(true); // Redirect if email exists
+      } else {
+        setRedirectToCreate(true); // Redirect to /create if email does not exist
+      }
+    } catch (error) {
+      console.error('Error checking email:', error);
+    }
+  };
 
   const handleLoginSuccess = (response) => {
     const decodedToken = JSON.parse(atob(response.credential.split('.')[1]));
     console.log('Decoded JWT:', decodedToken);
-    
+
     // Store user data in localStorage
     localStorage.setItem('userData', JSON.stringify(decodedToken));
-
     setUserData(decodedToken); // Store the decoded data
-    setRedirect(true); // Trigger the redirect
+    checkEmail(decodedToken.email); // Check if the email exists
   };
 
   const handleLoginFailure = () => {
     console.log('Login Failed');
   };
 
-  if (redirect) {
-    return <Navigate to="/create" state={{ userData }} />; // Pass userData to create page
+  if (redirectToApplication) {
+    return <Navigate to="/createapplication" state={{ userData }} />;
+  }
+
+  if (redirectToCreate) {
+    return <Navigate to="/create" state={{ userData }} />;
   }
 
   return (
@@ -42,10 +67,10 @@ const AdmissionPortal = () => {
       <div>
         <TopNav />
         <div
-      className="flex items-center justify-center min-h-screen bg-fixed bg-cover bg-center pb-[70px] pt-[70px]"
-      style={{ backgroundImage: `url(${StudentImage})` }}
+          className="flex items-center justify-center min-h-screen bg-fixed bg-cover bg-center pb-[70px] pt-[70px]"
+          style={{ backgroundImage: `url(${StudentImage})` }}
         >
-          <div className="w-full max-w-md p-8 bg-white  shadow-lg rounded-lg">
+          <div className="w-full max-w-md p-8 bg-white shadow-lg rounded-lg">
             <div className="flex flex-col items-center">
               <img src={Logo} alt="University Logo" className="w-20 h-20 mb-4" />
               <h2 className="text-3xl font-extrabold text-[#C61A01]">Admission Portal</h2>

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAppContext } from "../../contexts/AppContext";
+import { Link, useNavigate, } from "react-router-dom";
 import { useActiveItem } from "../../contexts/CreateAppContext";
+import { useOutletContext } from 'react-router-dom';
 
 const Details = () => {
-  const { applicantType, seniorHighTrack, strand, preferredProgram } = useAppContext();
   const { setActiveItem } = useActiveItem();
   const navigate = useNavigate();
+  const { userDetails } = useOutletContext(); // Access the passed data
 
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
@@ -41,9 +41,9 @@ const Details = () => {
   // Check if the form is complete and enable the button
   useEffect(() => {
     const isFormComplete =
-      applicantType && preferredProgram && (seniorHighTrack || strand);
+      userDetails?.applicant_type && userDetails?.preferred_program && (userDetails?.senior_high_track || userDetails?.strand);
     setIsButtonDisabled(!isFormComplete);
-  }, [applicantType, seniorHighTrack, strand, preferredProgram]);
+  }, [userDetails]);
 
   // Function to render detail sections dynamically
   const renderDetail = (label, value) => (
@@ -69,10 +69,10 @@ const Details = () => {
       </div>
 
       {/* Applicant Details */}
-      {renderDetail("Applicant Type", fullNames[applicantType] || applicantType)}
-      {seniorHighTrack && renderDetail("Senior High Track", fullNames[seniorHighTrack] || seniorHighTrack)}
-      {strand && renderDetail("Strand", fullNames[strand] || strand)}
-      {renderDetail("Preferred Program", preferredProgram)}
+      {renderDetail("Applicant Type", fullNames[userDetails?.applicant_type] || userDetails?.applicant_type)}
+      {userDetails?.senior_high_track && renderDetail("Senior High Track", fullNames[userDetails?.senior_high_track] || userDetails?.senior_high_track)}
+      {userDetails?.strand && renderDetail("Strand", fullNames[userDetails?.strand] || userDetails?.strand)}
+      {renderDetail("Preferred Program", userDetails?.preferred_program || "Not provided")}
 
       {/* Cancel Application Button */}
       <div className="flex justify-end gap-5 my-11 mx-7">

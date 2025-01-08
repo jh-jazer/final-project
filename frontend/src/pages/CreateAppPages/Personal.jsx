@@ -1,18 +1,21 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
 import { nationalities, countries, religions } from "../../constants.js";
 import { useNavigate } from 'react-router-dom';
 import { useActiveItem } from "../../contexts/CreateAppContext";
+import { useOutletContext } from 'react-router-dom';
+
 
 const Personal = () => {
   const [selectedNationality, setSelectedNationality] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
   const navigate = useNavigate();
+  const { userDetails } = useOutletContext(); // Access the passed data
   const [formData, setFormData] = useState({
     givenName: '',
     familyName: '',
     middleName: '',
     suffix: '',
+    lrn: '', // Add LRN here
     sex: '',
     nationalities:'',
     dob: '',
@@ -68,11 +71,15 @@ const Personal = () => {
     const validationErrors = {};
     const regex = {
       contactNumber: /^\d{11}$/,
+      lrn: /^\d{12}$/, // LRN should be exactly 12 digits
+
     
     };
 
     if (!formData.givenName) validationErrors.givenName = "Given Name is required.";
     if (!formData.familyName) validationErrors.familyName = "Family Name is required.";
+    if (!formData.lrn || !regex.lrn.test(formData.lrn))
+      validationErrors.lrn = "LRN must be a 12-digit number.";
     if (!formData.dob) validationErrors.dob = "Date of Birth is required.";
     if (!formData.contactNumber || !regex.contactNumber.test(formData.contactNumber))
       validationErrors.contactNumber = "Contact Number must be 11 digits.";
@@ -225,6 +232,22 @@ const Personal = () => {
             onChange={handleChange}
           />
         </div>
+        <div className="mb-4">
+        <label className="text-gray-600 text-lg font-semibold" htmlFor="lrn">
+          LRN (Learner Reference Number)*
+        </label>
+        <input
+          id="lrn"
+          name="lrn"
+          type="text"
+          className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
+          placeholder="Enter LRN"
+          value={formData.lrn}
+          onChange={handleChange}
+        />
+        {errors.lrn && <p className="text-red-500 text-sm">{errors.lrn}</p>}
+      </div>
+
 
         {/* Sex Field */}
         <div className="mb-4">
@@ -288,7 +311,7 @@ const Personal = () => {
         value={formData.religion}
         onChange={handleChange}
       >
-        <option value="" disabled selected>
+        <option value="" disabled>
           Select your religion
         </option>
         {religions.map((religion, index) => (
@@ -397,12 +420,12 @@ const Personal = () => {
               className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
               id="province "
               name="province"
-              value={formData.city}
+              value={formData.province}
               onChange={handleChange}
               required
               placeholder="Enter Province"
             />
-            {errors.city && <p className="text-red-500 text-sm">{errors.city}</p>}
+            {errors.province && <p className="text-red-500 text-sm">{errors.province}</p>}
           </div>
 
           <div className="mb-4">
@@ -412,7 +435,7 @@ const Personal = () => {
               className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
               id="municipality"
               name="municipality"
-              value={formData.state}
+              value={formData.municipality}
               onChange={handleChange}
               required
               placeholder="Enter Municipality"

@@ -1,23 +1,23 @@
-import { useState } from "react";
-import { Link, Outlet, useNavigate,useLocation } from "react-router-dom";
-import { useAppContext } from "../contexts/AppContext";
+import { useState, useEffect } from "react";
+import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { FaBars, FaTimes, FaSignOutAlt } from "react-icons/fa";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { useActiveItem } from "../contexts/CreateAppContext";
 
+
 const AdmissionsPage = () => {
-  const [activeSection, setActiveSection] = useState('First Section');
+  const location = useLocation(); // Use location before accessing its state
+  const { userData } = location.state || {}; // Ensure location.state is handled properly
+  const { enrollmentData } = location.state || {}; // Ensure location.state is handled properly
+  const storedEmail = localStorage.getItem("email");
+  const email = userData?.email || enrollmentData?.email || storedEmail || "No email provided"; // Fallback if email is undefined
+  const [activeSection, setActiveSection] = useState("First Section");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const location = useLocation();
-
+  const [userDetails, setUserDetails] = useState(null); // Store entire user data
   const { activeItem } = useActiveItem();
-
-  // Handle button click to set the active item
   const navigate = useNavigate();
-  const { applicantType, preferredProgram } = useAppContext();
-
-  const icon = activeSection === 'First Section' ? faChevronDown : faChevronUp;
+  const icon = activeSection === "First Section" ? faChevronDown : faChevronUp;
 
   const toggleSection = () => {
     setActiveSection(prevSection =>
@@ -25,17 +25,12 @@ const AdmissionsPage = () => {
     );
   };
 
-  const user = {
-    applicantId: "TCS12345",
-    preferredProgram: "Computer Science",
-    applicantType: "Transfer",
-  };
 
   const fullNames = {
-    als: "Alternative Learning System (ALS) Passer",
-    shs: "Senior High School Graduate",
-    grade12: "Currently Enrolled Grade 12 Student",
-    bachelors: "Bachelor's Degree Graduate",
+    als: "ALS Passer",
+    shs: "SHS Graduate",
+    grade12: "Enrolled Grade 12",
+    bachelors: "Bachelor's Grad",
     transferee: "Transferee",
     stem: "Science, Technology, Engineering, and Mathematics (STEM)",
     abm: "Accountancy, Business, and Management (ABM)",
@@ -51,17 +46,46 @@ const AdmissionsPage = () => {
     cs: "Bachelor of Science in Computer Science",
   };
 
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const response = await fetch(`http://localhost:5005/api/enrollments?email=${email}`);
+        const data = await response.json();
+
+        if (data) {
+          setUserDetails(data); 
+          
+          // Save email in local storage if available
+          if (data.email) {
+            localStorage.setItem("email", data.email);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      }
+    };
+
+    if (email) {
+      fetchUserDetails();
+    }
+  }, [email]);
+
   
 
   const handleLogout = () => {
     const confirmLogout = window.confirm("Are you sure you want to logout?");
     if (confirmLogout) {
       localStorage.removeItem("userData");
+      localStorage.removeItem("email");
+
     navigate("/apply");
     
     }
   };
+  
 
+  const applicantType = userDetails?.applicant_type || "Not provided";
+  const preferredProgram = userDetails?.preferred_program || "Not provided";
 
   return (
     <div className="h-screen flex overflow-auto bg-gray-100">
@@ -72,13 +96,22 @@ const AdmissionsPage = () => {
       >
         <div className="p-6 flex flex-col items-center border-b border-gray-700">
           <h2
-            className="text-xl font-semibold py-3"
+            className="text-xl font-semibold pt-2"
             onClick={() => setIsSidebarOpen(false)}
           >
-            {user.applicantId}
+            {userDetails?.enrollment_id || "Unknown ID"} {/* Display enrollment ID from user details */}
+           
           </h2>
-          <p className="text-sm text-center text-gray-400">{preferredProgram || "Not provided"}</p>
+          <h1 className="text-md font-semibold text-gray-400 text-center py-2">
+            {email}
+          </h1>
           <p className="text-sm text-center text-gray-400">
+            {preferredProgram === "Bachelor of Science in Computer Science"
+              ? "BSCS"
+              : preferredProgram === "Bachelor of Science in Information Technology"
+              ? "BSIT"
+              : preferredProgram || "Not provided"} |{" "}
+          
             {fullNames[applicantType] || applicantType || "Not provided"}
           </p>
         </div>
@@ -138,7 +171,7 @@ const AdmissionsPage = () => {
                      text-white"
                   >
                     <span className="text-xl font-semibold">6.</span>
-                    <span>Schecule Appointment</span>
+                    <span>Schedule Appointment</span>
                   </button>
                 </li>
                 {/* Other steps */}
@@ -154,7 +187,7 @@ const AdmissionsPage = () => {
                      text-white"
                   >
                     <span className="text-xl font-semibold">7.</span>
-                    <span>Document Verification</span>
+                    <span>Documents Verification</span>
                   </button>
                 </li>
                 <li className={activeItem === '/entrance-examination' ? 'active' : ''}>
@@ -163,7 +196,7 @@ const AdmissionsPage = () => {
                      text-white"
                   >
                     <span className="text-xl font-semibold">8.</span>
-                    <span>Entrance Examination</span>
+                    <span>Student Evaluation</span>
                   </button>
                 </li>
                 <li className={activeItem === '/document-submission' ? 'active' : ''}>
@@ -172,7 +205,7 @@ const AdmissionsPage = () => {
                      text-white"
                   >
                     <span className="text-xl font-semibold">9.</span>
-                    <span>Document Submission</span>
+                    <span>Documents Submission</span>
                   </button>
                 </li>
                 <li className={activeItem === '/applicant-society-payment' ? 'active' : ''}>
@@ -184,22 +217,14 @@ const AdmissionsPage = () => {
                     <span>Society Payment</span>
                   </button>
                 </li>
-                <li className={activeItem === '/applicant-society-payment' ? 'active' : ''}>
-                  <button
-                    className="px-4 py-2 flex items-center space-x-3  rounded-lg cursor-default
-                     text-white"
-                   >
-                    <span className="text-xl font-semibold">11.</span>
-                    <span>Advising</span>
-                  </button>
-                </li>
+               
                 <li className={activeItem === '/enrollment-completed' ? 'active' : ''}>
                   <button
                     className="px-4 py-2 flex items-center space-x-3  rounded-lg cursor-default
                      text-white"
                   >
-                    <span className="text-xl font-semibold">12.</span>
-                    <span>Enrollment Completed</span>
+                    <span className="text-xl font-semibold">11.</span>
+                    <span>Enrollment Completion</span>
                   </button>
                 </li>
                 {/* Other steps */}
@@ -239,7 +264,7 @@ const AdmissionsPage = () => {
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto h-full p-8">
-        <Outlet /> {/* This renders the nested route components */}
+      <Outlet context={{ userDetails }} /> {/* Passing userDetails to Outlet */}
       </main>
     </div>
   );

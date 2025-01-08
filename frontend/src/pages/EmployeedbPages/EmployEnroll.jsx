@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const SocietyPayments = () => {
+const ManageEnrollments = () => {
   const [enrollments, setEnrollments] = useState([
     {
       id: 1,
@@ -307,4 +307,4 @@ const SocietyPayments = () => {
   );
 };
 
-export default SocietyPayments;
+export default ManageEnrollments;

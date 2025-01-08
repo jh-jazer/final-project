@@ -39,9 +39,26 @@ const Create = () => {
     }
   }, [applicantType, preferredProgram]);
   
+// Check if email exists on component load
+useEffect(() => {
+  const checkExistingEmail = async () => {
+    if (userData?.email) {
+      const emailExists = await checkEmailExists(userData.email);
+      if (emailExists) {
+        // Navigate to createapplication page with the email
+        navigate("/createapplication", { state: { email: userData.email } });
+      }
+    }
+  };
+  checkExistingEmail();
+}, [userData, navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem("userData");
+    setApplicantType("");
+    setSeniorHighTrack("");
+    setStrand("");
+    setPreferredProgram("");
     navigate("/apply");
   };
 
@@ -144,8 +161,9 @@ const Create = () => {
     const emailExists = await checkEmailExists(userData.email);
 
     if (emailExists) {
-      setErrorMessage("This email is already registered. Please use a different one.");
+      setErrorMessage("This email is already registered. Redirecting...");
       setLoading(false);
+      navigate("/createapplication", { state: { email: userData.email } });
       return;
     }
 
@@ -162,6 +180,13 @@ const Create = () => {
 
     if (result.success) {
       alert("Application successfully created!");
+
+       // Reset the form
+    setApplicantType("");
+    setSeniorHighTrack("");
+    setStrand("");
+    setPreferredProgram("");
+
       navigate("/createapplication", { state: { enrollmentData } });
     } else {
       setErrorMessage("An error occurred while creating your application. Please try again.");
@@ -256,10 +281,20 @@ const Create = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C61A01] focus:border-transparent"
             value={applicantType}
             onChange={(e) => {
-              setApplicantType(e.target.value)
-              setPreferredProgram("");
+              const value = e.target.value;
+              setApplicantType(value);
+
+              // Reset other fields based on applicant type
+              if (["als", "transferee", "bachelors"].includes(value)) {
+                setStrand("null");
+                setSeniorHighTrack("null");
+                setPreferredProgram("");
+              } else {
+                setStrand("");
+                setSeniorHighTrack("");
+                setPreferredProgram("");
+              }
             }}
-          
           >
             <option value="" disabled>
               Choose a type of applicant

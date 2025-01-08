@@ -9,6 +9,7 @@ import ResetPassword from './pages/ResetPassword.jsx';
 import Apply from './pages/Apply.jsx';
 import Privacy from './pages/DataPrivacyNotice.jsx';
 import Create from './pages/Create.jsx';
+import { UserDataProvider } from './contexts/UserDataContext.jsx';
 import { ActiveItemProvider } from './contexts/CreateAppContext.jsx';
 
 import Admissiondb from './pages/Admissiondb.jsx';
@@ -290,9 +291,12 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AppProvider>
+    <UserDataProvider> {/* Wrap your app with UserDetailsProvider */}
       <ActiveItemProvider> {/* Wrap with ActiveItemProvider */}
         <RouterProvider router={router} />
       </ActiveItemProvider>
+      </UserDataProvider>
     </AppProvider>
+    
   </StrictMode>
 );

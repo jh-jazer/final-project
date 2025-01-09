@@ -219,6 +219,34 @@ app.delete('/api/employees/:employee_id', async (req, res) => {
   }
 });
 
+//get all applciation
+app.get('/api/application', async (req, res) => {
+  try {
+    const [application] = await db.query('SELECT * FROM application');
+    res.status(200).json(application);
+  } catch (err) {
+    console.error('Error fetching application:', err);
+    res.status(500).json({ message: 'Error fetching application' });
+  }
+})
+
+app.get('/api/otherInfo', async (req, res) => {
+  try {
+    const [personalInfo] = await db.query('SELECT * FROM student_personal_info');
+    const [familyBackground] = await db.query('SELECT * FROM student_family_profile');
+    const [educationalBackground] = await db.query('SELECT * FROM student_educational_info');
+
+    res.status(200).json({
+      personalInfo,
+      familyBackground,
+      educationalBackground,
+    });
+  } catch (err) {
+    console.error('Error fetching other info:', err);
+    res.status(500).json({ message: 'Error fetching other info' });
+  }
+});
+
 // Get all students
 app.get('/api/students', async (req, res) => {
   try {

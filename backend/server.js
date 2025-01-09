@@ -18,6 +18,7 @@ const router = express.Router();  // Create an Express Router instance
 
 const port = process.env.PORT || 5005;
 
+
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
@@ -60,6 +61,125 @@ const testDatabaseConnection = async () => {
 
 testDatabaseConnection();
 
+app.post('/submit_personal', (req, res) => {
+  let {
+    enrollment_id,  // Enrollment ID (foreign key)
+    givenName,  // First name
+    familyName,  // Last name
+    middleName,  // Middle name
+    suffix,  // Suffix (e.g., Jr., Sr.)
+    lrn,  // Learner's Reference Number (15 digits)
+    sex,  // Sex
+    dob,  // Date of birth
+    civilStatus,  // Civil status
+    religion,  // Religion
+    nationality,  // Nationality
+    contactNumber,  // Contact number
+    houseNumber,  // House number
+    streetAddress,  // Street address
+    region,  // Region
+    province,  // Province
+    municipality,  // Municipality
+    zipCode,  // Zip code
+    country,  // Country
+  } = req.body;
+
+  // Validate that required fields are present
+  if (!enrollment_id || !givenName || !familyName || !lrn || !sex || !dob) {
+    return res.status(400).send({ error: 'Missing required fields' });
+  }
+
+  // Ensure that optional fields (like middleName, suffix, etc.) are not undefined
+  middleName = middleName || null;
+  suffix = suffix || null;
+  civilStatus = civilStatus || null;
+  religion = religion || null;
+  nationality = nationality || null;
+  contactNumber = contactNumber || null;
+  houseNumber = houseNumber || null;
+  streetAddress = streetAddress || null;
+  region = region || null;
+  province = province || null;
+  municipality = municipality || null;
+  zipCode = zipCode || null;
+  country = country || null;
+
+  // Validate the format of lrn (should be a 15-digit number)
+  const lrnPattern = /^\d{12}$/;
+  if (!lrnPattern.test(lrn)) {
+    return res.status(400).send({ error: 'LRN must be a 12-digit number' });
+  }
+
+  // SQL query to insert form data into the student_personal_info table, including enrollment_id and lrn
+  const query = `
+    INSERT INTO student_personal_info (
+      enrollment_id, fname, lname, mname, suffix, lrn, sex, bday, civil_status, religion, nationality,
+      contact, house_number, street_subdivision, region, province, municipality, zip_code, country
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+  `;
+
+  const values = [
+    enrollment_id,  // Foreign key: enrollment_id
+    givenName,  // First name
+    familyName,  // Last name
+    middleName,  // Middle name (or null if not provided)
+    suffix,  // Suffix (or null if not provided)
+    lrn,  // Learner's Reference Number (15 digits)
+    sex,  // Sex
+    dob,  // Date of birth
+    civilStatus,  // Civil status (or null if not provided)
+    religion,  // Religion (or null if not provided)
+    nationality,  // Nationality (or null if not provided)
+    contactNumber,  // Contact number (or null if not provided)
+    houseNumber,  // House number (or null if not provided)
+    streetAddress,  // Street address (or null if not provided)
+    region,  // Region (or null if not provided)
+    province,  // Province (or null if not provided)
+    municipality,  // Municipality (or null if not provided)
+    zipCode,  // Zip code (or null if not provided)
+    country,  // Country (or null if not provided)
+  ];
+
+  // Execute the query to insert data
+  db.execute(query, values, (err, result) => {
+    if (err) {
+      console.error('Error inserting data:', err);
+      return res.status(500).send({ error: 'Failed to submit form data' });
+    }
+    console.log('Data inserted successfully');  // Check if the data is inserted
+  res.status(201).json({ message: 'Application updated successfully!' });
+  });
+});
+
+
+
+app.delete('/api/enrollments_delete/:id', async (req, res) => {
+  const { id } = req.params;
+  console.log("DELETE request received for ID:", id);
+
+  if (!id) {
+    return res.status(400).json({ error: 'ID is required' });
+  }
+
+  try {
+    // Using raw SQL query with db.query
+    const [result] = await db.query('DELETE FROM enrollments WHERE id = ?', [id]);
+
+    // Check if any rows were affected (deleted)
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Enrollment not found' });
+    }
+
+    res.status(200).json({ message: 'Enrollment deleted successfully' });
+  } catch (error) {
+    console.error("Error during deletion:", error);
+    res.status(500).json({ message: 'Error deleting enrollment' });
+  }
+});
+
+
+
+
 app.get('/api/enrollments', async (req, res) => {
   const { email } = req.query;
 
@@ -79,6 +199,18 @@ app.get('/api/enrollments', async (req, res) => {
     res.status(500).json({ error: 'Database error' });
   }
 });
+
+// Get all enrollee
+app.get('/api/enrollee', async (req, res) => {
+  try {
+    const [enrollments] = await db.query('SELECT * FROM enrollments');
+    res.status(200).json(enrollments);
+  } catch (err) {
+    console.error('Error fetching enrollments:', err);
+    res.status(500).json({ message: 'Error fetching enr0llments' });
+  }
+});
+
 
 
 // Endpoint to check if email already exists

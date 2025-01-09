@@ -49,7 +49,7 @@ const AdmissionsPage = () => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:5005/api/enrollments?email=${email}`);
+        const response = await fetch(`https://cvsu-backend-system.vercel.app/api/enrollments?email=${email}`);
         const data = await response.json();
 
         if (data) {

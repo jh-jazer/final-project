@@ -1,15 +1,29 @@
 import React, { useState, useEffect, useRef } from "react";
-import { nationalities, countries, religions } from "../../constants.js";
 import { useNavigate } from 'react-router-dom';
 import { useActiveItem } from "../../contexts/CreateAppContext";
 import { useOutletContext } from 'react-router-dom';
 
+const apiRequest = async (url, method, body = null) => {
+  try {
+    const response = await fetch(url, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: body ? JSON.stringify(body) : null,
+    });
+    return response.json();
+  } catch (error) {
+    console.error('Error with API request:', error);
+    throw new Error('API request failed');
+  }
+};
+
 
 const Personal = () => {
-  const [selectedNationality, setSelectedNationality] = useState("");
-  const [selectedCountry, setSelectedCountry] = useState("");
   const navigate = useNavigate();
   const { userDetails } = useOutletContext(); // Access the passed data
+  const enrollment_id = userDetails?.enrollment_id || "No id provided"; 
   const [formData, setFormData] = useState({
     givenName: '',
     familyName: '',
@@ -30,6 +44,7 @@ const Personal = () => {
     zipCode: '',
     country: '',
   });
+  const [isEditing, setIsEditing] = useState(false);
 
   const [successMessage, setSuccessMessage] = useState(""); 
   const [errors, setErrors] = useState({});
@@ -81,8 +96,13 @@ const Personal = () => {
     if (!formData.lrn || !regex.lrn.test(formData.lrn))
       validationErrors.lrn = "LRN must be a 12-digit number.";
     if (!formData.dob) validationErrors.dob = "Date of Birth is required.";
+    if (!formData.religion) validationErrors.religion = "Religion is required.";
+    if (!formData.nationalities) validationErrors.nationalities = "Nationalities is required.";
     if (!formData.contactNumber || !regex.contactNumber.test(formData.contactNumber))
       validationErrors.contactNumber = "Contact Number must be 11 digits.";
+    if (!formData.sex || !/^(male|female)$/i.test(formData.sex)) {
+      validationErrors.sex = "Sex at birth is required and must be either 'male' or 'female'.";
+    }    
     if (!formData.houseNumber) validationErrors.houseNumber = "House Number is required.";
     if (!formData.streetAddress) validationErrors.streetAddress = "Street Address is required.";
     if (!formData.region) validationErrors.region = "Region is required.";
@@ -104,28 +124,49 @@ const Personal = () => {
     setFormUpdated(true); // Mark the form as updated
   };
   
-
-    const handleSubmit = (e) => {
-    e.preventDefault(); 
-
-    // First, validate the form before submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
     const isValid = validate();
-    
     if (isValid) {
-        // If valid, process the form submission
-        console.log("Personal Information Submitted:", formData);
-        setFormUpdated(true);
-        
-        // Then show the success message after navigation
-        divRef.current.scrollIntoView({ behavior: "smooth" });
-        setSuccessMessage("Application updated successfully!"); 
-        setTimeout(() => setSuccessMessage(""), 3000); // Hide message after 3 seconds
+      const updatedFormData = {
+        ...formData,
+        enrollment_id: enrollment_id,
+      };
+  
+      try {
+        const response = await fetch('https://cvsu-backend-system.vercel.app/submit_personal', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedFormData),
+        });
+  
+        if (response.ok) {
+          const result = await response.json();
+          console.log(response.status); // Check the actual response status code here
+          setFormData({ ...formData, givenName: '', familyName: '', lrn: '', sex: '', dob: '', contactNumber: '' }); // Reset form
+          divRef.current.scrollIntoView({ behavior: "smooth" });
+          setSuccessMessage("Application updated successfully!");
+          setTimeout(() => setSuccessMessage(""), 5000);
+        } else {
+          
+          setSuccessMessage("There was an issue with the submission. Please try again.");
+          setTimeout(() => setSuccessMessage(""), 5000);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        setSuccessMessage("An error occurred. Please try again.");
+        setTimeout(() => setSuccessMessage(""), 5000);
+      }
     } else {
-        divRef.current.scrollIntoView({ behavior: "smooth" });
-        // If invalid, clear success message and notify the user
-        setSuccessMessage("there is something wrong"); // Clear success message if validation fails
+      divRef.current.scrollIntoView({ behavior: "smooth" });
+      setSuccessMessage("There is something wrong with the form. Please check your entries.");
+      setTimeout(() => setSuccessMessage(""), 5000);
     }
-};
+  };
+  
 
   return (
     <div 
@@ -206,7 +247,7 @@ const Personal = () => {
         {/* Middle Name Field */}
         <div className="mb-4">
           <label className="form-group text-lg font-sans text-gray-600" htmlFor="middleName">
-            Middle Name (Not Applicable)
+            Middle Name 
           </label>
           <input
             id="middleName"
@@ -217,6 +258,7 @@ const Personal = () => {
             onChange={handleChange}
           />
         </div>
+
 
         {/* Suffix Field */}
         <div className="mb-4">
@@ -232,6 +274,8 @@ const Personal = () => {
             onChange={handleChange}
           />
         </div>
+
+
         <div className="mb-4">
         <label className="text-gray-600 text-lg font-semibold" htmlFor="lrn">
           LRN (Learner Reference Number)*
@@ -248,7 +292,6 @@ const Personal = () => {
         {errors.lrn && <p className="text-red-500 text-sm">{errors.lrn}</p>}
       </div>
 
-
         {/* Sex Field */}
         <div className="mb-4">
           <label className="text-gray-600 text-lg font-semibold" htmlFor="sex">
@@ -257,13 +300,17 @@ const Personal = () => {
           <select
             id="sex"
             name="sex"
-            className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
+            className={`w-full mt-2 p-3 border ${errors.sex ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]`}
             value={formData.sex}
             onChange={handleChange}
           >
+            <option value="">Select Sex</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
           </select>
+          {errors.sex && (
+            <p className="text-red-500 text-sm mt-1">{errors.sex}</p>
+          )}
         </div>
 
         {/* Date of Birth Field */}
@@ -301,47 +348,36 @@ const Personal = () => {
         </div>
 
         <div className="mb-4">
-      <label className="text-gray-600 text-lg font-semibold" htmlFor="religion">
-        Religion
-      </label>
-      <select
-        id="religion"
-        name="religion"
-        className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
-        value={formData.religion}
-        onChange={handleChange}
-      >
-        <option value="" disabled>
-          Select your religion
-        </option>
-        {religions.map((religion, index) => (
-          <option key={index} value={religion}>
-            {religion}
-          </option>
-        ))}
-      </select>
-    </div>
+            <label className="form-group text-lg font-sans text-gray-600" htmlFor="city">Religion</label>
+            <input
+              type="text"
+              className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
+              id="religion "
+              name="religion"
+              value={formData.religion}
+              onChange={handleChange}
+              required
+              placeholder="Enter Religion"
+            />
+            {errors.religion && <p className="text-red-500 text-sm">{errors.religion}</p>}
+          </div>
 
-            {/* Nationality Dropdown */}
-            <div className="mb-4">
-  <label className="text-gray-600 text-lg font-semibold" htmlFor="nationality">
-    Nationality
-  </label>
-  <select
-    id="nationality"
-    name="nationalities" // Update the name to match formData
-    className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
-    value={formData.nationalities} // Use formData.nationalities instead of selectedNationality
-    onChange={handleChange}
-  >
-    <option value="">Select a Nationality</option>
-    {nationalities.map((nationality, index) => (
-      <option key={index} value={nationality}>
-        {nationality}
-      </option>
-    ))}
-  </select>
-</div>
+          <div className="mb-4">
+            <label className="form-group text-lg font-sans text-gray-600" htmlFor="city">Nationalities</label>
+            <input
+              type="text"
+              className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
+              id="nationalities "
+              name="nationalities"
+              value={formData.nationalities}
+              onChange={handleChange}
+              required
+              placeholder="Enter Nationalities"
+            />
+            {errors.nationalities && <p className="text-red-500 text-sm">{errors.nationalities}</p>}
+          </div>
+
+          
         {/* Contact Number Field */}
         <div className="mb-4">
           <label className="text-gray-600 text-lg font-semibold" htmlFor="contactNumber">
@@ -453,32 +489,25 @@ const Personal = () => {
               value={formData.zipCode}
               onChange={handleChange}
               required
-              placeholder="Enter zip code"
+              placeholder="Enter Zip code"
             />
             {errors.zipCode && <p className="text-red-500 text-sm">{errors.zipCode}</p>}
           </div>
 
-          {/* Country Dropdown */}
-          <div className="mb-4">
-  <label className="text-gray-600 text-lg font-semibold" htmlFor="country">
-    Country
-  </label>
-  <select
-    id="country"
-    name="country" // The name should match formData
-    className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
-    value={formData.country} // Use formData.country instead of selectedCountry
-    onChange={handleChange}
-  >
-    <option value="">Select a Country</option>
-    {countries.map((country, index) => (
-      <option key={index} value={country}>
-        {country}
-      </option>
-    ))}
-  </select>
-</div>
-
+        <div className="mb-4">
+            <label className="form-group text-lg font-sans text-gray-600" htmlFor="city">Country</label>
+            <input
+              type="text"
+              className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
+              id="country "
+              name="country"
+              value={formData.country}
+              onChange={handleChange}
+              required
+              placeholder="Enter Country"
+            />
+            {errors.country && <p className="text-red-500 text-sm">{errors.country}</p>}
+          </div>
           </div>
     
 

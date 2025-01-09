@@ -60,6 +60,162 @@ const testDatabaseConnection = async () => {
 };
 
 testDatabaseConnection();
+app.post('/submit_education', (req, res) => {
+  let {
+    enrollment_id, // Foreign key
+    elementarySchoolName,
+    elementarySchoolAddress,
+    elementarySchoolYearGraduated,
+    highSchoolName,
+    highSchoolAddress,
+    highSchoolYearGraduated,
+    seniorHighSchoolName,
+    seniorHighSchoolAddress,
+    seniorHighSchoolYearGraduated,
+    collegeName,
+    collegeAddress,
+    collegeYearGraduated,
+    collegeDegree,
+  } = req.body;
+
+  // Validate required field
+  if (!enrollment_id) {
+    return res.status(400).send({ error: 'Missing required field: enrollment_id' });
+  }
+
+  // Ensure optional fields have default values of NULL
+  elementarySchoolName = elementarySchoolName || null;
+  elementarySchoolAddress = elementarySchoolAddress || null;
+  elementarySchoolYearGraduated = elementarySchoolYearGraduated || null;
+  highSchoolName = highSchoolName || null;
+  highSchoolAddress = highSchoolAddress || null;
+  highSchoolYearGraduated = highSchoolYearGraduated || null;
+  seniorHighSchoolName = seniorHighSchoolName || null;
+  seniorHighSchoolAddress = seniorHighSchoolAddress || null;
+  seniorHighSchoolYearGraduated = seniorHighSchoolYearGraduated || null;
+  collegeName = collegeName || null;
+  collegeAddress = collegeAddress || null;
+  collegeYearGraduated = collegeYearGraduated || null;
+  collegeDegree = collegeDegree || null;
+
+  // SQL query to insert or update educational info
+  const query = `
+    REPLACE INTO student_educational_info (
+      enrollment_id, elementarySchoolName, elementarySchoolAddress, elementarySchoolYearGraduated,
+      highSchoolName, highSchoolAddress, highSchoolYearGraduated,
+      seniorHighSchoolName, seniorHighSchoolAddress, seniorHighSchoolYearGraduated,
+      collegeName, collegeAddress, collegeYearGraduated, collegeDegree
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+  `;
+
+  const values = [
+    enrollment_id,
+    elementarySchoolName,
+    elementarySchoolAddress,
+    elementarySchoolYearGraduated,
+    highSchoolName,
+    highSchoolAddress,
+    highSchoolYearGraduated,
+    seniorHighSchoolName,
+    seniorHighSchoolAddress,
+    seniorHighSchoolYearGraduated,
+    collegeName,
+    collegeAddress,
+    collegeYearGraduated,
+    collegeDegree,
+  ];
+
+  // Execute the query
+  db.execute(query, values, (err, result) => {
+    if (err) {
+      console.error('Error inserting/updating educational info:', err);
+      return res.status(500).send({ error: 'Failed to submit educational info' });
+    }
+    console.log('Educational info inserted/updated successfully');
+    res.status(201).json({ message: 'Educational info updated successfully!' });
+  });
+});
+
+
+app.post('/submit_family', (req, res) => {
+  let {
+    enrollment_id,  // Enrollment ID (foreign key)
+    fatherName,  // Father name
+    fatherOccupation,  // Father occupation
+    fatherContact,  // Father contact
+    isFatherNotApplicable,  // Is father not applicable
+    motherName,  // Mother name
+    motherOccupation,  // Mother occupation
+    motherContact,  // Mother contact
+    isMotherNotApplicable,  // Is mother not applicable
+    guardianName,  // Guardian name
+    guardianOccupation,  // Guardian occupation
+    guardianContact,  // Guardian contact
+    numOfSiblings,  // Number of siblings
+    familyAnnualIncome,  // Annual income
+  } = req.body;
+
+  // Validate that required fields are present
+  if (!enrollment_id) {
+    return res.status(400).send({ error: 'Missing required fields' });
+  }
+
+  // Ensure optional fields (like fatherName, motherName, etc.) are not undefined
+  fatherName = fatherName || null;
+  fatherOccupation = fatherOccupation || null;
+  fatherContact = fatherContact || null;
+  isFatherNotApplicable = isFatherNotApplicable || false;  // default to false if not provided
+
+  motherName = motherName || null;
+  motherOccupation = motherOccupation || null;
+  motherContact = motherContact || null;
+  isMotherNotApplicable = isMotherNotApplicable || false;  // default to false if not provided
+
+  guardianName = guardianName || null;
+  guardianOccupation = guardianOccupation || null;
+  guardianContact = guardianContact || null;
+  numOfSiblings = numOfSiblings || null;
+  familyAnnualIncome = familyAnnualIncome || null;
+
+  // SQL query to insert or replace form data into the student_family_profile table, including enrollment_id
+  const query = `
+    REPLACE INTO student_family_profile (
+      enrollment_id, father_name, father_occupation, father_contact, isFatherNotApplicable, 
+      mother_name, mother_occupation, mother_contact, isMotherNotApplicable, 
+      guardian_name, guardian_occupation, guardian_contact, 
+      num_of_siblings, family_annual_income
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+  `;
+
+  const values = [
+    enrollment_id,  // Foreign key: enrollment_id
+    fatherName,  // Father name
+    fatherOccupation,  // Father occupation
+    fatherContact,  // Father contact
+    isFatherNotApplicable,  // Father not applicable (default false)
+    motherName,  // Mother name
+    motherOccupation,  // Mother occupation
+    motherContact,  // Mother contact
+    isMotherNotApplicable,  // Mother not applicable (default false)
+    guardianName,  // Guardian name
+    guardianOccupation,  // Guardian occupation
+    guardianContact,  // Guardian contact
+    numOfSiblings,  // Number of siblings
+    familyAnnualIncome,  // Family annual income
+  ];
+
+  // Execute the query to insert/replace data
+  db.execute(query, values, (err, result) => {
+    if (err) {
+      console.error('Error inserting data:', err);
+      return res.status(500).send({ error: 'Failed to submit family form data' });
+    }
+    console.log('Family data inserted successfully');
+    res.status(201).json({ message: 'Family application updated successfully!' });
+  });
+});
+
+
 
 app.post('/submit_personal', (req, res) => {
   let {
@@ -112,7 +268,7 @@ app.post('/submit_personal', (req, res) => {
 
   // SQL query to insert form data into the student_personal_info table, including enrollment_id and lrn
   const query = `
-    INSERT INTO student_personal_info (
+    REPLACE INTO student_personal_info (
       enrollment_id, fname, lname, mname, suffix, lrn, sex, bday, civil_status, religion, nationality,
       contact, house_number, street_subdivision, region, province, municipality, zip_code, country
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);

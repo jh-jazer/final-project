@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
-import { useAppContext } from "../../contexts/AppContext";
 import { useNavigate } from 'react-router-dom';
 import { useActiveItem } from "../../contexts/CreateAppContext";
+import { useOutletContext } from 'react-router-dom';
+
 
 const Education = () => {
-  const { applicantType } = useAppContext();
-  const showCollegeFields = applicantType === "transferee" || applicantType === "bachelors";
-  const showSeniorHighYearField = applicantType !== "grade12"; // Check if senior high year should be shown
+  const { userDetails } = useOutletContext(); // Access the passed data
+  const enrollment_id = userDetails?.enrollment_id || "No id provided"; 
+  const showCollegeFields = userDetails?.applicant_type === "transferee" || userDetails?.applicant_type === "bachelors";
+  const showSeniorHighYearField = userDetails?.applicant_type !== "grade12"; // Check if senior high year should be shown
   const navigate = useNavigate();
   const { setActiveItem } = useActiveItem();
 
@@ -21,11 +22,12 @@ const Education = () => {
     seniorHighSchoolName: "",
     seniorHighSchoolAddress: "",
     seniorHighSchoolYearGraduated: "",
-    collegeName: "",
-    collegeAddress: "",
-    collegeYearGraduated: "",
-    collegeDegree: "",
+    collegeName: null,
+    collegeAddress: null,
+    collegeYearGraduated: null,
+    collegeDegree: null,
   });
+
   const [successMessage, setSuccessMessage] = useState(""); 
   const [errors, setErrors] = useState({});
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true); // Tracks if 'Next' button is disabled after form update
@@ -176,28 +178,70 @@ const Education = () => {
     setFormData(prevData => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault(); 
-
-    // First, validate the form before submission
+const handleSubmit = async (e) => {
+    e.preventDefault();
+  
     const isValid = validate();
-    
     if (isValid) {
-        // If valid, process the form submission
-        console.log("Personal Information Submitted:", formData);
-        setFormUpdated(true);
-        
-        // Then show the success message after navigation
-        divRef.current.scrollIntoView({ behavior: "smooth" });
-        setSuccessMessage("Application updated successfully!"); 
-        setTimeout(() => setSuccessMessage(""), 3000); // Hide message after 3 seconds
-    } else {
-        divRef.current.scrollIntoView({ behavior: "smooth" });
-        // If invalid, clear success message and notify the user
-        setSuccessMessage("there is something wrong"); // Clear success message if validation fails
-    }
-};
+      const updatedFormData = {
+        ...formData,
+        enrollment_id: enrollment_id,
+      };
+      divRef.current.scrollIntoView({ behavior: "smooth" });
+      setSuccessMessage("Application updated successfully!");
+      setIsNextButtonDisabled(false);
+      
+  
+      try {
+        const response = await fetch('http://localhost:5005/submit_education', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedFormData),
+        });
+  
+        if (response.ok) {
+          const result = await response.json();
+          console.log(response.status); // Check the actual response status code here
 
+          setFormData({
+            ...formData,
+            elementarySchoolName: "",
+            elementarySchoolAddress: "",
+            elementarySchoolYearGraduated: "",
+            highSchoolName: "",
+            highSchoolAddress: "",
+            highSchoolYearGraduated: "",
+            seniorHighSchoolName: "",
+            seniorHighSchoolAddress: "",
+            seniorHighSchoolYearGraduated: "",
+            collegeName: "",
+            collegeAddress: "",
+            collegeYearGraduated: "",
+            collegeDegree: "",
+          }); // Reset family form data
+          
+                    divRef.current.scrollIntoView({ behavior: "smooth" });
+          setSuccessMessage("Application updated successfully!");
+          setTimeout(() => setSuccessMessage(""), 5000);
+        } else {
+          
+          setSuccessMessage("There was an issue with the submission. Please try again.");
+          setTimeout(() => setSuccessMessage(""), 5000);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        setSuccessMessage("An error occurred. Please try again.");
+        setTimeout(() => setSuccessMessage(""), 5000);
+      }
+    } else {
+      divRef.current.scrollIntoView({ behavior: "smooth" });
+      setSuccessMessage("There is something wrong with the form. Please check your entries.");
+      setTimeout(() => setSuccessMessage(""), 5000);
+    }
+  };
+  
   return (
     <div 
     ref={divRef}

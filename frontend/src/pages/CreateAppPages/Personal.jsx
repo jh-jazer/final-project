@@ -3,23 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useActiveItem } from "../../contexts/CreateAppContext";
 import { useOutletContext } from 'react-router-dom';
 
-const apiRequest = async (url, method, body = null) => {
-  try {
-    const response = await fetch(url, {
-      method: method,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: body ? JSON.stringify(body) : null,
-    });
-    return response.json();
-  } catch (error) {
-    console.error('Error with API request:', error);
-    throw new Error('API request failed');
-  }
-};
-
-
 const Personal = () => {
   const navigate = useNavigate();
   const { userDetails } = useOutletContext(); // Access the passed data
@@ -44,7 +27,6 @@ const Personal = () => {
     zipCode: '',
     country: '',
   });
-  const [isEditing, setIsEditing] = useState(false);
 
   const [successMessage, setSuccessMessage] = useState(""); 
   const [errors, setErrors] = useState({});
@@ -133,9 +115,11 @@ const Personal = () => {
         ...formData,
         enrollment_id: enrollment_id,
       };
+      divRef.current.scrollIntoView({ behavior: "smooth" });
+      setSuccessMessage("Application updated successfully!");
   
       try {
-        const response = await fetch('https://cvsu-backend-system.vercel.app/submit_personal', {
+        const response = await fetch('http://localhost:5005/submit_personal', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

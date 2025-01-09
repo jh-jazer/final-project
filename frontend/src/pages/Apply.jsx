@@ -23,7 +23,7 @@ const AdmissionPortal = () => {
 
   const checkEmail = async (email) => {
     try {
-      const response = await fetch('http://localhost:5005/check-email', {
+      const response = await fetch('https://cvsu-backend-system.vercel.app/check-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),

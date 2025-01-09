@@ -10,7 +10,6 @@ const Details = () => {
 
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
-  const id = userDetails?.id;
 
   // Full names mapping for display
   const fullNames = {
@@ -57,38 +56,24 @@ const Details = () => {
     </div>
   );
 
+  // Confirm cancellation
   const handleConfirmCancel = async () => {
-    const id = userDetails?.id; // Ensure this is correct
-    if (!id) {
-      console.error("No ID provided for deletion.");
-      return;
-    }
-  
     try {
-      const response = await fetch(`https://cvsu-backend-system.vercel.app/api/enrollments/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      // Simulate API call to delete enrollment
+      await fetch(`https://cvsu-backend-system.vercel.app/api/enrollments_delete/${userDetails.id}`, {
+        method: "DELETE",
       });
-  
-      if (!response.ok) {
-        const errorDetails = await response.text(); // Log the response body for debugging
-        throw new Error(`Failed to delete: ${response.status} ${response.statusText} - ${errorDetails}`);
-      }
-  
-      // If the delete is successful
+
       localStorage.removeItem("userData");
       localStorage.removeItem("email");
-      navigate("/apply");
+
+      navigate("/apply"); // Redirect to create page
     } catch (error) {
       console.error("Failed to cancel application:", error);
     } finally {
       setIsModalOpen(false); // Close modal
     }
   };
-  
-  
 
   return (
     <div className="w-full min-h-screen bg-white p-8 pt-12 shadow-xl rounded-lg flex flex-col justify-between">

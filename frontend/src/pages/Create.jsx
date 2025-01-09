@@ -94,7 +94,7 @@ useEffect(() => {
 
   const checkEmailExists = async (email) => {
     try {
-      const response = await fetch("http://localhost:5005/check-email", {
+      const response = await fetch("https://cvsu-backend-system.vercel.app/check-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -109,7 +109,7 @@ useEffect(() => {
 
   const saveEnrollmentData = async (enrollmentData) => {
     try {
-      const response = await fetch("http://localhost:5005/save-enrollment", {
+      const response = await fetch("https://cvsu-backend-system.vercel.app/save-enrollment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(enrollmentData),

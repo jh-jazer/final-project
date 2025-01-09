@@ -151,22 +151,6 @@ const EmployeeAccountManagement = () => {
   };
   
 
-  // Toggle employee status (Active/Inactive)
-  const toggleStatus = async (employee) => {
-    const updatedStatus = employee.status === 'Active' ? 'Inactive' : 'Active';
-    try {
-      await apiRequest(
-        `https://cvsu-backend-system.vercel.app/api/employees/${employee.employee_id}`,
-        'PUT',
-        { ...employee, status: updatedStatus }
-      );
-      setStatusMessage('Employee status updated');
-      fetchEmployees();
-    } catch (error) {
-      setStatusMessage('Error updating status');
-    }
-  };
-
   // Filter employees based on search and active status
   const filteredEmployees = employees.filter(
     (employee) =>

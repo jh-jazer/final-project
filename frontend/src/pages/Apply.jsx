@@ -75,12 +75,13 @@ const AdmissionPortal = () => {
               <img src={Logo} alt="University Logo" className="w-20 h-20 mb-4" />
               <h2 className="text-3xl font-extrabold text-[#C61A01]">Admission Portal</h2>
             </div>
-            <div className="mt-6 text-center">
+            <div className="mt-6 flex justify-center">
               <GoogleLogin
                 onSuccess={handleLoginSuccess}
                 onError={handleLoginFailure}
               />
             </div>
+
             <div className="text-center pt-4">
               <a href="#" className="text-sm text-[#C61A01] hover:underline">
                 Read The Admission Overview?

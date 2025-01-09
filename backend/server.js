@@ -497,7 +497,7 @@ app.post('/api/login', async (req, res) => {
             full_name: student.full_name,
             role: 'Student',
             type: student.student_type,
-            other: student.program,
+            other: student.program_id,
           },
         });
       } else {

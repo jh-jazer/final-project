@@ -379,6 +379,23 @@ app.get('/api/otherInfo', async (req, res) => {
   }
 });
 
+app.get('/api/numberOfPeoplePerRoles', async (req, res )=> {
+  try{
+    const [numOfApplicants] = await db.query('select COUNT(*) from enrollments');
+    const [numOfStudents] = await db.query('select COUNT(*) from employees');
+    const [numOfEmployees] = await db.query('select COUNT(*) from employees');
+    res.status(200).json({
+      numOfApplicants,
+      numOfStudents,
+      numOfEmployees
+    })
+  }
+  catch (error){
+    console.error('Error fetching number of people per role:', error);
+    res.status(500).json({ message: 'Error fetching number of people per role' });
+  }
+});
+
 // Get all students
 app.get('/api/students', async (req, res) => {
   try {

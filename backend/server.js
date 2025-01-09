@@ -60,6 +60,26 @@ const testDatabaseConnection = async () => {
 
 testDatabaseConnection();
 
+app.delete('/api/enrollments/:id', async (req, res) => {
+  const { id } = req.params;
+  console.log("DELETE request received for ID:", id);
+
+  try {
+    const result = await db('enrollments').where('id', id).del();
+    console.log("Deletion result:", result);
+    if (result) {
+      res.sendStatus(200);
+    } else {
+      res.status(404).send("Enrollment not found");
+    }
+  } catch (error) {
+    console.error("Error during deletion:", error);
+    res.status(500).send("Server error");
+  }
+});
+
+
+
 app.get('/api/enrollments', async (req, res) => {
   const { email } = req.query;
 

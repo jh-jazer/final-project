@@ -7,11 +7,10 @@ import { useOutletContext } from 'react-router-dom';
 const Education = () => {
   const { userDetails } = useOutletContext(); // Access the passed data
   const enrollment_id = userDetails?.enrollment_id || "No id provided"; 
-  const showCollegeFields = userDetails?.applicant_type === "transferee" || userDetails?.applicant_type === "bachelors";
+  const showCollegeFields = userDetails?.applicant_type === "transferee";
   const showSeniorHighYearField = userDetails?.applicant_type !== "grade12"; // Check if senior high year should be shown
   const navigate = useNavigate();
   const { setActiveItem } = useActiveItem();
-
   const [formData, setFormData] = useState({
     elementarySchoolName: "",
     elementarySchoolAddress: "",
@@ -31,14 +30,13 @@ const Education = () => {
   const [successMessage, setSuccessMessage] = useState(""); 
   const [errors, setErrors] = useState({});
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true); // Tracks if 'Next' button is disabled after form update
-  const [formUpdated, setFormUpdated] = useState(false); // Tracks if the form has been successfully updated
   const divRef = useRef(null);
 
     // Effect to enable or disable the button based on form completion
     useEffect(() => {
       const isFormValid = validate(); // Checks if the form is valid based on `validate` function
-      setIsNextButtonDisabled(!(isFormValid && formUpdated)); // Enables "Next" only if valid and updated
-    }, [formData, formUpdated]);
+      setIsNextButtonDisabled(!(isFormValid )); // Enables "Next" only if valid and updated
+    }, [formData]);
 
     const handleFirstClick = (item) => {
       if (!isNextButtonDisabled) {
@@ -48,11 +46,35 @@ const Education = () => {
     };
   
     const handleSecondClick = (item) => {
-      if (isNextButtonDisabled) {
         navigate('/createapplication/family');// Navigate to the desired route
         setActiveItem(item);
-      } 
+       
     };
+
+        useEffect(() => {
+          if (enrollment_id && enrollment_id !== "No ID provided") {
+            fetchFormData(enrollment_id);
+          }
+        }, [enrollment_id]);
+        
+        const fetchFormData = async (enrollment_id) => {
+          try {
+            // Update the fetch URL to include the enrollment_id as a query parameter
+            const response = await fetch(`http://localhost:5005/api/getEducationInfo?enrollment_id=${enrollment_id}`);
+            if (!response.ok) {
+              throw new Error("Failed to fetch data");
+            }
+            const data = await response.json();
+            setFormData((prevData) => ({
+              ...prevData,
+              ...data,  // Populate form with fetched data
+            }));
+          } catch (error) {
+            console.error("Error fetching data:", error);
+          }
+        };
+        
+    
 
   const validate = () => {
     let validationErrors = {};
@@ -193,7 +215,7 @@ const handleSubmit = async (e) => {
       
   
       try {
-        const response = await fetch('https://cvsu-backend-system.vercel/submit_education', {
+        const response = await fetch('http://localhost:5005/submit_education', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -315,8 +337,8 @@ const handleSubmit = async (e) => {
               value={formData.elementarySchoolYearGraduated}
               onChange={handleChange}
               placeholder="Enter Year Graduated"
-              className="input-field"
-            />
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all"
+              />
             {errors.elementarySchoolYearGraduated && <p className="text-red-500 text-sm">{errors.elementarySchoolYearGraduated}</p>}
           </div>
         </fieldset>
@@ -360,14 +382,14 @@ const handleSubmit = async (e) => {
               value={formData.highSchoolYearGraduated}
               onChange={handleChange}
               placeholder="Enter Graduation Year"
-              className="input-field"
-            />
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all"
+              />
             {errors.highSchoolYearGraduated && <p className="text-red-500 text-sm">{errors.highSchoolYearGraduated}</p>}
           </div>
         </fieldset>
 
         {/* Senior High School Section */}
-        {showSeniorHighYearField && (
+        
           <fieldset className="mx-5">
             <legend className="text-2xl font-extrabold text-[#001800] mb-6 text-left">Senior High School</legend>
             <div className="form-group mb-4">
@@ -396,6 +418,9 @@ const handleSubmit = async (e) => {
               />
               {errors.seniorHighSchoolAddress &&  <p className="text-red-500 text-sm">{errors.seniorHighSchoolAddress}</p>}
             </div>
+            </fieldset>
+            {showSeniorHighYearField && (
+            <fieldset>
             <div className="form-group mb-4">
               <label htmlFor="seniorHighSchoolYearGraduated" className="block text-lg font-semibold text-gray-600">Senior High Year Graduated</label>
               <input
@@ -405,8 +430,8 @@ const handleSubmit = async (e) => {
                 value={formData.seniorHighSchoolYearGraduated}
                 onChange={handleChange}
                 placeholder="Enter Graduation Year"
-                className="input-field"
-              />
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all"
+                />
               {errors.seniorHighSchoolYearGraduated &&  <p className="text-red-500 text-sm">{errors.seniorHighSchoolYearGraduated}</p>}
             </div>
           </fieldset>
@@ -441,32 +466,6 @@ const handleSubmit = async (e) => {
                 className="w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-300"
               />
               {errors.collegeAddress && <p className="text-red-500 text-sm">{errors.collegeAddress}</p>}
-            </div>
-            <div className="form-group mb-4">
-              <label htmlFor="collegeYearGraduated" className="block text-lg font-semibold text-gray-600">Year Graduated</label>
-              <input
-                type="number"
-                id="collegeYearGraduated"
-                name="collegeYearGraduated"
-                value={formData.collegeYearGraduated}
-                onChange={handleChange}
-                placeholder="Enter Graduation Year"
-                className="w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-300"
-              />
-              {errors.collegeYearGraduated && <p className="text-red-500 text-sm">{errors.collegeYearGraduated}</p>}
-            </div>
-            <div className="form-group mb-4">
-              <label htmlFor="collegeDegree" className="block text-lg font-semibold text-gray-600">Degree</label>
-              <input
-                type="text"
-                id="collegeDegree"
-                name="collegeDegree"
-                value={formData.collegeDegree}
-                onChange={handleChange}
-                placeholder="Enter Degree"
-                className="w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-300"
-              />
-              {errors.collegeDegree && <p className="text-red-500 text-sm">{errors.collegeDegree}</p>}
             </div>
           </fieldset>
           )}

@@ -8,7 +8,6 @@ const Family = () => {
   const [successMessage, setSuccessMessage] = useState(""); 
   const [errors, setErrors] = useState({});
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true); // Tracks if 'Next' button is disabled after form update
-  const [formUpdated, setFormUpdated] = useState(false); // Tracks if the form has been successfully updated
   const divRef = useRef(null);
   const navigate = useNavigate();
   const { userDetails } = useOutletContext(); // Access the passed data
@@ -34,11 +33,11 @@ const Family = () => {
   });
 
 
-  // UseEffect to track form data changes and enable/disable submit button
    // Effect to enable or disable the button based on form completion
    useEffect(() => {
     const isFormValid = validate(); // Validate the form every time formData changes
-    setIsNextButtonDisabled(!isFormValid); // Disable Next button if form is not valid
+    console.log("Form Valid: ", isFormValid);  // Debugging
+    setIsNextButtonDisabled(!(isFormValid)); // Disable Next button if form is not valid
 }, [formData]);
 
     const { setActiveItem } = useActiveItem();
@@ -81,16 +80,35 @@ const Family = () => {
   };
 
   const handleSecondClick = (item) => {
-    if (isNextButtonDisabled) {
       navigate('/createapplication/personal');// Navigate to the desired route
       setActiveItem(item);
-    } 
+    
   };
 
-  useEffect(() => {
-    const isFormValid = validate(); // Checks if the form is valid based on `validate` function
-    setIsNextButtonDisabled(!(isFormValid && formUpdated)); // Enables "Next" only if valid and updated
-  }, [formData, formUpdated]);
+  
+    useEffect(() => {
+      if (enrollment_id && enrollment_id !== "No ID provided") {
+        fetchFormData(enrollment_id);
+      }
+    }, [enrollment_id]);
+    
+    const fetchFormData = async (enrollment_id) => {
+      try {
+        // Update the fetch URL to include the enrollment_id as a query parameter
+        const response = await fetch(`http://localhost:5005/api/getFamilyInfo?enrollment_id=${enrollment_id}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const data = await response.json();
+        setFormData((prevData) => ({
+          ...prevData,
+          ...data,  // Populate form with fetched data
+        }));
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    
 
   // Form validation function
   const validate = () => {
@@ -179,7 +197,7 @@ const Family = () => {
       
   
       try {
-        const response = await fetch('https://cvsu-backend-system.vercel/submit_family', {
+        const response = await fetch('http://localhost:5005/submit_family', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -272,7 +290,7 @@ const Family = () => {
              </h5>
           </div>
         {/* Father's Information */}
-        <div className="mx-11 mb-6">
+        <div>
 
         <div className="mx-11 mb-6">
             <label htmlFor="isFatherNotApplicable" className="flex items-center text-lg cursor-pointer">

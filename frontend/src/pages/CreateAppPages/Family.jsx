@@ -179,7 +179,7 @@ const Family = () => {
       
   
       try {
-        const response = await fetch('http://localhost:5005/submit_family', {
+        const response = await fetch('https://cvsu-backend-system.vercel/submit_family', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

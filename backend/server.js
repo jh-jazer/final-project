@@ -14,8 +14,6 @@ import { fileURLToPath } from 'url';
 dotenv.config();
 
 const app = express();
-const router = express.Router();  // Create an Express Router instance
-
 const port = process.env.PORT || 5005;
 
 
@@ -60,6 +58,8 @@ const testDatabaseConnection = async () => {
 };
 
 testDatabaseConnection();
+
+
 app.post('/submit_education', (req, res) => {
   let {
     enrollment_id, // Foreign key

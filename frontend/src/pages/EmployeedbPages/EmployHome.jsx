@@ -9,13 +9,22 @@ const EmployHome = () => {
   });
 
   useEffect(() => {
-    // Simulating an API call to fetch data
-    setStatistics({
-      applicants: 120, // replace with actual data
-      students: 500, // replace with actual data
-      employees: 30, // replace with actual data
-    });
-  }, []);
+      const numberOfPeoplePerRole = async () => {
+        try {
+          const response = await fetch('https://cvsu-backend-system.vercel.app/api/numberOfPeoplePerRoles');
+          const data = await response.json();
+          setStatistics({
+            applicants: data.numOfApplicants[0]["COUNT(*)"],
+            students: data.numOfStudents[0]["COUNT(*)"],
+            employees: data.numOfEmployees[0]["COUNT(*)"],
+          });          
+        } catch (error) {
+          console.error('Error fetching other info:', error);
+        }
+      };
+  
+      numberOfPeoplePerRole();
+    }, []);
 
   return (
     <div className="p-8">

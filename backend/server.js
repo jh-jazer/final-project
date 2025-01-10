@@ -644,6 +644,51 @@ app.delete('/api/employees/:employee_id', async (req, res) => {
   }
 });
 
+//get all applciation
+app.get('/api/application', async (req, res) => {
+  try {
+    const [application] = await db.query('SELECT * FROM application');
+    res.status(200).json(application);
+  } catch (err) {
+    console.error('Error fetching application:', err);
+    res.status(500).json({ message: 'Error fetching application' });
+  }
+})
+
+app.get('/api/otherInfo', async (req, res) => {
+  try {
+    const [personalInfo] = await db.query('SELECT * FROM student_personal_info');
+    const [familyBackground] = await db.query('SELECT * FROM student_family_profile');
+    const [educationalBackground] = await db.query('SELECT * FROM student_educational_info');
+
+    res.status(200).json({
+      personalInfo,
+      familyBackground,
+      educationalBackground,
+    });
+  } catch (err) {
+    console.error('Error fetching other info:', err);
+    res.status(500).json({ message: 'Error fetching other info' });
+  }
+});
+
+app.get('/api/numberOfPeoplePerRoles', async (req, res )=> {
+  try{
+    const [numOfApplicants] = await db.query('select COUNT(*) from enrollments');
+    const [numOfStudents] = await db.query('select COUNT(*) from employees');
+    const [numOfEmployees] = await db.query('select COUNT(*) from employees');
+    res.status(200).json({
+      numOfApplicants,
+      numOfStudents,
+      numOfEmployees
+    })
+  }
+  catch (error){
+    console.error('Error fetching number of people per role:', error);
+    res.status(500).json({ message: 'Error fetching number of people per role' });
+  }
+});
+
 // Get all students
 app.get('/api/students', async (req, res) => {
   try {

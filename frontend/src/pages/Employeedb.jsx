@@ -19,6 +19,7 @@ const EmployeeDashboard = () => {
   const [isSidebarMinimized, setIsSidebarMinimized] = useState(false);
   const [isStudentDropdownOpen, setIsStudentDropdownOpen] = useState(false);
   const [isApplicationDropdownOpen, setIsApplicationDropdownOpen] = useState(false);
+  const [isCoursesDropdownOpen, setIsCoursesDropdownOpen] = useState(false);
   const [isSocietyDropdownOpen, setIsSocietyDropdownOpen] = useState(false);
   const [isAdminDropdownOpen, setIsAdminDropdownOpen] = useState(false);
   const [user, setUser] = useState(null); // Store user data locally

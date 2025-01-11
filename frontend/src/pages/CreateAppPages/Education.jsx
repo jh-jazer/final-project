@@ -60,7 +60,7 @@ const Education = () => {
         const fetchFormData = async (enrollment_id) => {
           try {
             // Update the fetch URL to include the enrollment_id as a query parameter
-            const response = await fetch(`http://localhost:5005/api/getEducationInfo?enrollment_id=${enrollment_id}`);
+            const response = await fetch(`https://cvsu-backend-system.vercel.app/api/getEducationInfo?enrollment_id=${enrollment_id}`);
             if (!response.ok) {
               throw new Error("Failed to fetch data");
             }
@@ -215,7 +215,7 @@ const handleSubmit = async (e) => {
       
   
       try {
-        const response = await fetch('http://localhost:5005/submit_education', {
+        const response = await fetch('https://cvsu-backend-system.vercel.app/submit_education', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

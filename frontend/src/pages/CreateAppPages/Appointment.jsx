@@ -22,7 +22,7 @@ const Appointment = () => {
     if (formData.date) {
       const fetchSlots = async () => {
         try {
-          const response = await fetch(`http://localhost:5005/api/available-slots?date=${formData.date}`);
+          const response = await fetch(`https://cvsu-backend-system.vercel.app/api/available-slots?date=${formData.date}`);
           if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
           const data = await response.json();
@@ -116,7 +116,7 @@ const Appointment = () => {
         </svg>
       </button>
       </div>
-      
+
       <div className="appointment-form-container">
         <div className="bg-gray-800 text-white px-4 rounded pt-3 pb-6 mb-3">
           <h3 className="text-lg font-bold mb-2">Directions</h3>

@@ -23,7 +23,7 @@ const EmployeeProfile = () => {
 
   const fetchFormData = async (employee_id) => {
     try {
-      const response = await fetch(`https://cvsu-backend-system.vercel.app/?employee_id=${employee_id}`);
+      const response = await fetch(`https://cvsu-backend-system.vercel.app/api/getEmployeeInfo?employee_id=${employee_id}`);
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }

@@ -420,7 +420,7 @@ const handleSubmit = async (e) => {
             </div>
             </fieldset>
             {showSeniorHighYearField && (
-            <fieldset>
+          <fieldset className="mx-5">
             <div className="form-group mb-4">
               <label htmlFor="seniorHighSchoolYearGraduated" className="block text-lg font-semibold text-gray-600">Senior High Year Graduated</label>
               <input

@@ -1,230 +1,97 @@
-import React, { useState } from "react";
-import { PencilSquareIcon, TrashIcon, EyeIcon } from "@heroicons/react/24/solid";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const ClassManagement = () => {
-  const [classes, setClasses] = useState([
-    {
-      id: 1,
-      classCode: "CS101A",
-      courseName: "Introduction to Computer Science",
-      courseCode: "CS101",
-      instructor: "Prof. John Smith",
-      year: "1st Year",
-      section: "A",
-      enrolledRegular: 25,
-      enrolledIrregular: 5,
-      students: [
-        { id: 1, name: "Alice Brown", enrollmentType: "Regular" },
-        { id: 2, name: "Bob Green", enrollmentType: "Irregular" },
-        { id: 3, name: "Charlie Black", enrollmentType: "Regular" },
-      ],
-    },
-    {
-      id: 2,
-      classCode: "IT202B",
-      courseName: "Data Structures",
-      courseCode: "IT202",
-      instructor: "Prof. Jane Doe",
-      year: "2nd Year",
-      section: "B",
-      enrolledRegular: 20,
-      enrolledIrregular: 7,
-      students: [
-        { id: 4, name: "Diana White", enrollmentType: "Regular" },
-        { id: 5, name: "Edward Blue", enrollmentType: "Irregular" },
-        { id: 6, name: "Fiona Gray", enrollmentType: "Regular" },
-      ],
-    },
-  ]);
+const Appointments = () => {
+  const [appointments, setAppointments] = useState([]);
+  const [startDate, setStartDate] = useState('2025-01-15');
+  const [endDate, setEndDate] = useState('2025-06-15');
 
-  const [activeClass, setActiveClass] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [classToDelete, setClassToDelete] = useState(null);
-  const [editingClass, setEditingClass] = useState(null);
-  const [newClass, setNewClass] = useState({
-    id: null,
-    classCode: "",
-    courseName: "",
-    courseCode: "",
-    instructor: "",
-    year: "",
-    section: "",
-    enrolledRegular: 0,
-    enrolledIrregular: 0,
-    students: [],
-  });
+  useEffect(() => {
+    // Fetch appointments when the component mounts or the date range changes
+    axios
+      .get('http://localhost:3001/appointments', {
+        params: { startDate, endDate },
+      })
+      .then((response) => {
+        setAppointments(response.data);
+      })
+      .catch((error) => console.error('Error fetching appointments:', error));
+  }, [startDate, endDate]);
 
-  const openModal = (classData) => {
-    setActiveClass(classData);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setActiveClass(null);
-    setIsModalOpen(false);
-  };
-
-  const openDeleteModal = (classData) => {
-    setClassToDelete(classData); // Correctly setting the class to delete
-    setShowDeleteModal(true);    // Show the delete modal
-  };
-
-  const closeDeleteModal = () => {
-    setClassToDelete(null);
-    setShowDeleteModal(false);  // Correcting the state variable here
-  };
-
-  const handleInputChange = (e) => {
-    setNewClass({ ...newClass, [e.target.name]: e.target.value });
-  };
-
-  const saveClass = () => {
-    if (editingClass) {
-      setClasses(classes.map((c) => (c.id === editingClass.id ? newClass : c)));
-    } else {
-      setClasses([...classes, { ...newClass, id: classes.length + 1 }]);
-    }
-    resetForm();
-  };
-
-  const resetForm = () => {
-    setNewClass({
-      id: null,
-      classCode: "",
-      courseName: "",
-      courseCode: "",
-      instructor: "",
-      year: "",
-      section: "",
-      enrolledRegular: 0,
-      enrolledIrregular: 0,
-      students: [],
-    });
-    setEditingClass(null);
-  };
-
-  const deleteClass = () => {
-    setClasses(classes.filter((c) => c.id !== classToDelete.id));
-    closeDeleteModal();
-  };
-
-  const startEditing = (classData) => {
-    setEditingClass(classData);
-    setNewClass({ ...classData });
+  const handleSlotChange = (id, newAvailableSlots) => {
+    axios
+      .put(`http://localhost:3001/appointments/${id}`, { availableSlots: newAvailableSlots })
+      .then(() => {
+        // Update the appointments state after successful update
+        setAppointments((prevAppointments) =>
+          prevAppointments.map((appt) =>
+            appt.id === id ? { ...appt, available_slots: newAvailableSlots } : appt
+          )
+        );
+      })
+      .catch((error) => console.error('Error updating appointment:', error));
   };
 
   return (
-    <div className="p-6 bg-green-500 min-h-screen">
-      <div className="bg-white shadow-lg rounded-lg p-6 mx-auto max-w-full sm:max-w-6xl">
-        <h2 className="text-2xl font-semibold text-gray-700 mb-4">Class Management</h2>
+    <div className="min-h-screen bg-gray-100 p-8">
+      <div className="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+        <h1 className="text-3xl font-bold text-gray-900 mb-6">Manage Appointments</h1>
 
-        {/* Add/Edit Form */}
-        <div className="mb-6">
-          <h3 className="text-xl font-semibold text-gray-600">
-            {editingClass ? "Edit Class" : "Add New Class"}
-          </h3>
-          <div className="grid grid-cols-2 gap-4">
+        <div className="flex space-x-4 mb-6">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">Start Date</label>
             <input
-              type="text"
-              name="classCode"
-              placeholder="Class Code"
-              value={newClass.classCode}
-              onChange={handleInputChange}
-              className="border px-3 py-2 rounded-md"
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="mt-1 p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">End Date</label>
             <input
-              type="text"
-              name="courseName"
-              placeholder="Course Name"
-              value={newClass.courseName}
-              onChange={handleInputChange}
-              className="border px-3 py-2 rounded-md"
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="mt-1 p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             />
-            <input
-              type="text"
-              name="courseCode"
-              placeholder="Course Code"
-              value={newClass.courseCode}
-              onChange={handleInputChange}
-              className="border px-3 py-2 rounded-md"
-            />
-            <input
-              type="text"
-              name="instructor"
-              placeholder="Instructor"
-              value={newClass.instructor}
-              onChange={handleInputChange}
-              className="border px-3 py-2 rounded-md"
-            />
-            <input
-              type="text"
-              name="year"
-              placeholder="Year"
-              value={newClass.year}
-              onChange={handleInputChange}
-              className="border px-3 py-2 rounded-md"
-            />
-            <input
-              type="text"
-              name="section"
-              placeholder="Section"
-              value={newClass.section}
-              onChange={handleInputChange}
-              className="border px-3 py-2 rounded-md"
-            />
-            <div className="col-span-2 flex gap-4">
-              <button
-                onClick={saveClass}
-                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-              >
-                {editingClass ? "Save Changes" : "Add Class"}
-              </button>
-              {editingClass && (
-                <button
-                  onClick={resetForm}
-                  className="bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500"
-                >
-                  Cancel
-                </button>
-              )}
-            </div>
           </div>
         </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="min-w-full table-auto border-collapse">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="px-4 py-2 text-left border border-gray-300">Class Code</th>
-                <th className="px-4 py-2 text-left border border-gray-300">Course Name</th>
-                <th className="px-4 py-2 text-left border border-gray-300">Course Code</th>
-                <th className="px-4 py-2 text-left border border-gray-300">Instructor</th>
-                <th className="px-4 py-2 text-left border border-gray-300">Year</th>
-                <th className="px-4 py-2 text-left border border-gray-300">Section</th>
-                <th className="px-4 py-2 text-left border border-gray-300">Actions</th>
+        <div className="overflow-x-auto bg-white shadow-md rounded-lg">
+          <table className="min-w-full table-auto">
+            <thead className="bg-gray-200">
+              <tr>
+                <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Date</th>
+                <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Time Period</th>
+                <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Available Slots</th>
+                <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Max Slots</th>
+                <th className="py-3 px-6 text-center text-sm font-semibold text-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {classes.map((classData) => (
-                <tr key={classData.id} className="hover:bg-gray-100">
-                  <td className="px-4 py-2 border border-gray-300">{classData.classCode}</td>
-                  <td className="px-4 py-2 border border-gray-300">{classData.courseName}</td>
-                  <td className="px-4 py-2 border border-gray-300">{classData.courseCode}</td>
-                  <td className="px-4 py-2 border border-gray-300">{classData.instructor}</td>
-                  <td className="px-4 py-2 border border-gray-300">{classData.year}</td>
-                  <td className="px-4 py-2 border border-gray-300">{classData.section}</td>
-                  <td className="px-4 py-2 border border-gray-300 flex space-x-2">
-                    <button onClick={() => openModal(classData)}>
-                      <EyeIcon className="h-6 w-6 text-green-500" />
-                    </button>
-                    <button onClick={() => startEditing(classData)}>
-                      <PencilSquareIcon className="h-6 w-6 text-yellow-500" />
-                    </button>
-                    <button onClick={() => openDeleteModal(classData)}>
-                      <TrashIcon className="h-6 w-6 text-red-500" />
+              {appointments.map((appointment) => (
+                <tr key={appointment.id} className="border-b border-gray-200 hover:bg-gray-50">
+                  <td className="py-3 px-6 text-sm text-gray-800">{appointment.date}</td>
+                  <td className="py-3 px-6 text-sm text-gray-800">{appointment.time_period}</td>
+                  <td className="py-3 px-6 text-sm text-gray-800">
+                    <input
+                      type="number"
+                      value={appointment.available_slots}
+                      onChange={(e) => handleSlotChange(appointment.id, +e.target.value)}
+                      min="0"
+                      max={appointment.max_slots}
+                      className="w-16 p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                  </td>
+                  <td className="py-3 px-6 text-sm text-gray-800">{appointment.max_slots}</td>
+                  <td className="py-3 px-6 text-center">
+                    <button
+                      onClick={() => handleSlotChange(appointment.id, appointment.available_slots)}
+                      className="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
+                    >
+                      Update
                     </button>
                   </td>
                 </tr>
@@ -232,69 +99,9 @@ const ClassManagement = () => {
             </tbody>
           </table>
         </div>
-
-        {/* Modal */}
-        {isModalOpen && (
-          <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
-            <div className="bg-white p-6 rounded-lg shadow-lg">
-              <h3 className="text-xl font-semibold mb-4">
-                Students in Class: {activeClass.classCode}
-              </h3>
-              <ul className="list-disc ml-6">
-                {activeClass.students.map((student) => (
-                  <li key={student.id}>
-                    {student.name} ({student.enrollmentType})
-                  </li>
-                ))}
-              </ul>
-              <button
-                className="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                onClick={closeModal}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Animated Delete Modal */}
-        <AnimatePresence>
-          {showDeleteModal && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center"
-            >
-              <motion.div
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0.8 }}
-                className="bg-white rounded-md p-6 space-y-4"
-              >
-                <h3 className="text-lg text-center font-semibold">Confirm Deletion</h3>
-                <p>Are you sure you want to delete this class?</p>
-                <div className="flex space-x-4 justify-center">
-                  <button
-                    className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                    onClick={deleteClass}
-                  >
-                    Delete
-                  </button>
-                  <button
-                    className="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500"
-                    onClick={closeDeleteModal}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
     </div>
   );
 };
 
-export default ClassManagement;
+export default Appointments;

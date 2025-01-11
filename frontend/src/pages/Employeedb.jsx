@@ -316,63 +316,22 @@ const EmployeeDashboard = () => {
                 {!isSidebarMinimized && <span>Manage Enrollment</span>}
               </Link>
             </li>
-                
-                  </ul>
-                )}
-              </li>
-              <li>
-            
-                <button
-                  className={`w-full px-4 py-2 flex items-center pl-4 justify-between hover:bg-gray-700 rounded-lg cursor-pointer ${
-                    isSidebarMinimized ? "justify-center" : ""
-                  }`}
-                  onClick={toggleCoursesDropdown}
-                >
-                  <div className="flex items-center space-x-3">
-                    {isCoursesDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
-                    {!isSidebarMinimized && <span>Manage Programs</span>}
-                  </div>
-                </button>
-                {isCoursesDropdownOpen && (
-                  <ul className="mt-2 space-y-2 pl-4">
-                             <li>
-              <Link
-                to="employee-instructors"
-                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaUser />
-                {!isSidebarMinimized && <span>Manage Instructors</span>}
-              </Link>
-            </li>
-         
-        
-             {/* Manage Classes Section */}
-             <li>
+            {/* Manage Classes Section */}
+            <li>
               <Link
                 to="manage-classes"
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <FaClipboardList />
-                {!isSidebarMinimized && <span>Manage Classes</span>}
+                {!isSidebarMinimized && <span>Manage Appointments</span>}
               </Link>
             </li>
-             {/* Manage Enrollment Section */}
-             <li>
-              <Link
-                to="manage-sections"
-                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaClipboardList />
-                {!isSidebarMinimized && <span>Manage Sections</span>}
-              </Link>
-            </li>
-                   
+                
                   </ul>
                 )}
               </li>
+             
             </>
             )}
                 {/* Conditionally render links based on user role */}
@@ -444,7 +403,9 @@ const EmployeeDashboard = () => {
                 <FaClipboardList />
                 {!isSidebarMinimized && <span>Manage Applications</span>}
               </Link>
+              
             </li>
+            
              
             {/* Manage Enrollment Section */}
             <li>
@@ -457,63 +418,23 @@ const EmployeeDashboard = () => {
                 {!isSidebarMinimized && <span>Manage Enrollment</span>}
               </Link>
             </li>
-                
-                  </ul>
-                )}
-              </li>
-              <li>
             
-                <button
-                  className={`w-full px-4 py-2 flex items-center pl-4 justify-between hover:bg-gray-700 rounded-lg cursor-pointer ${
-                    isSidebarMinimized ? "justify-center" : ""
-                  }`}
-                  onClick={toggleCoursesDropdown}
-                >
-                  <div className="flex items-center space-x-3">
-                    {isCoursesDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
-                    {!isSidebarMinimized && <span>Manage Programs</span>}
-                  </div>
-                </button>
-                {isCoursesDropdownOpen && (
-                  <ul className="mt-2 space-y-2 pl-4">
-                             <li>
-              <Link
-                to="employee-instructors"
-                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaUser />
-                {!isSidebarMinimized && <span>Manage Instructors</span>}
-              </Link>
-            </li>
-         
-        
-             {/* Manage Classes Section */}
-             <li>
+            {/* Manage Classes Section */}
+            <li>
               <Link
                 to="manage-classes"
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <FaClipboardList />
-                {!isSidebarMinimized && <span>Manage Classes</span>}
+                {!isSidebarMinimized && <span>Manage Appointments</span>}
               </Link>
             </li>
-             {/* Manage Enrollment Section */}
-             <li>
-              <Link
-                to="manage-sections"
-                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <FaClipboardList />
-                {!isSidebarMinimized && <span>Manage Sections</span>}
-              </Link>
-            </li>
-                   
+                
                   </ul>
                 )}
               </li>
+              
               <li>
                 <button
                   className={`w-full px-4 py-2 flex items-center pl-4 justify-between hover:bg-gray-700 rounded-lg cursor-pointer ${

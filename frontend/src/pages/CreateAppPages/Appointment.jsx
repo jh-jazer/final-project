@@ -11,8 +11,12 @@ const Appointment = () => {
   const [time, setTime] = useState('');
   const [isSubmitConfirmationOpen, setIsSubmitConfirmationOpen] = useState(false);
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false); // Checkbox state
-  const [appointmentDetails, setAppointmentDetails] = useState(null); // Store the selected date and time
   const { setActiveItem } = useActiveItem();
+  const [appointmentDetails, setAppointmentDetails] = useState({
+    date: "",
+    time: "",
+  }); // Store the selected date and time
+
 
   const handleSecondClick = (item) => {
     if (isSubmitButtonDisabled) {

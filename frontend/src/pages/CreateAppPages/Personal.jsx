@@ -169,7 +169,6 @@ const Personal = () => {
       setTimeout(() => setSuccessMessage(""), 5000);
     }
   };
-  
 
   return (
     <div 

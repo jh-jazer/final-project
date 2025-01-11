@@ -270,9 +270,7 @@ const handleSubmit = async (e) => {
     className="w-full min-h-screen bg-white p-8 pt-12 shadow-xl rounded-lg flex flex-col"
     >
       {successMessage && (
-        <div 
-        
-        className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
           {successMessage}
         </div>
       )}

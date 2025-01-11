@@ -20,7 +20,6 @@ const EmployeeDashboard = () => {
   const [isStudentDropdownOpen, setIsStudentDropdownOpen] = useState(false);
   const [isApplicationDropdownOpen, setIsApplicationDropdownOpen] = useState(false);
   const [isSocietyDropdownOpen, setIsSocietyDropdownOpen] = useState(false);
-  const [isCoursesDropdownOpen, setIsCoursesDropdownOpen] = useState(false);
   const [isAdminDropdownOpen, setIsAdminDropdownOpen] = useState(false);
   const [user, setUser] = useState(null); // Store user data locally
 
@@ -513,7 +512,7 @@ const EmployeeDashboard = () => {
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto h-full p-8">
-        <Outlet /> {/* This renders the nested route components */}
+      <Outlet context={{ user }} /> {/* Passing user to Outlet */}
       </main>
 
       {/* Logout Confirmation Modal */}

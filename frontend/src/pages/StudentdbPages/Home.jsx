@@ -1,15 +1,34 @@
+import React from 'react';
 import { FaUser, FaClipboardList, FaBook } from "react-icons/fa";
+import { useLocation, useNavigate} from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Outlet } from "react-router-dom";
 
 const StudentDashboardHome = () => {
-  const user = {
-    name: "John Doe",
-  };
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [user, setUser] = useState(location.state || null);
 
+  // Check localStorage if user is null
+  useEffect(() => {
+    if (!user) {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      } else {
+        navigate('/'); // Redirect to login if no user data is found
+      }
+    }
+  }, [user, navigate]);
+
+  if (!user) return null; // Avoid rendering until user data is loaded
+
+  
   return (
     <div className="p-8">
       {/* Welcome Section */}
       <div className="bg-green-600 text-white rounded-lg p-6 shadow-md">
-        <h1 className="text-2xl font-bold">Welcome, {user.name}!</h1>
+        <h1 className="text-2xl font-bold">Welcome, {user.full_name}!</h1>
         <p className="mt-2 text-lg">
           Here is your dashboard. Navigate through the options to manage your
           courses, enrollment, and more.
@@ -50,6 +69,7 @@ const StudentDashboardHome = () => {
             <p className="text-sm text-gray-500">Start or continue your enrollment.</p>
           </div>
         </div>
+        <Outlet context={{ user }} /> 
       </div>
 
       {/* Schedule Section */}

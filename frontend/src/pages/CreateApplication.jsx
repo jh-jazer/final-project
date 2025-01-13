@@ -46,6 +46,25 @@ const AdmissionsPage = () => {
     cs: "Bachelor of Science in Computer Science",
   };
 
+  const handleFocus = () => {
+    if (window.innerWidth <= 1024) { // Check if it's a mobile screen
+      setIsSidebarOpen(false);
+    }
+  };
+  useEffect(() => {
+    // Add event listeners to close sidebar when user interacts with form inputs
+    const inputs = document.querySelectorAll("input, textarea, select");
+    inputs.forEach(input => {
+      input.addEventListener("focus", handleFocus);
+    });
+
+    // Clean up event listeners when the component is unmounted
+    return () => {
+      inputs.forEach(input => {
+        input.removeEventListener("focus", handleFocus);
+      });
+    };
+  }, []);
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
@@ -91,9 +110,10 @@ const AdmissionsPage = () => {
     <div className="h-screen flex overflow-auto bg-gray-100">
       {/* Sidebar */}
       <aside
-        className={`w-64 bg-[#001800] text-white flex flex-col fixed top-0 left-0 h-full z-50 transform translate-x-0" : "-translate-x-full"
-        } transition-transform duration-300 lg:relative lg:translate-x-0`}
-      >
+  className={`w-64 bg-[#001800] text-white flex flex-col fixed top-0 left-0 h-full z-50 transition-transform duration-300 lg:relative ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
+>
+
+
         <div className="p-6 flex flex-col items-center border-b border-gray-700">
           <h2
             className="text-xl font-semibold pt-2"
@@ -254,16 +274,18 @@ const AdmissionsPage = () => {
         </nav>
       </aside>
 
-      {/* Mobile Menu Button */}
+      {/* Mobile and Desktop Menu Button */}
       <button
-        className="lg:hidden fixed top-4 left-4 z-50 bg-[#081708] text-white p-2 rounded-md"
-        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+      className="lg:block fixed top-4 left-4 z-50 bg-[#081708] text-white p-2 rounded-md"
+      onClick={() => setIsSidebarOpen(!isSidebarOpen)} // Toggle open/close
       >
-        {isSidebarOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
+      {isSidebarOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
       </button>
 
+
+
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto h-full p-8">
+      <main className={`flex-1 overflow-y-auto h-full p-8 transition-all duration-300 ${isSidebarOpen ? '' : 'lg:-ml-64'}`}>
       <Outlet context={{ userDetails }} /> {/* Passing userDetails to Outlet */}
       </main>
     </div>

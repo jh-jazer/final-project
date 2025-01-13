@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
-import { useAppContext } from "../../contexts/AppContext";
 import { useNavigate } from 'react-router-dom';
 import { useActiveItem } from "../../contexts/CreateAppContext";
+import { useOutletContext } from 'react-router-dom';
+
 
 const Education = () => {
-  const { applicantType } = useAppContext();
-  const showCollegeFields = applicantType === "transferee" || applicantType === "bachelors";
-  const showSeniorHighYearField = applicantType !== "grade12"; // Check if senior high year should be shown
+  const { userDetails } = useOutletContext(); // Access the passed data
+  const enrollment_id = userDetails?.enrollment_id || "No id provided"; 
+  const showCollegeFields = userDetails?.applicant_type === "transferee";
+  const showSeniorHighYearField = userDetails?.applicant_type !== "grade12"; // Check if senior high year should be shown
   const navigate = useNavigate();
   const { setActiveItem } = useActiveItem();
-
   const [formData, setFormData] = useState({
     elementarySchoolName: "",
     elementarySchoolAddress: "",
@@ -21,22 +21,22 @@ const Education = () => {
     seniorHighSchoolName: "",
     seniorHighSchoolAddress: "",
     seniorHighSchoolYearGraduated: "",
-    collegeName: "",
-    collegeAddress: "",
-    collegeYearGraduated: "",
-    collegeDegree: "",
+    collegeName: null,
+    collegeAddress: null,
+    collegeYearGraduated: null,
+    collegeDegree: null,
   });
+
   const [successMessage, setSuccessMessage] = useState(""); 
   const [errors, setErrors] = useState({});
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true); // Tracks if 'Next' button is disabled after form update
-  const [formUpdated, setFormUpdated] = useState(false); // Tracks if the form has been successfully updated
   const divRef = useRef(null);
 
     // Effect to enable or disable the button based on form completion
     useEffect(() => {
       const isFormValid = validate(); // Checks if the form is valid based on `validate` function
-      setIsNextButtonDisabled(!(isFormValid && formUpdated)); // Enables "Next" only if valid and updated
-    }, [formData, formUpdated]);
+      setIsNextButtonDisabled(!(isFormValid )); // Enables "Next" only if valid and updated
+    }, [formData]);
 
     const handleFirstClick = (item) => {
       if (!isNextButtonDisabled) {
@@ -46,11 +46,35 @@ const Education = () => {
     };
   
     const handleSecondClick = (item) => {
-      if (isNextButtonDisabled) {
         navigate('/createapplication/family');// Navigate to the desired route
         setActiveItem(item);
-      } 
+       
     };
+
+        useEffect(() => {
+          if (enrollment_id && enrollment_id !== "No ID provided") {
+            fetchFormData(enrollment_id);
+          }
+        }, [enrollment_id]);
+        
+        const fetchFormData = async (enrollment_id) => {
+          try {
+            // Update the fetch URL to include the enrollment_id as a query parameter
+            const response = await fetch(`https://cvsu-backend-system.vercel.app/api/getEducationInfo?enrollment_id=${enrollment_id}`);
+            if (!response.ok) {
+              throw new Error("Failed to fetch data");
+            }
+            const data = await response.json();
+            setFormData((prevData) => ({
+              ...prevData,
+              ...data,  // Populate form with fetched data
+            }));
+          } catch (error) {
+            console.error("Error fetching data:", error);
+          }
+        };
+        
+    
 
   const validate = () => {
     let validationErrors = {};
@@ -176,37 +200,77 @@ const Education = () => {
     setFormData(prevData => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault(); 
-
-    // First, validate the form before submission
+const handleSubmit = async (e) => {
+    e.preventDefault();
+  
     const isValid = validate();
-    
     if (isValid) {
-        // If valid, process the form submission
-        console.log("Personal Information Submitted:", formData);
-        setFormUpdated(true);
-        
-        // Then show the success message after navigation
-        divRef.current.scrollIntoView({ behavior: "smooth" });
-        setSuccessMessage("Application updated successfully!"); 
-        setTimeout(() => setSuccessMessage(""), 3000); // Hide message after 3 seconds
-    } else {
-        divRef.current.scrollIntoView({ behavior: "smooth" });
-        // If invalid, clear success message and notify the user
-        setSuccessMessage("there is something wrong"); // Clear success message if validation fails
-    }
-};
+      const updatedFormData = {
+        ...formData,
+        enrollment_id: enrollment_id,
+      };
+      divRef.current.scrollIntoView({ behavior: "smooth" });
+      setSuccessMessage("Application updated successfully!");
+      setIsNextButtonDisabled(false);
+      
+  
+      try {
+        const response = await fetch('https://cvsu-backend-system.vercel.app/submit_education', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedFormData),
+        });
+  
+        if (response.ok) {
+          const result = await response.json();
+          console.log(response.status); // Check the actual response status code here
 
+          setFormData({
+            ...formData,
+            elementarySchoolName: "",
+            elementarySchoolAddress: "",
+            elementarySchoolYearGraduated: "",
+            highSchoolName: "",
+            highSchoolAddress: "",
+            highSchoolYearGraduated: "",
+            seniorHighSchoolName: "",
+            seniorHighSchoolAddress: "",
+            seniorHighSchoolYearGraduated: "",
+            collegeName: "",
+            collegeAddress: "",
+            collegeYearGraduated: "",
+            collegeDegree: "",
+          }); // Reset family form data
+          
+                    divRef.current.scrollIntoView({ behavior: "smooth" });
+          setSuccessMessage("Application updated successfully!");
+          setTimeout(() => setSuccessMessage(""), 5000);
+        } else {
+          
+          setSuccessMessage("There was an issue with the submission. Please try again.");
+          setTimeout(() => setSuccessMessage(""), 5000);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        setSuccessMessage("An error occurred. Please try again.");
+        setTimeout(() => setSuccessMessage(""), 5000);
+      }
+    } else {
+      divRef.current.scrollIntoView({ behavior: "smooth" });
+      setSuccessMessage("There is something wrong with the form. Please check your entries.");
+      setTimeout(() => setSuccessMessage(""), 5000);
+    }
+  };
+  
   return (
     <div 
     ref={divRef}
     className="w-full min-h-screen bg-white p-8 pt-12 shadow-xl rounded-lg flex flex-col"
     >
       {successMessage && (
-        <div 
-        
-        className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
           {successMessage}
         </div>
       )}
@@ -271,8 +335,8 @@ const Education = () => {
               value={formData.elementarySchoolYearGraduated}
               onChange={handleChange}
               placeholder="Enter Year Graduated"
-              className="input-field"
-            />
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all"
+              />
             {errors.elementarySchoolYearGraduated && <p className="text-red-500 text-sm">{errors.elementarySchoolYearGraduated}</p>}
           </div>
         </fieldset>
@@ -316,14 +380,14 @@ const Education = () => {
               value={formData.highSchoolYearGraduated}
               onChange={handleChange}
               placeholder="Enter Graduation Year"
-              className="input-field"
-            />
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all"
+              />
             {errors.highSchoolYearGraduated && <p className="text-red-500 text-sm">{errors.highSchoolYearGraduated}</p>}
           </div>
         </fieldset>
 
         {/* Senior High School Section */}
-        {showSeniorHighYearField && (
+        
           <fieldset className="mx-5">
             <legend className="text-2xl font-extrabold text-[#001800] mb-6 text-left">Senior High School</legend>
             <div className="form-group mb-4">
@@ -352,6 +416,9 @@ const Education = () => {
               />
               {errors.seniorHighSchoolAddress &&  <p className="text-red-500 text-sm">{errors.seniorHighSchoolAddress}</p>}
             </div>
+            </fieldset>
+            {showSeniorHighYearField && (
+          <fieldset className="mx-5">
             <div className="form-group mb-4">
               <label htmlFor="seniorHighSchoolYearGraduated" className="block text-lg font-semibold text-gray-600">Senior High Year Graduated</label>
               <input
@@ -361,8 +428,8 @@ const Education = () => {
                 value={formData.seniorHighSchoolYearGraduated}
                 onChange={handleChange}
                 placeholder="Enter Graduation Year"
-                className="input-field"
-              />
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all"
+                />
               {errors.seniorHighSchoolYearGraduated &&  <p className="text-red-500 text-sm">{errors.seniorHighSchoolYearGraduated}</p>}
             </div>
           </fieldset>
@@ -397,32 +464,6 @@ const Education = () => {
                 className="w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-300"
               />
               {errors.collegeAddress && <p className="text-red-500 text-sm">{errors.collegeAddress}</p>}
-            </div>
-            <div className="form-group mb-4">
-              <label htmlFor="collegeYearGraduated" className="block text-lg font-semibold text-gray-600">Year Graduated</label>
-              <input
-                type="number"
-                id="collegeYearGraduated"
-                name="collegeYearGraduated"
-                value={formData.collegeYearGraduated}
-                onChange={handleChange}
-                placeholder="Enter Graduation Year"
-                className="w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-300"
-              />
-              {errors.collegeYearGraduated && <p className="text-red-500 text-sm">{errors.collegeYearGraduated}</p>}
-            </div>
-            <div className="form-group mb-4">
-              <label htmlFor="collegeDegree" className="block text-lg font-semibold text-gray-600">Degree</label>
-              <input
-                type="text"
-                id="collegeDegree"
-                name="collegeDegree"
-                value={formData.collegeDegree}
-                onChange={handleChange}
-                placeholder="Enter Degree"
-                className="w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-300"
-              />
-              {errors.collegeDegree && <p className="text-red-500 text-sm">{errors.collegeDegree}</p>}
             </div>
           </fieldset>
           )}

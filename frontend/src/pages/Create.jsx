@@ -285,7 +285,7 @@ useEffect(() => {
               setApplicantType(value);
 
               // Reset other fields based on applicant type
-              if (["als", "transferee", "bachelors"].includes(value)) {
+              if (["als", "transferee"].includes(value)) {
                 setStrand("null");
                 setSeniorHighTrack("null");
                 setPreferredProgram("");
@@ -302,13 +302,12 @@ useEffect(() => {
             <option value="grade12">Currently Enrolled Grade 12 Student</option>
             <option value="shs">Senior High School Graduate</option>  
             <option value="als">Alternative Learning System (ALS) Passer</option>
-            <option value="bachelors">Bachelor's Degree Graduate</option>
             <option value="transferee">Transferee</option>
           </select>
         </div>
 
         {/* Preferred Program */}
-        {["als", "transferee", "bachelors"].includes(applicantType) && (
+        {["als", "transferee"].includes(applicantType) && (
           <div className="mb-6">
             <p className="text-gray-700 text-lg font-semibold mb-2">
               Choose your preferred program:

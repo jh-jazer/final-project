@@ -22,7 +22,6 @@ const Checklist = () => {
       }
     } catch (error) {
       console.error("An error occurred:", error);
-      alert("An error occurred while fetching grades.");
     }
   };
   

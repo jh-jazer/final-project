@@ -1,300 +1,268 @@
-import React, { useState } from "react";
-import { PencilSquareIcon, TrashIcon, EyeIcon } from "@heroicons/react/24/solid";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect } from 'react';
 
-const ClassManagement = () => {
-  const [classes, setClasses] = useState([
-    {
-      id: 1,
-      classCode: "CS101A",
-      courseName: "Introduction to Computer Science",
-      courseCode: "CS101",
-      instructor: "Prof. John Smith",
-      year: "1st Year",
-      section: "A",
-      enrolledRegular: 25,
-      enrolledIrregular: 5,
-      students: [
-        { id: 1, name: "Alice Brown", enrollmentType: "Regular" },
-        { id: 2, name: "Bob Green", enrollmentType: "Irregular" },
-        { id: 3, name: "Charlie Black", enrollmentType: "Regular" },
-      ],
-    },
-    {
-      id: 2,
-      classCode: "IT202B",
-      courseName: "Data Structures",
-      courseCode: "IT202",
-      instructor: "Prof. Jane Doe",
-      year: "2nd Year",
-      section: "B",
-      enrolledRegular: 20,
-      enrolledIrregular: 7,
-      students: [
-        { id: 4, name: "Diana White", enrollmentType: "Regular" },
-        { id: 5, name: "Edward Blue", enrollmentType: "Irregular" },
-        { id: 6, name: "Fiona Gray", enrollmentType: "Regular" },
-      ],
-    },
-  ]);
+const Appointments = () => {
+  const [appointments, setAppointments] = useState([]);
+  const [startDate, setStartDate] = useState('2025-01-01');
+  const [endDate, setEndDate] = useState('2025-01-31');
+  const [filteredAppointments, setFilteredAppointments] = useState([]);
+  const [activeTab, setActiveTab] = useState('Upcoming');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [editingSlotId, setEditingSlotId] = useState(null);
+  const [newAvailableSlots, setNewAvailableSlots] = useState('');
+  const [currentPage, setCurrentPage] = useState(1); // State for current page
+  const appointmentsPerPage = 25; // Maximum appointments per page
 
-  const [activeClass, setActiveClass] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [classToDelete, setClassToDelete] = useState(null);
-  const [editingClass, setEditingClass] = useState(null);
-  const [newClass, setNewClass] = useState({
-    id: null,
-    classCode: "",
-    courseName: "",
-    courseCode: "",
-    instructor: "",
-    year: "",
-    section: "",
-    enrolledRegular: 0,
-    enrolledIrregular: 0,
-    students: [],
-  });
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
 
-  const openModal = (classData) => {
-    setActiveClass(classData);
-    setIsModalOpen(true);
-  };
+  useEffect(() => {
+    filterAppointments();
+  }, [appointments, startDate, endDate, searchTerm]);
 
-  const closeModal = () => {
-    setActiveClass(null);
-    setIsModalOpen(false);
-  };
-
-  const openDeleteModal = (classData) => {
-    setClassToDelete(classData); // Correctly setting the class to delete
-    setShowDeleteModal(true);    // Show the delete modal
-  };
-
-  const closeDeleteModal = () => {
-    setClassToDelete(null);
-    setShowDeleteModal(false);  // Correcting the state variable here
-  };
-
-  const handleInputChange = (e) => {
-    setNewClass({ ...newClass, [e.target.name]: e.target.value });
-  };
-
-  const saveClass = () => {
-    if (editingClass) {
-      setClasses(classes.map((c) => (c.id === editingClass.id ? newClass : c)));
-    } else {
-      setClasses([...classes, { ...newClass, id: classes.length + 1 }]);
+  // Fetch all appointments data from the backend
+  const fetchAppointments = async () => {
+    try {
+      const response = await fetch('https://cvsu-backend-system.vercel.app/api/appointments');
+      if (!response.ok) {
+        throw new Error('Failed to fetch appointments');
+      }
+      const data = await response.json();
+      setAppointments(data);
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
     }
-    resetForm();
   };
 
-  const resetForm = () => {
-    setNewClass({
-      id: null,
-      classCode: "",
-      courseName: "",
-      courseCode: "",
-      instructor: "",
-      year: "",
-      section: "",
-      enrolledRegular: 0,
-      enrolledIrregular: 0,
-      students: [],
+  const filterAppointments = () => {
+    const filtered = appointments.filter((appointment) => {
+      const appointmentDate = new Date(appointment.date);
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      const isWithinDateRange = appointmentDate >= start && appointmentDate <= end;
+
+      // Extract the month from the appointment date
+      const appointmentMonth = appointmentDate
+        .toLocaleString('default', { month: 'long' })
+        .toLowerCase();
+
+      // Check if the appointment matches the search term (month or time period)
+      const isMatchingSearchTerm =
+        searchTerm === '' ||
+        appointment.time_period.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        appointmentMonth.includes(searchTerm.toLowerCase()) ||
+        appointment.date.toLowerCase().includes(searchTerm.toLowerCase());
+
+      return isMatchingSearchTerm && isWithinDateRange;
     });
-    setEditingClass(null);
+    setFilteredAppointments(filtered);
   };
 
-  const deleteClass = () => {
-    setClasses(classes.filter((c) => c.id !== classToDelete.id));
-    closeDeleteModal();
+  // Function to handle saving the updated available slots
+  const handleSaveSlots = async (appointmentId) => {
+    if (newAvailableSlots && !isNaN(newAvailableSlots)) {
+      try {
+        // Send PUT request to update the available slots in the backend
+        const response = await fetch(
+          `https://cvsu-backend-system.vercel.app/api/appointments/${appointmentId}`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ available_slots: newAvailableSlots }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to update available slots');
+        }
+
+        // Update the state locally to reflect the change in the UI
+        setAppointments((prevAppointments) =>
+          prevAppointments.map((appointment) =>
+            appointment.id === appointmentId
+              ? { ...appointment, available_slots: newAvailableSlots }
+              : appointment
+          )
+        );
+
+        // Reset editing state
+        setEditingSlotId(null);
+        setNewAvailableSlots('');
+      } catch (error) {
+        console.error('Error updating available slots:', error);
+      }
+    }
   };
 
-  const startEditing = (classData) => {
-    setEditingClass(classData);
-    setNewClass({ ...classData });
+  // Function to format date in a more readable way
+  const formatDate = (date) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(date).toLocaleDateString('en-US', options); // Formats to "January 15, 2025"
   };
+
+  // Get the appointments for the current page
+  const paginateAppointments = (appointments) => {
+    const startIndex = (currentPage - 1) * appointmentsPerPage;
+    const endIndex = startIndex + appointmentsPerPage;
+    return appointments.slice(startIndex, endIndex);
+  };
+
+  // Handle page change
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  // Calculate total pages
+  const totalPages = Math.ceil(filteredAppointments.length / appointmentsPerPage);
 
   return (
-    <div className="p-6 bg-green-500 min-h-screen">
+    <div className="p-6 bg-blue-500 min-h-screen">
       <div className="bg-white shadow-lg rounded-lg p-6 mx-auto max-w-full sm:max-w-6xl">
-        <h2 className="text-2xl font-semibold text-gray-700 mb-4">Class Management</h2>
+        <h2 className="text-2xl font-semibold text-gray-700 mb-4">Manage Appointments</h2>
 
-        {/* Add/Edit Form */}
-        <div className="mb-6">
-          <h3 className="text-xl font-semibold text-gray-600">
-            {editingClass ? "Edit Class" : "Add New Class"}
-          </h3>
-          <div className="grid grid-cols-2 gap-4">
+        {/* Date range filters */}
+        <div className="flex space-x-4 mb-6">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">Start Date</label>
             <input
-              type="text"
-              name="classCode"
-              placeholder="Class Code"
-              value={newClass.classCode}
-              onChange={handleInputChange}
-              className="border px-3 py-2 rounded-md"
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="mt-1 p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">End Date</label>
             <input
-              type="text"
-              name="courseName"
-              placeholder="Course Name"
-              value={newClass.courseName}
-              onChange={handleInputChange}
-              className="border px-3 py-2 rounded-md"
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="mt-1 p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             />
-            <input
-              type="text"
-              name="courseCode"
-              placeholder="Course Code"
-              value={newClass.courseCode}
-              onChange={handleInputChange}
-              className="border px-3 py-2 rounded-md"
-            />
-            <input
-              type="text"
-              name="instructor"
-              placeholder="Instructor"
-              value={newClass.instructor}
-              onChange={handleInputChange}
-              className="border px-3 py-2 rounded-md"
-            />
-            <input
-              type="text"
-              name="year"
-              placeholder="Year"
-              value={newClass.year}
-              onChange={handleInputChange}
-              className="border px-3 py-2 rounded-md"
-            />
-            <input
-              type="text"
-              name="section"
-              placeholder="Section"
-              value={newClass.section}
-              onChange={handleInputChange}
-              className="border px-3 py-2 rounded-md"
-            />
-            <div className="col-span-2 flex gap-4">
-              <button
-                onClick={saveClass}
-                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-              >
-                {editingClass ? "Save Changes" : "Add Class"}
-              </button>
-              {editingClass && (
-                <button
-                  onClick={resetForm}
-                  className="bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500"
-                >
-                  Cancel
-                </button>
-              )}
-            </div>
           </div>
         </div>
 
-        {/* Table */}
+        {/* Search by month */}
+        <div className="mb-6">
+          <input
+            type="text"
+            className="p-2 border border-gray-300 rounded-md w-full"
+            placeholder="Search by time period or month (e.g., January)"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
+        {/* Tabs for Appointment Status */}
+        <div className="mb-4 flex flex-wrap space-x-6">
+          <button
+            onClick={() => setActiveTab('Upcoming')}
+            className={`${
+              activeTab === 'Upcoming' ? 'text-blue-600 font-semibold' : 'text-gray-600'
+            } px-4 py-2`}
+          >
+            Upcoming Appointments
+          </button>
+          <button
+            onClick={() => setActiveTab('Past')}
+            className={`${
+              activeTab === 'Past' ? 'text-blue-600 font-semibold' : 'text-gray-600'
+            } px-4 py-2`}
+          >
+            Past Appointments
+          </button>
+        </div>
+
+        {/* Table for Appointments */}
         <div className="overflow-x-auto">
           <table className="min-w-full table-auto border-collapse">
             <thead>
               <tr className="bg-gray-200">
-                <th className="px-4 py-2 text-left border border-gray-300">Class Code</th>
-                <th className="px-4 py-2 text-left border border-gray-300">Course Name</th>
-                <th className="px-4 py-2 text-left border border-gray-300">Course Code</th>
-                <th className="px-4 py-2 text-left border border-gray-300">Instructor</th>
-                <th className="px-4 py-2 text-left border border-gray-300">Year</th>
-                <th className="px-4 py-2 text-left border border-gray-300">Section</th>
+                <th className="px-4 py-2 text-left border border-gray-300">Date</th>
+                <th className="px-4 py-2 text-left border border-gray-300">Time Period</th>
+                <th className="px-4 py-2 text-left border border-gray-300">Available Slots</th>
+                <th className="px-4 py-2 text-left border border-gray-300">Max Slots</th>
                 <th className="px-4 py-2 text-left border border-gray-300">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {classes.map((classData) => (
-                <tr key={classData.id} className="hover:bg-gray-100">
-                  <td className="px-4 py-2 border border-gray-300">{classData.classCode}</td>
-                  <td className="px-4 py-2 border border-gray-300">{classData.courseName}</td>
-                  <td className="px-4 py-2 border border-gray-300">{classData.courseCode}</td>
-                  <td className="px-4 py-2 border border-gray-300">{classData.instructor}</td>
-                  <td className="px-4 py-2 border border-gray-300">{classData.year}</td>
-                  <td className="px-4 py-2 border border-gray-300">{classData.section}</td>
-                  <td className="px-4 py-2 border border-gray-300 flex space-x-2">
-                    <button onClick={() => openModal(classData)}>
-                      <EyeIcon className="h-6 w-6 text-green-500" />
-                    </button>
-                    <button onClick={() => startEditing(classData)}>
-                      <PencilSquareIcon className="h-6 w-6 text-yellow-500" />
-                    </button>
-                    <button onClick={() => openDeleteModal(classData)}>
-                      <TrashIcon className="h-6 w-6 text-red-500" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {paginateAppointments(filteredAppointments)
+                .filter((appointment) => {
+                  const appointmentDate = new Date(appointment.date);
+                  const today = new Date();
+                  return activeTab === 'Upcoming'
+                    ? appointmentDate >= today
+                    : appointmentDate < today;
+                })
+                .map((appointment) => (
+                  <tr key={appointment.id} className="hover:bg-gray-100">
+                    <td className="px-4 py-2 border border-gray-300">
+                      {formatDate(appointment.date)}
+                    </td>
+                    <td className="px-4 py-2 border border-gray-300">{appointment.time_period}</td>
+                    <td className="px-4 py-2 border border-gray-300">
+                      {editingSlotId === appointment.id ? (
+                        <input
+                          type="number"
+                          value={newAvailableSlots}
+                          onChange={(e) => setNewAvailableSlots(e.target.value)}
+                          className="p-2 border border-gray-300 rounded-md w-20"
+                        />
+                      ) : (
+                        appointment.available_slots
+                      )}
+                    </td>
+                    <td className="px-4 py-2 border border-gray-300">{appointment.max_slots}</td>
+                    <td className="px-4 py-2 border border-gray-300">
+                      {editingSlotId === appointment.id ? (
+                        <button
+                          onClick={() => handleSaveSlots(appointment.id)}
+                          className="bg-blue-500 text-white px-4 py-1 rounded-md"
+                        >
+                          Save
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setEditingSlotId(appointment.id);
+                            setNewAvailableSlots(appointment.available_slots);
+                          }}
+                          className="bg-yellow-500 text-white px-4 py-1 rounded-md"
+                        >
+                          Edit
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
 
-        {/* Modal */}
-        {isModalOpen && (
-          <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
-            <div className="bg-white p-6 rounded-lg shadow-lg">
-              <h3 className="text-xl font-semibold mb-4">
-                Students in Class: {activeClass.classCode}
-              </h3>
-              <ul className="list-disc ml-6">
-                {activeClass.students.map((student) => (
-                  <li key={student.id}>
-                    {student.name} ({student.enrollmentType})
-                  </li>
-                ))}
-              </ul>
-              <button
-                className="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                onClick={closeModal}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Animated Delete Modal */}
-        <AnimatePresence>
-          {showDeleteModal && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center"
-            >
-              <motion.div
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0.8 }}
-                className="bg-white rounded-md p-6 space-y-4"
-              >
-                <h3 className="text-lg text-center font-semibold">Confirm Deletion</h3>
-                <p>Are you sure you want to delete this class?</p>
-                <div className="flex space-x-4 justify-center">
-                  <button
-                    className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                    onClick={deleteClass}
-                  >
-                    Delete
-                  </button>
-                  <button
-                    className="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500"
-                    onClick={closeDeleteModal}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Pagination Controls */}
+        <div className="mt-4 flex justify-center space-x-4">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="bg-gray-500 text-white px-4 py-2 rounded-md"
+          >
+            Prev
+          </button>
+          <span className="text-lg">{`Page ${currentPage} of ${totalPages}`}</span>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="bg-gray-500 text-white px-4 py-2 rounded-md"
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );
 };
 
-export default ClassManagement;
+export default Appointments;

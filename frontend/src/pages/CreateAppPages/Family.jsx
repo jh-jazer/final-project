@@ -1,14 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 import { useActiveItem } from "../../contexts/CreateAppContext";
+import { useOutletContext } from 'react-router-dom';
+
+
 const Family = () => {
   const [successMessage, setSuccessMessage] = useState(""); 
   const [errors, setErrors] = useState({});
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true); // Tracks if 'Next' button is disabled after form update
-  const [formUpdated, setFormUpdated] = useState(false); // Tracks if the form has been successfully updated
   const divRef = useRef(null);
   const navigate = useNavigate();
+  const { userDetails } = useOutletContext(); // Access the passed data
+  const enrollment_id = userDetails?.enrollment_id || "No id provided"; 
+
   
 
   // State to manage form data
@@ -29,23 +33,44 @@ const Family = () => {
   });
 
 
-  // UseEffect to track form data changes and enable/disable submit button
    // Effect to enable or disable the button based on form completion
    useEffect(() => {
     const isFormValid = validate(); // Validate the form every time formData changes
-    setIsNextButtonDisabled(!isFormValid); // Disable Next button if form is not valid
+    console.log("Form Valid: ", isFormValid);  // Debugging
+    setIsNextButtonDisabled(!(isFormValid)); // Disable Next button if form is not valid
 }, [formData]);
 
     const { setActiveItem } = useActiveItem();
 
-  // Input field change handler
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-  };
+    const handleInputChange = (e) => {
+      const { name, value, type, checked } = e.target;
+    
+      if (type === 'checkbox') {
+        // When the checkbox is clicked, if the "Not Applicable" checkbox is checked, 
+        // reset the respective data (father's or mother's) to null
+        if (name === "isFatherNotApplicable" && checked) {
+          setFormData(prevData => ({
+            ...prevData,
+            fatherName: null,
+            fatherOccupation: null,
+            fatherContact: null,
+          }));
+        } else if (name === "isMotherNotApplicable" && checked) {
+          setFormData(prevData => ({
+            ...prevData,
+            motherName: null,
+            motherOccupation: null,
+            motherContact: null,
+          }));
+        }
+      }
+    
+      // For other inputs, update the state normally
+      setFormData(prevData => ({
+        ...prevData,
+        [name]: type === 'checkbox' ? checked : value,
+      }));
+    };
 
   const handleFirstClick = (item) => {
     if (!isNextButtonDisabled) {
@@ -55,16 +80,35 @@ const Family = () => {
   };
 
   const handleSecondClick = (item) => {
-    if (isNextButtonDisabled) {
       navigate('/createapplication/personal');// Navigate to the desired route
       setActiveItem(item);
-    } 
+    
   };
 
-  useEffect(() => {
-    const isFormValid = validate(); // Checks if the form is valid based on `validate` function
-    setIsNextButtonDisabled(!(isFormValid && formUpdated)); // Enables "Next" only if valid and updated
-  }, [formData, formUpdated]);
+  
+    useEffect(() => {
+      if (enrollment_id && enrollment_id !== "No ID provided") {
+        fetchFormData(enrollment_id);
+      }
+    }, [enrollment_id]);
+    
+    const fetchFormData = async (enrollment_id) => {
+      try {
+        // Update the fetch URL to include the enrollment_id as a query parameter
+        const response = await fetch(`https://cvsu-backend-system.vercel.app/api/getFamilyInfo?enrollment_id=${enrollment_id}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const data = await response.json();
+        setFormData((prevData) => ({
+          ...prevData,
+          ...data,  // Populate form with fetched data
+        }));
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    
 
   // Form validation function
   const validate = () => {
@@ -138,28 +182,68 @@ const Family = () => {
 
   
 
-  const handleSubmit = (e) => {
-    e.preventDefault(); 
-
-    // First, validate the form before submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
     const isValid = validate();
-    
     if (isValid) {
-        // If valid, process the form submission
-        console.log("Personal Information Submitted:", formData);
-        setFormUpdated(true);
-        
-        // Then show the success message after navigation
-        divRef.current.scrollIntoView({ behavior: "smooth" });
-        setSuccessMessage("Application updated successfully!"); 
-        setTimeout(() => setSuccessMessage(""), 3000); // Hide message after 3 seconds
-        
+      const updatedFormData = {
+        ...formData,
+        enrollment_id: enrollment_id,
+      };
+      divRef.current.scrollIntoView({ behavior: "smooth" });
+      setSuccessMessage("Application updated successfully!");
+      setIsNextButtonDisabled(false);
+      
+  
+      try {
+        const response = await fetch('https://cvsu-backend-system.vercel.app/submit_family', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedFormData),
+        });
+  
+        if (response.ok) {
+          const result = await response.json();
+          console.log(response.status); // Check the actual response status code here
+
+          setFormData({
+            ...formData,
+            fatherName: '',
+            fatherOccupation: '',
+            fatherContact: '',
+            motherName: '',
+            motherOccupation: '',
+            motherContact: '',
+            guardianName: '',
+            guardianOccupation: '',
+            guardianContact: '',
+            numOfSiblings: '',
+            familyAnnualIncome: ''
+          }); // Reset family form data
+          
+                    divRef.current.scrollIntoView({ behavior: "smooth" });
+          setSuccessMessage("Application updated successfully!");
+          setTimeout(() => setSuccessMessage(""), 5000);
+        } else {
+          
+          setSuccessMessage("There was an issue with the submission. Please try again.");
+          setTimeout(() => setSuccessMessage(""), 5000);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        setSuccessMessage("An error occurred. Please try again.");
+        setTimeout(() => setSuccessMessage(""), 5000);
+      }
     } else {
-        divRef.current.scrollIntoView({ behavior: "smooth" });
-        // If invalid, clear success message and notify the user
-        setSuccessMessage("there is something wrong"); // Clear success message if validation fails
+      divRef.current.scrollIntoView({ behavior: "smooth" });
+      setSuccessMessage("There is something wrong with the form. Please check your entries.");
+      setTimeout(() => setSuccessMessage(""), 5000);
     }
-};
+  };
+  
 
   return (
     <div 
@@ -200,11 +284,15 @@ const Family = () => {
 
 
       {/* Form Section */}
-      <form onSubmit={handleSubmit}>
+      <div>
+             <h5 className="text-2xl font-extrabold text-[#001800] mb-6 text-left pl-11 pb-5">
+             Father's Information
+             </h5>
+          </div>
         {/* Father's Information */}
+        <div>
+
         <div className="mx-11 mb-6">
-          <h5 className="text-2xl font-extrabold text-[#001800] mb-6 text-left ">
-            Father's Information
             <label htmlFor="isFatherNotApplicable" className="flex items-center text-lg cursor-pointer">
               <input
                 type="checkbox"
@@ -216,7 +304,6 @@ const Family = () => {
               />
               Not Applicable
             </label>
-          </h5>
           <div className="form-group text-lg font-sans text-gray-600">
             <label htmlFor="fatherName" className='text-gray-600 text-lg font-semibold'>Father's Name*</label>
             <input
@@ -402,6 +489,7 @@ const Family = () => {
             {errors.familyIncome && <p className="text-red-500 text-sm">{errors.familyIncome}</p>}
           </div>
           </div>
+          </div>
               {/* Action Buttons */}
           
           <div className="flex justify-end gap-5 mb-5 mx-5">
@@ -419,7 +507,6 @@ const Family = () => {
         </button>
         </div>
       </div>
-      </form>
     </div>
   );
 };

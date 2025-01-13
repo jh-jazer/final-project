@@ -14,8 +14,6 @@ import { fileURLToPath } from 'url';
 dotenv.config();
 
 const app = express();
-const router = express.Router();  // Create an Express Router instance
-
 const port = process.env.PORT || 5005;
 
 
@@ -60,6 +58,402 @@ const testDatabaseConnection = async () => {
 };
 
 testDatabaseConnection();
+
+
+
+// Get all Personal Info
+app.get('/api/appointments', async (req, res) => {
+  try {
+    const [appointments] = await db.query('SELECT * FROM appointments');
+    res.status(200).json(appointments);
+  } catch (err) {
+    console.error('Error fetching appointments:', err);
+    res.status(500).json({ message: 'Error fetching appointments' });
+  }
+});
+// Define the endpoint to get available slots by date
+app.get('/api/available-slots', async (req, res) => {
+  const { date } = req.query;  // Get the date from the query parameters
+
+  // Validate required field
+  if (!date) {
+    return res.status(400).json({ error: 'Date is required' });
+  }
+
+  try {
+    // SQL query to fetch appointments for the given date
+    const query = `
+      SELECT 
+        time_period, 
+        available_slots 
+      FROM appointments
+      WHERE date = ?;
+    `;
+
+    // Execute query with the provided date
+    const [rows] = await db.execute(query, [date]);
+
+    // Handle case where no records are found
+    if (rows.length === 0) {
+      console.log(`No available slots found for date: ${date}`);
+      return res.status(404).json({ error: 'No available appointments found for the given date.' });
+    }
+
+    // Initialize counters for available slots
+    let morningSlots = 0;
+    let afternoonSlots = 0;
+
+    // Process each appointment record
+    rows.forEach(appointment => {
+      // Check if the appointment is for the morning and has available slots
+      if (appointment.time_period === 'morning' && appointment.available_slots > 0) {
+        morningSlots += appointment.available_slots;
+      }
+      // Check if the appointment is for the afternoon and has available slots
+      if (appointment.time_period === 'afternoon' && appointment.available_slots > 0) {
+        afternoonSlots += appointment.available_slots;
+      }
+    });
+
+    // Send the available slots as the response
+    res.status(200).json({
+      morning: morningSlots,
+      afternoon: afternoonSlots,
+    });
+  } catch (err) {
+    console.error('Database error:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
+
+// Update available slots for a specific appointment
+app.put('/api/appointments/:id', async (req, res) => {
+  const appointmentId = req.params.id;
+  const { available_slots } = req.body; // Get available_slots from the request body
+  
+  if (!available_slots || isNaN(available_slots)) {
+    return res.status(400).json({ message: 'Available slots must be a valid number.' });
+  }
+
+  try {
+    // Update the available slots in the database for the specified appointment
+    const [result] = await db.query(
+      'UPDATE appointments SET available_slots = ? WHERE id = ?',
+      [available_slots, appointmentId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+    // Send the updated appointment as the response
+    const [updatedAppointment] = await db.query(
+      'SELECT * FROM appointments WHERE id = ?',
+      [appointmentId]
+    );
+    res.status(200).json(updatedAppointment[0]);
+  } catch (err) {
+    console.error('Error updating available slots:', err);
+    res.status(500).json({ message: 'Error updating available slots' });
+  }
+});
+
+
+// Define the endpoint to get educational info by enrollment_id
+app.get('/api/getEducationInfo', async (req, res) => {
+  const { enrollment_id } = req.query;
+
+  // Validate required field
+  if (!enrollment_id) {
+    return res.status(400).json({ error: 'Enrollment ID is required' });
+  }
+
+  try {
+    // SQL query to fetch educational information
+    const query = `
+      SELECT 
+        enrollment_id, 
+        elementarySchoolName, 
+        elementarySchoolAddress, 
+        elementarySchoolYearGraduated, 
+        highSchoolName, 
+        highSchoolAddress, 
+        highSchoolYearGraduated, 
+        seniorHighSchoolName, 
+        seniorHighSchoolAddress, 
+        seniorHighSchoolYearGraduated, 
+        collegeName, 
+        collegeAddress, 
+        collegeYearGraduated, 
+        collegeDegree
+      FROM student_educational_info
+      WHERE enrollment_id = ?;
+    `;
+
+    // Execute query and get results
+    const [rows] = await db.execute(query, [enrollment_id]);
+
+    // Handle case where no records are found
+    if (rows.length === 0) {
+      console.log(`No educational info found for enrollment_id: ${enrollment_id}`);
+      return res.status(404).json({ error: 'Educational info not found' });
+    }
+
+    // Respond with the fetched data
+    res.json(rows[0]);
+  } catch (err) {
+    console.error('Database error:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
+
+app.post('/submit_education', (req, res) => {
+  let {
+    enrollment_id, // Foreign key
+    elementarySchoolName,
+    elementarySchoolAddress,
+    elementarySchoolYearGraduated,
+    highSchoolName,
+    highSchoolAddress,
+    highSchoolYearGraduated,
+    seniorHighSchoolName,
+    seniorHighSchoolAddress,
+    seniorHighSchoolYearGraduated,
+    collegeName,
+    collegeAddress,
+    collegeYearGraduated,
+    collegeDegree,
+  } = req.body;
+
+  // Validate required field
+  if (!enrollment_id) {
+    return res.status(400).send({ error: 'Missing required field: enrollment_id' });
+  }
+
+  // Ensure optional fields have default values of NULL
+  elementarySchoolName = elementarySchoolName || null;
+  elementarySchoolAddress = elementarySchoolAddress || null;
+  elementarySchoolYearGraduated = elementarySchoolYearGraduated || null;
+  highSchoolName = highSchoolName || null;
+  highSchoolAddress = highSchoolAddress || null;
+  highSchoolYearGraduated = highSchoolYearGraduated || null;
+  seniorHighSchoolName = seniorHighSchoolName || null;
+  seniorHighSchoolAddress = seniorHighSchoolAddress || null;
+  seniorHighSchoolYearGraduated = seniorHighSchoolYearGraduated || null;
+  collegeName = collegeName || null;
+  collegeAddress = collegeAddress || null;
+  collegeYearGraduated = collegeYearGraduated || null;
+  collegeDegree = collegeDegree || null;
+
+  // SQL query to insert or update educational info
+  const query = `
+    REPLACE INTO student_educational_info (
+      enrollment_id, elementarySchoolName, elementarySchoolAddress, elementarySchoolYearGraduated,
+      highSchoolName, highSchoolAddress, highSchoolYearGraduated,
+      seniorHighSchoolName, seniorHighSchoolAddress, seniorHighSchoolYearGraduated,
+      collegeName, collegeAddress, collegeYearGraduated, collegeDegree
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+  `;
+
+  const values = [
+    enrollment_id,
+    elementarySchoolName,
+    elementarySchoolAddress,
+    elementarySchoolYearGraduated,
+    highSchoolName,
+    highSchoolAddress,
+    highSchoolYearGraduated,
+    seniorHighSchoolName,
+    seniorHighSchoolAddress,
+    seniorHighSchoolYearGraduated,
+    collegeName,
+    collegeAddress,
+    collegeYearGraduated,
+    collegeDegree,
+  ];
+
+  // Execute the query
+  db.execute(query, values, (err, result) => {
+    if (err) {
+      console.error('Error inserting/updating educational info:', err);
+      return res.status(500).send({ error: 'Failed to submit educational info' });
+    }
+    console.log('Educational info inserted/updated successfully');
+    res.status(201).json({ message: 'Educational info updated successfully!' });
+  });
+});
+
+
+// Define the endpoint to get user details by enrollment_id
+app.get('/api/getFamilyInfo', async (req, res) => {
+  const { enrollment_id } = req.query;
+
+  if (!enrollment_id) {
+    return res.status(400).json({ error: 'Enrollment ID is required' });
+  }
+
+  try {
+    const query = `
+    SELECT 
+      enrollment_id, 
+      father_name AS fatherName, 
+      father_occupation AS fatherOccupation, 
+      father_contact AS fatherContact, 
+      isFatherNotApplicable, 
+      mother_name AS motherName, 
+      mother_occupation AS motherOccupation, 
+      mother_contact AS motherContact, 
+      isMotherNotApplicable, 
+      guardian_name AS guardianName, 
+      guardian_occupation AS guardianOccupation, 
+      guardian_contact AS guardianContact, 
+      num_of_siblings AS numberOfSiblings, 
+      family_annual_income AS familyIncome
+    FROM student_family_profile
+    WHERE enrollment_id = ?;
+  `;
+  
+    
+    const [rows] = await db.execute(query, [enrollment_id]);
+
+    if (rows.length === 0) {
+      console.log(`No user found for enrollment_id: ${enrollment_id}`);
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    res.json(rows[0]);
+  } catch (err) {
+    console.error('Database error:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
+
+app.post('/submit_family', (req, res) => {
+  let {
+    enrollment_id,  // Enrollment ID (foreign key)
+    fatherName,  // Father name
+    fatherOccupation,  // Father occupation
+    fatherContact,  // Father contact
+    isFatherNotApplicable,  // Is father not applicable
+    motherName,  // Mother name
+    motherOccupation,  // Mother occupation
+    motherContact,  // Mother contact
+    isMotherNotApplicable,  // Is mother not applicable
+    guardianName,  // Guardian name
+    guardianOccupation,  // Guardian occupation
+    guardianContact,  // Guardian contact
+    numberOfSiblings,  // Number of siblings
+    familyIncome,  // Annual income
+  } = req.body;
+
+  // Validate that required fields are present
+  if (!enrollment_id) {
+    return res.status(400).send({ error: 'Missing required fields' });
+  }
+
+  // Ensure optional fields (like fatherName, motherName, etc.) are not undefined
+  fatherName = fatherName || null;
+  fatherOccupation = fatherOccupation || null;
+  fatherContact = fatherContact || null;
+  isFatherNotApplicable = isFatherNotApplicable || false;  // default to false if not provided
+
+  motherName = motherName || null;
+  motherOccupation = motherOccupation || null;
+  motherContact = motherContact || null;
+  isMotherNotApplicable = isMotherNotApplicable || false;  // default to false if not provided
+
+  guardianName = guardianName || null;
+  guardianOccupation = guardianOccupation || null;
+  guardianContact = guardianContact || null;
+  numberOfSiblings = numberOfSiblings || null;
+  familyIncome = familyIncome || null;
+
+  // SQL query to insert or replace form data into the student_family_profile table, including enrollment_id
+  const query = `
+    REPLACE INTO student_family_profile (
+      enrollment_id, father_name, father_occupation, father_contact, isFatherNotApplicable, 
+      mother_name, mother_occupation, mother_contact, isMotherNotApplicable, 
+      guardian_name, guardian_occupation, guardian_contact, 
+      num_of_siblings, family_annual_income
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+  `;
+
+  const values = [
+    enrollment_id,  // Foreign key: enrollment_id
+    fatherName,  // Father name
+    fatherOccupation,  // Father occupation
+    fatherContact,  // Father contact
+    isFatherNotApplicable,  // Father not applicable (default false)
+    motherName,  // Mother name
+    motherOccupation,  // Mother occupation
+    motherContact,  // Mother contact
+    isMotherNotApplicable,  // Mother not applicable (default false)
+    guardianName,  // Guardian name
+    guardianOccupation,  // Guardian occupation
+    guardianContact,  // Guardian contact
+    numberOfSiblings,  // Number of siblings
+    familyIncome,  // Family annual income
+  ];
+
+  // Execute the query to insert/replace data
+  db.execute(query, values, (err, result) => {
+    if (err) {
+      console.error('Error inserting data:', err);
+      return res.status(500).send({ error: 'Failed to submit family form data' });
+    }
+    console.log('Family data inserted successfully');
+    res.status(201).json({ message: 'Family application updated successfully!' });
+  });
+});
+
+// Get all Personal Info
+app.get('/api/personalInfo', async (req, res) => {
+  try {
+    const [personalInfo] = await db.query('SELECT * FROM student_personal_info');
+    res.status(200).json(personalInfo);
+  } catch (err) {
+    console.error('Error fetching Personal Info:', err);
+    res.status(500).json({ message: 'Error fetching enrollments' });
+  }
+});
+
+// Define the endpoint to get user details by enrollment_id
+app.get('/api/getPersonalInfo', async (req, res) => {
+  const { enrollment_id } = req.query;
+
+  if (!enrollment_id) {
+    return res.status(400).json({ error: 'Enrollment ID is required' });
+  }
+
+  try {
+    const query = `
+      SELECT 
+        enrollment_id, fname AS givenName, lname AS familyName, mname AS middleName,
+        suffix, lrn, sex, bday AS dob, civil_status AS civilStatus, religion,
+        nationality, contact AS contactNumber, house_number AS houseNumber,
+        street_subdivision AS streetAddress, region, province, municipality,
+        zip_code AS zipCode, country
+      FROM student_personal_info
+      WHERE enrollment_id = ?;
+    `;
+    
+    const [rows] = await db.execute(query, [enrollment_id]);
+
+    if (rows.length === 0) {
+      console.log(`No user found for enrollment_id: ${enrollment_id}`);
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    res.json(rows[0]);
+  } catch (err) {
+    console.error('Database error:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
 
 app.post('/submit_personal', (req, res) => {
   let {
@@ -112,7 +506,7 @@ app.post('/submit_personal', (req, res) => {
 
   // SQL query to insert form data into the student_personal_info table, including enrollment_id and lrn
   const query = `
-    INSERT INTO student_personal_info (
+    REPLACE INTO student_personal_info (
       enrollment_id, fname, lname, mname, suffix, lrn, sex, bday, civil_status, religion, nationality,
       contact, house_number, street_subdivision, region, province, municipality, zip_code, country
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
@@ -267,6 +661,51 @@ app.post("/save-enrollment", async (req, res) => {
 
 // Employee Routes
 // Get all employees
+
+
+
+app.get('/api/getEmployeeInfo', async (req, res) => {
+  let { employee_id } = req.query;
+
+  // Log incoming request data for debugging
+  console.log("Received Employee ID:", employee_id);
+
+  // Ensure employee_id is correctly parsed as an integer
+  employee_id = parseInt(employee_id, 10);
+
+  // Validate employee_id
+  if (!Number.isInteger(employee_id) || employee_id <= 0) {
+    return res.status(400).json({ error: 'A valid Employee ID is required as a positive integer' });
+  }
+
+  try {
+    const query = `
+      SELECT 
+        full_name,
+        employee_type,
+        email,
+        phone_number,
+        address,
+        dob,
+        emergency_contact,
+        status
+      FROM employees
+      WHERE employee_id = ?;
+    `;
+
+    const [rows] = await db.execute(query, [employee_id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Employee info not found' });
+    }
+
+    res.json(rows[0]);
+  } catch (err) {
+    console.error('Database error:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
 app.get('/api/employees', async (req, res) => {
   try {
     const [employees] = await db.query('SELECT * FROM employees');

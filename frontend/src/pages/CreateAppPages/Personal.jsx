@@ -3,23 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useActiveItem } from "../../contexts/CreateAppContext";
 import { useOutletContext } from 'react-router-dom';
 
-const apiRequest = async (url, method, body = null) => {
-  try {
-    const response = await fetch(url, {
-      method: method,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: body ? JSON.stringify(body) : null,
-    });
-    return response.json();
-  } catch (error) {
-    console.error('Error with API request:', error);
-    throw new Error('API request failed');
-  }
-};
-
-
 const Personal = () => {
   const navigate = useNavigate();
   const { userDetails } = useOutletContext(); // Access the passed data
@@ -31,7 +14,7 @@ const Personal = () => {
     suffix: '',
     lrn: '', // Add LRN here
     sex: '',
-    nationalities:'',
+    nationality:'',
     dob: '',
     civilStatus: '',
     religion: '',
@@ -44,14 +27,11 @@ const Personal = () => {
     zipCode: '',
     country: '',
   });
-  const [isEditing, setIsEditing] = useState(false);
 
   const [successMessage, setSuccessMessage] = useState(""); 
   const [errors, setErrors] = useState({});
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true); // Tracks if 'Next' button is disabled after form update
-  const [formUpdated, setFormUpdated] = useState(false); // Tracks if the form has been successfully updated
   const divRef = useRef(null);
-
   const { setActiveItem } = useActiveItem();
   
     // Handle button click to set the active item
@@ -63,10 +43,32 @@ const Personal = () => {
   };
 
   const handleSecondClick = (item) => {
-    if (isNextButtonDisabled) {
       navigate('/createapplication');
       setActiveItem(item);
-    } 
+  };
+
+
+  useEffect(() => {
+    if (enrollment_id && enrollment_id !== "No ID provided") {
+      fetchFormData(enrollment_id);
+    }
+  }, [enrollment_id]);
+  
+  const fetchFormData = async (enrollment_id) => {
+    try {
+      // Update the fetch URL to include the enrollment_id as a query parameter
+      const response = await fetch(`https://cvsu-backend-system.vercel.app/api/getPersonalInfo?enrollment_id=${enrollment_id}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch data");
+      }
+      const data = await response.json();
+      setFormData((prevData) => ({
+        ...prevData,
+        ...data,  // Populate form with fetched data
+      }));
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
   };
   
 
@@ -75,12 +77,9 @@ const Personal = () => {
   useEffect(() => {
     const isFormValid = validate();
     console.log("Form Valid: ", isFormValid);  // Debugging
-    console.log("Form Updated: ", formUpdated);  // Debugging
-    setIsNextButtonDisabled(!(isFormValid && formUpdated));
-  }, [formData, formUpdated]);
+    setIsNextButtonDisabled(!(isFormValid));
+  }, [formData]);
 
-  
-  
 
   const validate = () => {
     const validationErrors = {};
@@ -97,11 +96,14 @@ const Personal = () => {
       validationErrors.lrn = "LRN must be a 12-digit number.";
     if (!formData.dob) validationErrors.dob = "Date of Birth is required.";
     if (!formData.religion) validationErrors.religion = "Religion is required.";
-    if (!formData.nationalities) validationErrors.nationalities = "Nationalities is required.";
+    if (!formData.nationality) validationErrors.nationality = "Nationality is required.";
     if (!formData.contactNumber || !regex.contactNumber.test(formData.contactNumber))
       validationErrors.contactNumber = "Contact Number must be 11 digits.";
     if (!formData.sex || !/^(male|female)$/i.test(formData.sex)) {
       validationErrors.sex = "Sex at birth is required and must be either 'male' or 'female'.";
+    }   
+    if (!formData.civilStatus || !/^(single|married|divorced)$/i.test(formData.civilStatus)) {
+      validationErrors.civilStatus = "Civil Status is required.";
     }    
     if (!formData.houseNumber) validationErrors.houseNumber = "House Number is required.";
     if (!formData.streetAddress) validationErrors.streetAddress = "Street Address is required.";
@@ -121,7 +123,6 @@ const Personal = () => {
       ...prevData,
       [name]: value,
     }));
-    setFormUpdated(true); // Mark the form as updated
   };
   
   const handleSubmit = async (e) => {
@@ -133,6 +134,8 @@ const Personal = () => {
         ...formData,
         enrollment_id: enrollment_id,
       };
+      divRef.current.scrollIntoView({ behavior: "smooth" });
+      setSuccessMessage("Application updated successfully!");
   
       try {
         const response = await fetch('https://cvsu-backend-system.vercel.app/submit_personal', {
@@ -166,7 +169,6 @@ const Personal = () => {
       setTimeout(() => setSuccessMessage(""), 5000);
     }
   };
-  
 
   return (
     <div 
@@ -186,8 +188,13 @@ const Personal = () => {
       <button 
             onClick={() => handleSecondClick('/createapplication')}
             className="absolute left-0 top-1/2 transform -translate-y-1/2text-[#345e34] hover:text-green-900">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className="w-8 h-8" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
         <h1 className="text-3xl font-extrabold text-[#001800]">Personal Information</h1>
@@ -220,7 +227,7 @@ const Personal = () => {
             name="givenName"
             type="text"
             className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
-            placeholder="John"
+            placeholder="Given Name"
             value={formData.givenName}
             onChange={handleChange}
           />
@@ -228,8 +235,8 @@ const Personal = () => {
         </div>
 
         {/* Family Name Field */}
-        <div className="mb-4">
-          <label className="form-group text-lg font-sans text-gray-600" htmlFor="familyName">
+        <div className="form-group text-lg font-sans text-gray-600">
+        <label className="text-gray-600 text-lg font-semibold"  htmlFor="familyName">
             Family Name*
           </label>
           <input
@@ -237,7 +244,7 @@ const Personal = () => {
             name="familyName"
             type="text"
             className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
-            placeholder="Doe"
+            placeholder="Family Name"
             value={formData.familyName}
             onChange={handleChange}
           />
@@ -245,24 +252,27 @@ const Personal = () => {
         </div>
 
         {/* Middle Name Field */}
-        <div className="mb-4">
-          <label className="form-group text-lg font-sans text-gray-600" htmlFor="middleName">
-            Middle Name 
+        <div className="form-group text-lg font-sans text-gray-600">
+        <label className="text-gray-600 text-lg font-semibold"  htmlFor="middleName">
+            Middle Name (Optional)
           </label>
           <input
             id="middleName"
             name="middleName"
             type="text"
             className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
+            placeholder="Middle Name"
             value={formData.middleName}
             onChange={handleChange}
           />
+          <p className="text-gray-500 text-sm mt-1">This is optional</p>
+
         </div>
 
 
         {/* Suffix Field */}
-        <div className="mb-4">
-          <label className="text-gray-600 text-lg font-semibold" htmlFor="suffix">
+        <div className="form-group text-lg font-sans text-gray-600">
+        <label className="text-gray-600 text-lg font-semibold"  htmlFor="suffix">
             Suffix (Optional)
           </label>
           <input
@@ -270,14 +280,16 @@ const Personal = () => {
             name="suffix"
             type="text"
             className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
+            placeholder="Suffix"
             value={formData.suffix}
             onChange={handleChange}
           />
+           <p className="text-gray-500 text-sm mt-1">This is optional</p>
         </div>
 
 
-        <div className="mb-4">
-        <label className="text-gray-600 text-lg font-semibold" htmlFor="lrn">
+        <div className="form-group text-lg font-sans text-gray-600">
+        <label className="text-gray-600 text-lg font-semibold"  htmlFor="lrn">
           LRN (Learner Reference Number)*
         </label>
         <input
@@ -293,14 +305,14 @@ const Personal = () => {
       </div>
 
         {/* Sex Field */}
-        <div className="mb-4">
-          <label className="text-gray-600 text-lg font-semibold" htmlFor="sex">
-            Sex at birth
+        <div className="form-group text-lg font-sans text-gray-600">
+        <label className="text-gray-600 text-lg font-semibold"  htmlFor="sex">
+            Sex*
           </label>
           <select
             id="sex"
             name="sex"
-            className={`w-full mt-2 p-3 border ${errors.sex ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]`}
+            className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
             value={formData.sex}
             onChange={handleChange}
           >
@@ -314,8 +326,8 @@ const Personal = () => {
         </div>
 
         {/* Date of Birth Field */}
-        <div className="mb-4">
-          <label className="text-gray-600 text-lg font-semibold" htmlFor="dob">
+        <div className="form-group text-lg font-sans text-gray-600">
+        <label className="text-gray-600 text-lg font-semibold"  htmlFor="dob">
             Date of Birth*
           </label>
           <input
@@ -330,9 +342,9 @@ const Personal = () => {
         </div>
 
         {/* Civil Status Field */}
-        <div className="mb-4">
-          <label className="text-gray-600 text-lg font-semibold" htmlFor="civilStatus">
-            Civil Status
+        <div className="form-group text-lg font-sans text-gray-600">
+        <label className="text-gray-600 text-lg font-semibold" htmlFor="civilStatus">
+            Civil Status*
           </label>
           <select
             id="civilStatus"
@@ -341,14 +353,20 @@ const Personal = () => {
             value={formData.civilStatus}
             onChange={handleChange}
           >
+            <option value="">Select Civil Status</option>
             <option value="single">Single</option>
             <option value="married">Married</option>
             <option value="divorced">Divorced</option>
           </select>
+          {errors.civilStatus && (
+            <p className="text-red-500 text-sm mt-1">{errors.civilStatus}</p>
+          )}
         </div>
 
-        <div className="mb-4">
-            <label className="form-group text-lg font-sans text-gray-600" htmlFor="city">Religion</label>
+        <div className="form-group text-lg font-sans text-gray-600">
+        <label className="text-gray-600 text-lg font-semibold" htmlFor="religion">
+          Religion*
+        </label>
             <input
               type="text"
               className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
@@ -362,25 +380,27 @@ const Personal = () => {
             {errors.religion && <p className="text-red-500 text-sm">{errors.religion}</p>}
           </div>
 
-          <div className="mb-4">
-            <label className="form-group text-lg font-sans text-gray-600" htmlFor="city">Nationalities</label>
+          <div className="form-group text-lg font-sans text-gray-600">
+          <label className="text-gray-600 text-lg font-semibold" htmlFor="ationality">
+          Nationality*
+          </label>
             <input
               type="text"
               className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
-              id="nationalities "
-              name="nationalities"
-              value={formData.nationalities}
+              id="nationality "
+              name="nationality"
+              value={formData.nationality}
               onChange={handleChange}
               required
-              placeholder="Enter Nationalities"
+              placeholder="Enter Nationality"
             />
-            {errors.nationalities && <p className="text-red-500 text-sm">{errors.nationalities}</p>}
+            {errors.nationality && <p className="text-red-500 text-sm">{errors.nationality}</p>}
           </div>
 
           
         {/* Contact Number Field */}
-        <div className="mb-4">
-          <label className="text-gray-600 text-lg font-semibold" htmlFor="contactNumber">
+        <div className="form-group text-lg font-sans text-gray-600">
+        <label className="text-gray-600 text-lg font-semibold" htmlFor="contactNumber">
             Contact Number*
           </label>
           <input
@@ -407,8 +427,10 @@ const Personal = () => {
 
 
           {/* Address Fields */}
-          <div className="mb-4">
-            <label className="form-group text-lg font-sans text-gray-600" htmlFor="addressLine1">House Number</label>
+          <div className="form-group text-lg font-sans text-gray-600">
+         <label className="text-gray-600 text-lg font-semibold" htmlFor="addressLine1">
+          House Number*
+        </label>
             <input
               type="text"
               className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
@@ -420,8 +442,10 @@ const Personal = () => {
               placeholder="Enter House Number"
             />
           {errors.houseNumber && <p className="text-red-500 text-sm">{errors.houseNumber}</p>}          </div>
-          <div className="mb-4">
-            <label className="form-group text-lg font-sans text-gray-600" htmlFor="addressLine1">Street Address</label>
+          <div className="form-group text-lg font-sans text-gray-600">
+          <label className="text-gray-600 text-lg font-semibold" htmlFor="addressLine1">
+            Street Address*
+          </label>
             <input
               type="text"
               className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
@@ -434,8 +458,10 @@ const Personal = () => {
             />
             {errors.streetAddress && <p className="text-red-500 text-sm">{errors.streetAddress}</p>}
           </div>
-          <div className="mb-4">
-            <label className="form-group text-lg font-sans text-gray-600" htmlFor="region">Region</label>
+          <div className="form-group text-lg font-sans text-gray-600">
+          <label className="text-gray-600 text-lg font-semibold" htmlFor="region">
+            Region*
+          </label>
               <input
                type="text"
                className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
@@ -449,8 +475,10 @@ const Personal = () => {
                {errors.region && <p className="text-red-500 text-sm">{errors.region}</p>}
               </div>
 
-          <div className="mb-4">
-            <label className="form-group text-lg font-sans text-gray-600" htmlFor="city">Province</label>
+              <div className="form-group text-lg font-sans text-gray-600">
+              <label className="text-gray-600 text-lg font-semibold" htmlFor="city">
+                Province*
+              </label>
             <input
               type="text"
               className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
@@ -464,8 +492,10 @@ const Personal = () => {
             {errors.province && <p className="text-red-500 text-sm">{errors.province}</p>}
           </div>
 
-          <div className="mb-4">
-            <label className="form-group text-lg font-sans text-gray-600" htmlFor="state">Municipality</label>
+          <div className="form-group text-lg font-sans text-gray-600">
+          <label className="text-gray-600 text-lg font-semibold" htmlFor="state">
+            Municipality*
+          </label>
             <input
               type="text"
               className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
@@ -479,8 +509,10 @@ const Personal = () => {
             {errors.municipality && <p className="text-red-500 text-sm">{errors.municipality}</p>}
           </div>
 
-          <div className="mb-4">
-            <label className="form-group text-lg font-sans text-gray-600" htmlFor="zipCode">Zip Code</label>
+          <div className="form-group text-lg font-sans text-gray-600">
+        <label className="text-gray-600 text-lg font-semibold" htmlFor="zipCode">
+          Zip Code*
+        </label>
             <input
               type="text"
               className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
@@ -494,8 +526,10 @@ const Personal = () => {
             {errors.zipCode && <p className="text-red-500 text-sm">{errors.zipCode}</p>}
           </div>
 
-        <div className="mb-4">
-            <label className="form-group text-lg font-sans text-gray-600" htmlFor="city">Country</label>
+          <div className="form-group text-lg font-sans text-gray-600">
+          <label className="text-gray-600 text-lg font-semibold" htmlFor="city">
+            Country*
+          </label>
             <input
               type="text"
               className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"

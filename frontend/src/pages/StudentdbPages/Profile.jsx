@@ -1,108 +1,56 @@
-import {React, useState, useEffect} from "react";
+import React from "react";
 import { FaUser, FaMapMarkedAlt, FaUsers, FaGraduationCap } from "react-icons/fa";
-import { useOutletContext } from "react-router-dom";
 
 const Profile = () => {
-  const dataFromParent = useOutletContext();
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  useEffect(() => {
-    const fetchOtherInfo = async (enrollmentId) => {
-      try {
-        //https://cvsu-backend-system.vercel.app/api/
-        const response = await fetch(`https://cvsu-backend-system.vercel.app/api/otherInfo/${enrollmentId}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch data');
-        }
-        const result = await response.json();
-        setData(result);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchOtherInfo(dataFromParent.user.enrollment_id);
-  }, []);
-
-  if (loading) return <p style={{
-    fontSize: '1rem', // Adjust the size as needed
-    textAlign: 'center',
-    margin: 0,
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)'
-  }}>
-    Loading...
-  </p>
-  if (error) return <p>Error: {error}</p>;
-
-  
-  const personal = data.personalInfo[0];
-  const family = data.familyBackground[0];
-  const education = data.educationalBackground[0];
-  
-  const dateString = personal.bday;
-  const date = new Date(dateString);
-
-  const formattedDate = date.toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  });
-
   const formData = {
-    givenName: personal.fname,
-    familyName: personal.lname,
-    middleName: personal.mname,
-    suffix: personal.suffix,
-    sexAtBirth: personal.sex,
-    civilStatus: personal.civil_status,
-    religion: personal.religion,
-    dateOfBirth: formattedDate,
-    contactNumber: personal.contact,
-    nationality: personal.nationality,
-    houseNumber: personal.house_number,
-    streetAddress: personal.street_subdivision,
-    region: personal.region,
-    province: personal.province,
-    municipality: personal.municipality,
-    barangay: "no baranggay on database",
-    zipCode: personal.zip_code,
-    country: personal.country,
+    givenName: "Kerry",
+    familyName: "Not Applicable",
+    middleName: "Not Applicable",
+    suffix: "Not Applicable",
+    sexAtBirth: "Male",
+    civilStatus: "Single",
+    religion: "Roman Catholic",
+    dateOfBirth: "February 05, 2004",
+    contactNumber: "09123796420",
+    nationality: "Filipino",
+    houseNumber: "1",
+    streetAddress: "Not provided",
+    region: "National Capital Region (NCR)",
+    province: "Metro Manila",
+    municipality: "Taguig",
+    barangay: "Not provided",
+    zipCode: "1740",
+    country: "Philippines",
     
-    fathersName: family.father_name,
-    fathersOccupation: family.father_occupation,
-    fathersContactNumber: family.father_contact,
-    mothersName: family.mother_name,
-    mothersOccupation: family.mother_occupation,
-    mothersContactNumber: family.mother_contact,
-    guardiansName: family.guardian_name,
-    guardiansOccupation: family.guardian_occupation,
-    guardiansContactNumber: family.guardian_contact,
-    numberOfSiblings: family.num_of_siblings,
-    incomeBracket: family.family_annual_income,
+    fathersName: "Not Applicable",
+    fathersOccupation: "Not Applicable",
+    fathersContactNumber: "Not Applicable",
+    mothersName: "Not Applicable",
+    mothersOccupation: "Not Applicable",
+    mothersContactNumber: "Not Applicable",
+    guardiansName: "Joshua",
+    guardiansOccupation: "Joshua",
+    guardiansContactNumber: "0948756134",
+    numberOfSiblings: "1",
+    incomeBracket: "22,001 - 43,000",
     educationalBackground: [
       {
         level: "Elementary",
-        school: education.elementarySchoolName,
-        address: education.elementarySchoolAddress,
-        yearGraduated: education.elementarySchoolYearGraduated,
+        school: "Harvard",
+        address: "Quezon City",
+        yearGraduated: "2012",
       },
       {
         level: "High School",
-        school: education.highSchoolName,
-        address: education.highSchoolAddress,
-        yearGraduated: education.highSchoolYearGraduated,
+        school: "Harvard",
+        address: "Quezon City",
+        yearGraduated: "2012",
       },
       {
         level: "Senior High School",
-        school: education.seniorHighSchoolName,
-        address: education.seniorHighSchoolAddress,
-        yearGraduated: education.seniorHighSchoolYearGraduated,
+        school: "Harvard",
+        address: "Quezon City",
+        yearGraduated: "2018",
       },
     ],
   };

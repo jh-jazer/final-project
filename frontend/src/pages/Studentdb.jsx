@@ -77,7 +77,7 @@ const StudentDashboard = () => {
                 {user.id || "Unknown ID"}
               </Link>
               <p className="text-sm text-gray-400">
-              {user.program === "Bachelor of Science in Computer Science" ? "BSCS" : user.program === "Bachelor of Science in Information Technology" ? "BSIT" : "Unknown Program"} |{" "}
+              {user.other === 1 ? "BSCS" : user.other === 2 ? "BSIT" : "Unknown Program"} |{" "}
               {user.type || "Unknown Student Type"} |{" "}
               {user.role || "Unknown Role"}
             </p>
@@ -163,7 +163,7 @@ const StudentDashboard = () => {
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto h-full p-8">
-        <Outlet context={{ user }} />  {/* This renders the nested route components */}
+        <Outlet /> {/* This renders the nested route components */}
       </main>
 
       {/* Logout Confirmation Modal */}

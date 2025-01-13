@@ -127,35 +127,81 @@ app.get('/api/available-slots', async (req, res) => {
 });
 
 
-// Update available slots for a specific appointment
-app.put('/api/appointments/:id', async (req, res) => {
-  const appointmentId = req.params.id;
-  const { available_slots } = req.body; // Get available_slots from the request body
-  
-  if (!available_slots || isNaN(available_slots)) {
-    return res.status(400).json({ message: 'Available slots must be a valid number.' });
+app.post('/submit_appointment', (req, res) => {
+  let {
+    enrollment_id,  // Enrollment ID (foreign key)
+    scheduled_date,           // Date of schedule
+    time_period     // Time period ("morning" or "afternoon")
+  } = req.body;
+
+  // Validate that required fields are present
+  if (!enrollment_id || !scheduled_date || !time_period) {
+    return res.status(400).send({ error: 'Missing required fields' });
+  }
+
+  // Ensure time_period is either "morning" or "afternoon"
+  if (!['morning', 'afternoon'].includes(time_period.toLowerCase())) {
+    return res.status(400).send({ error: 'Invalid time period. Must be either "morning" or "afternoon"' });
+  }
+
+  // SQL query to insert form data into the schedule_info table
+  const query = `
+    REPLACE INTO applicant_schedule (
+      enrollment_id, scheduled_date, time_period
+    ) VALUES (?, ?, ?);
+  `;
+
+  const values = [
+    enrollment_id,  // Foreign key: enrollment_id
+    scheduled_date,           // Date of schedule
+    time_period     // Time period (either morning or afternoon)
+  ];
+
+  // Execute the query to insert data
+  db.execute(query, values, (err, result) => {
+    if (err) {
+      console.error('Error inserting data:', err);
+      return res.status(500).send({ error: 'Failed to submit schedule data' });
+    }
+    console.log('Schedule data inserted successfully');
+    res.status(201).json({ message: 'Schedule updated successfully!' });
+  });
+});
+
+// Define the endpoint to get simplified educational info by enrollment_id
+app.get('/api/getSchedule', async (req, res) => {
+  const { enrollment_id } = req.query;
+
+  // Validate required field
+  if (!enrollment_id) {
+    return res.status(400).json({ error: 'Enrollment ID is required' });
   }
 
   try {
-    // Update the available slots in the database for the specified appointment
-    const [result] = await db.query(
-      'UPDATE appointments SET available_slots = ? WHERE id = ?',
-      [available_slots, appointmentId]
-    );
+    // SQL query to fetch simplified educational information
+    const query = `
+      SELECT 
+        enrollment_id, 
+        scheduled_date, 
+        time_period
+      FROM applicant_schedule
+      WHERE enrollment_id = ?;
+    `;
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Appointment not found' });
+    // Execute query and get results
+    const [rows] = await db.execute(query, [enrollment_id]);
+
+    // Handle case where no records are found
+    if (rows.length === 0) {
+      console.log(`No educational info found for enrollment_id: ${enrollment_id}`);
+      return res.status(404).json({ error: 'Educational info not found' });
     }
 
-    // Send the updated appointment as the response
-    const [updatedAppointment] = await db.query(
-      'SELECT * FROM appointments WHERE id = ?',
-      [appointmentId]
-    );
-    res.status(200).json(updatedAppointment[0]);
+    // Respond with the fetched data
+    res.json(rows[0]);
   } catch (err) {
-    console.error('Error updating available slots:', err);
-    res.status(500).json({ message: 'Error updating available slots' });
+    console.error('Database error:', err);
+    res.status(500).json({ error: 'Database error' });
   }
 });
 

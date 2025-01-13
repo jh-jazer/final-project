@@ -7,6 +7,7 @@ const Personal = () => {
   const navigate = useNavigate();
   const { userDetails } = useOutletContext(); // Access the passed data
   const enrollment_id = userDetails?.enrollment_id || "No id provided"; 
+  const [isExistingAppointment, setIsExistingAppointment] = useState(false);
   const [formData, setFormData] = useState({
     givenName: '',
     familyName: '',
@@ -62,10 +63,12 @@ const Personal = () => {
         throw new Error("Failed to fetch data");
       }
       const data = await response.json();
+
       setFormData((prevData) => ({
         ...prevData,
         ...data,  // Populate form with fetched data
       }));
+      setIsExistingAppointment(true);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -75,11 +78,10 @@ const Personal = () => {
 
   // Effect to enable or disable the button based on form completion
   useEffect(() => {
-    const isFormValid = validate();
-    console.log("Form Valid: ", isFormValid);  // Debugging
-    setIsNextButtonDisabled(!(isFormValid));
-  }, [formData]);
+    setIsNextButtonDisabled(!isExisting());
+  }, [isExistingAppointment]);
 
+  const isExisting = () => isExistingAppointment
 
   const validate = () => {
     const validationErrors = {};
@@ -128,7 +130,7 @@ const Personal = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const isValid = validate();
-    
+
     if (isValid) {
       const updatedFormData = {
         ...formData,
@@ -136,6 +138,8 @@ const Personal = () => {
       };
       divRef.current.scrollIntoView({ behavior: "smooth" });
       setSuccessMessage("Application updated successfully!");
+      navigate('/createapplication/family');// Navigate to the desired route
+      setActiveItem(item);
   
       try {
         const response = await fetch('https://cvsu-backend-system.vercel.app/submit_personal', {
@@ -295,7 +299,7 @@ const Personal = () => {
         <input
           id="lrn"
           name="lrn"
-          type="text"
+          type="number"
           className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
           placeholder="Enter LRN"
           value={formData.lrn}
@@ -406,7 +410,7 @@ const Personal = () => {
           <input
             id="contactNumber"
             name="contactNumber"
-            type="text"
+            type="number"
             className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
             placeholder="09128796420"
             value={formData.contactNumber}
@@ -514,7 +518,7 @@ const Personal = () => {
           Zip Code*
         </label>
             <input
-              type="text"
+              type="number"
               className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
               id="zipCode"
               name="zipCode"

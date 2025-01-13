@@ -801,11 +801,12 @@ app.get('/api/application', async (req, res) => {
   }
 })
 
-app.get('/api/otherInfo', async (req, res) => {
+app.get('/api/otherInfo/:enrollment_id', async (req, res) => {
+  const {enrollment_id} = req.params;
   try {
-    const [personalInfo] = await db.query('SELECT * FROM student_personal_info');
-    const [familyBackground] = await db.query('SELECT * FROM student_family_profile');
-    const [educationalBackground] = await db.query('SELECT * FROM student_educational_info');
+    const [personalInfo] = await db.query('SELECT * FROM student_personal_info WHERE enrollment_id = ?', [enrollment_id]);
+    const [familyBackground] = await db.query('SELECT * FROM student_family_profile WHERE enrollment_id = ?', [enrollment_id]);
+    const [educationalBackground] = await db.query('SELECT * FROM student_educational_info WHERE enrollment_id = ?', [enrollment_id]);
 
     res.status(200).json({
       personalInfo,
@@ -821,7 +822,7 @@ app.get('/api/otherInfo', async (req, res) => {
 app.get('/api/numberOfPeoplePerRoles', async (req, res )=> {
   try{
     const [numOfApplicants] = await db.query('select COUNT(*) from enrollments');
-    const [numOfStudents] = await db.query('select COUNT(*) from employees');
+    const [numOfStudents] = await db.query('select COUNT(*) from students');
     const [numOfEmployees] = await db.query('select COUNT(*) from employees');
     res.status(200).json({
       numOfApplicants,
@@ -967,12 +968,11 @@ app.post('/api/login', async (req, res) => {
 
   try {
     // Check the students table first
-    const [studentResults] = await db.query('SELECT * FROM students WHERE student_id = ?', [login_id]);
+    const [studentResults] = await db.query('SELECT * FROM students inner join enrollments on students.enrollment_id = enrollments.enrollment_id WHERE student_id = ?', [login_id]);
 
     if (studentResults.length > 0) {
       const student = studentResults[0];
       const isPasswordCorrect = await bcrypt.compare(password, student.password);
-      
       if (isPasswordCorrect) {
         return res.status(200).json({
           message: 'Login successful',
@@ -981,7 +981,8 @@ app.post('/api/login', async (req, res) => {
             full_name: student.full_name,
             role: 'Student',
             type: student.student_type,
-            other: student.program_id,
+            program: student.preferred_program,
+            enrollment_id: student.enrollment_id,
           },
         });
       } else {
@@ -1259,6 +1260,29 @@ app.delete("/api/delete_instructor", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+
+app.get('/api/getGrades/:enrollmentId/:courseCode', async (req, res) => {
+  const { enrollmentId, courseCode } = req.params;
+
+  try {
+    const [grade] = await db.query(
+      'SELECT * FROM student_courses INNER JOIN courses ON course_id = courses.id WHERE student_id = ? AND courses.code = ?',
+      [enrollmentId, courseCode]
+    );
+
+    if (grade.length > 0) {
+      res.status(200).json(grade);
+    } else {
+      res.status(404).json({ message: 'No grades found for this enrollment ID and course code.' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'An error occurred while fetching grades.' });
+  }
+});
+
+
 
 
 

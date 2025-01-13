@@ -13,7 +13,7 @@ const AdmissionsPage = () => {
   const storedEmail = localStorage.getItem("email");
   const email = userData?.email || enrollmentData?.email || storedEmail || "No email provided"; // Fallback if email is undefined
   const [activeSection, setActiveSection] = useState("First Section");
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [userDetails, setUserDetails] = useState(null); // Store entire user data
   const { activeItem } = useActiveItem();
   const navigate = useNavigate();

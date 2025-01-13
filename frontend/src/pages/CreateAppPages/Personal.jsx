@@ -127,8 +127,8 @@ const Personal = () => {
   
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
     const isValid = validate();
+    
     if (isValid) {
       const updatedFormData = {
         ...formData,

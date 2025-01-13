@@ -60,13 +60,20 @@ const Appointment = () => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    if (validate()) {
-      const updatedFormData = { ...formData, enrollment_id };
 
+    if (validate()) {
+      const updatedFormData = { 
+        ...formData,
+         enrollment_id: enrollment_id,
+       };
+       setSuccessMessage("Application updated successfully!");
+       
       try {
-        const response = await fetch('http://localhost:5005/submit_personal', {
+        const response = await fetch('http://localhost:5005/submit_appointment', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json' 
+          },
           body: JSON.stringify(updatedFormData)
         });
 

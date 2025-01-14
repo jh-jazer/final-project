@@ -178,7 +178,7 @@ const StudentAccountManagement = () => {
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">Student Accounts</h2>
         {statusMessage && <div className="mb-4 text-center text-red-600">{statusMessage}</div>}
 
-        <div className="mb-4 flex justify-between items-center">
+        <div className="mb-4 flex justify-between items-center overflow-x-auto">
           <button
             className="px-4 py-2 bg-blue-500 text-white rounded-md"
             onClick={() => openModal()}

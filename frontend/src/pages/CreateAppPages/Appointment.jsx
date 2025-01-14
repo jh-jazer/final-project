@@ -30,7 +30,7 @@ const Appointment = () => {
 
   const fetchFormData = async (enrollment_id) => {
     try {
-      const response = await fetch(`http://localhost:5005/api/getSchedule?enrollment_id=${enrollment_id}`);
+      const response = await fetch(`https://cvsu-backend-system.vercel.app/api/getSchedule?enrollment_id=${enrollment_id}`);
       if (!response.ok) {
         throw new Error("Failed to fetch data");
       }
@@ -99,7 +99,7 @@ const Appointment = () => {
 
   const updateSlotCount = async (date, timePeriod) => {
     try {
-      const response = await fetch('http://localhost:5005/update_slot_count', {
+      const response = await fetch('https://cvsu-backend-system.vercel.app/update_slot_count', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ date, timePeriod })
@@ -127,7 +127,7 @@ const Appointment = () => {
 
       
       try {
-        const response = await fetch('http://localhost:5005/submit_appointment', {
+        const response = await fetch('https://cvsu-backend-system.vercel.app/submit_appointment', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(updatedFormData)

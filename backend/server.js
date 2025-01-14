@@ -126,6 +126,41 @@ app.get('/api/available-slots', async (req, res) => {
   }
 });
 
+// Define the endpoint to update slot count for a given date and time period
+app.patch('/update_slot_count', async (req, res) => {
+  const { date, timePeriod } = req.body;  // Get the date and time period from the request body
+
+  // Validate required fields
+  if (!date || !timePeriod) {
+    return res.status(400).json({ error: 'Date and time period are required' });
+  }
+
+  try {
+    // SQL query to decrement the available slot count
+    const query = `
+      UPDATE appointments 
+      SET available_slots = available_slots - 1
+      WHERE date = ? AND time_period = ? AND available_slots > 0;
+    `;
+
+    // Execute the query with the provided date and time period
+    const [result] = await db.execute(query, [date, timePeriod]);
+
+    // Check if any rows were affected (i.e., slots were available)
+    if (result.affectedRows === 0) {
+      return res.status(400).json({ error: `No available slots left for ${timePeriod} on ${date}.` });
+    }
+
+    // If the slot count was successfully decremented
+    res.status(200).json({ message: `Slot count updated successfully for ${timePeriod} on ${date}.` });
+  } catch (err) {
+    // Handle any database errors
+    console.error('Database error:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
+
 // Update available slots for a specific appointment
 app.put('/api/appointments/:id', async (req, res) => {
   const appointmentId = req.params.id;
@@ -154,11 +189,10 @@ app.put('/api/appointments/:id', async (req, res) => {
     res.status(500).json({ message: 'Error updating available slots' });
   }
 });
-
-app.post('/submit_appointment', (req, res) => {
+app.post('/submit_appointment', async (req, res) => {
   let {
     enrollment_id,  // Enrollment ID (foreign key)
-    scheduled_date,           // Date of schedule
+    scheduled_date, // Date of schedule
     time_period     // Time period ("morning" or "afternoon")
   } = req.body;
 
@@ -181,19 +215,22 @@ app.post('/submit_appointment', (req, res) => {
 
   const values = [
     enrollment_id,  // Foreign key: enrollment_id
-    scheduled_date,           // Date of schedule
+    scheduled_date, // Date of schedule
     time_period     // Time period (either morning or afternoon)
   ];
 
-  // Execute the query to insert data
-  db.execute(query, values, (err, result) => {
-    if (err) {
-      console.error('Error inserting data:', err);
-      return res.status(500).send({ error: 'Failed to submit schedule data' });
-    }
+  try {
+    // Execute the query to insert data
+    const [result] = await db.execute(query, values);
+
     console.log('Schedule data inserted successfully');
     res.status(201).json({ message: 'Schedule updated successfully!' });
-  });
+
+  } catch (err) {
+    // Catch any errors that occur during the execution of the query
+    console.error('Error inserting data:', err);
+    res.status(500).send({ error: 'Failed to submit schedule data' });
+  }
 });
 
 // Define the endpoint to get simplified educational info by enrollment_id

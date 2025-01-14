@@ -12,6 +12,9 @@ export default {
       fontSize: {
         base: '12px', // Change the default font size from 16px to 18px
       },
+      screens: {
+        'xs': '350px', // Custom screen size for 350px width
+      },
     },
   },
   plugins: [],

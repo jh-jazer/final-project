@@ -121,10 +121,10 @@ const Appointments = () => {
   return (
     <div className="p-6 bg-blue-500 min-h-screen">
       <div className="bg-white shadow-lg rounded-lg p-6 mx-auto max-w-full sm:max-w-6xl">
-        <h2 className="text-2xl font-semibold text-gray-700 mb-4">Manage Appointments</h2>
+        <h2 className="text-2xl font-semibold text-gray-700 mb-4 ">Manage Appointments</h2>
 
         {/* Date range filters */}
-        <div className="flex space-x-4 mb-6">
+        <div className="flex space-x-4 mb-6  overflow-x-auto">
           <div>
             <label className="block text-sm font-semibold text-gray-700">Start Date</label>
             <input

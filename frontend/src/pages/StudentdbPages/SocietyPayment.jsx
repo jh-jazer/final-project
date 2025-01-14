@@ -186,7 +186,7 @@ const handleApplicantApproval = (id) => {
         </div>
 
         {/* Radio Buttons to Toggle Between Regular, Irregular, and New Students */}
-        <div className="mb-4 flex space-x-4">
+        <div className="mb-4 flex space-x-4 overflow-x-auto">
           <label className="flex items-center">
             <input
               type="radio"

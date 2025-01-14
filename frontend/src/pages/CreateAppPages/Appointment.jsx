@@ -71,6 +71,11 @@ const Appointment = () => {
     } 
   };
 
+  const handleSecondClick = (item) => {
+    navigate('/createapplication/requirements');// Navigate to the desired route
+    setActiveItem(item);
+   
+};
 
   const handleInputChange = (e, isDatePicker = false) => {
     if (isDatePicker) {
@@ -115,7 +120,7 @@ const Appointment = () => {
   };
   
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e, item) => {
     e.preventDefault();
   
     if (validate()) {
@@ -132,13 +137,21 @@ const Appointment = () => {
         });
   
         if (response.ok) {
-          setSuccessMessage("Appointment scheduled successfully!");
-          setTimeout(() => setSuccessMessage(""), 5000);
               
           await updateSlotCount(formData.scheduled_date, formData.time_period);
   
           // Insert data into applicant_progress table after successful appointment scheduling
           await addApplicantProgress(enrollment_id);
+
+          setSuccessMessage("Application updated successfully!");
+
+            // Set a timeout before navigating to give the user time to see the message
+            setTimeout(() => {
+              // Navigate to the desired route after 2 seconds
+              navigate("/createapplication/document-verification");  // Use item (which is '/family' in this case)
+              setActiveItem(item); // Set active item (pass '/family')
+            }, 2000); // Delay of 2 seconds
+    
           
         } else {
           setSuccessMessage("Submission issue. Please try again.");
@@ -249,8 +262,8 @@ const Appointment = () => {
         </div>
         
         ) : (
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
+              <form onSubmit={(e) => handleSubmit(e, '/document-verification')}>
+              <div className="form-group">
               <label htmlFor="appointmentDate">Select Date</label>
               <DatePicker
                 selected={startDate}

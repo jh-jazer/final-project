@@ -203,7 +203,7 @@ const Education = () => {
     setFormData(prevData => ({ ...prevData, [name]: value }));
   };
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e, item) => {
     e.preventDefault();
     const isValid = validate();
 

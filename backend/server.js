@@ -233,6 +233,43 @@ app.post('/submit_appointment', async (req, res) => {
   }
 });
 
+app.post('/add_applicant_progress', async (req, res) => {
+  const { enrollment_id, docs_verification, eval_assessment, docs_submission, society_payment, student_enrollment } = req.body;
+
+  if (!enrollment_id) {
+    return res.status(400).json({ error: 'enrollment_id is required' });
+  }
+
+  try {
+    const query = `
+      INSERT INTO applicant_progress (
+        enrollment_id,
+        docs_verification,
+        eval_assessment,
+        docs_submission,
+        society_payment,
+        student_enrollment
+      ) VALUES (?, ?, ?, ?, ?, ?)
+    `;
+    
+    const values = [
+      enrollment_id,
+      docs_verification,
+      eval_assessment,
+      docs_submission,
+      society_payment,
+      student_enrollment
+    ];
+
+    const [result] = await db.execute(query, values);
+
+    res.status(201).json({ message: 'Progress data added successfully' });
+  } catch (error) {
+    console.error('Error inserting into applicant_progress:', error);
+    res.status(500).json({ error: 'Failed to insert data' });
+  }
+});
+
 // Define the endpoint to get simplified educational info by enrollment_id
 app.get('/api/getSchedule', async (req, res) => {
   const { enrollment_id } = req.query;

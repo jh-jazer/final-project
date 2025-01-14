@@ -117,55 +117,76 @@ const Appointment = () => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-
+  
     if (validate()) {
       const updatedFormData = { ...formData, enrollment_id };
-      setSuccessMessage("Application updated successfully!");
-      setTimeout(() => setSuccessMessage(""), 5000);
       divRef.current.scrollIntoView({ behavior: "smooth" });
+  
+      setSuccessMessage("Loading...");
 
-
-      
       try {
         const response = await fetch('https://cvsu-backend-system.vercel.app/submit_appointment', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(updatedFormData)
         });
-
+  
         if (response.ok) {
           setSuccessMessage("Appointment scheduled successfully!");
           setTimeout(() => setSuccessMessage(""), 5000);
-            
+              
           await updateSlotCount(formData.scheduled_date, formData.time_period);
-
+  
+          // Insert data into applicant_progress table after successful appointment scheduling
+          await addApplicantProgress(enrollment_id);
+          
         } else {
           setSuccessMessage("Submission issue. Please try again.");
           setTimeout(() => setSuccessMessage(""), 5000);
           divRef.current.scrollIntoView({ behavior: "smooth" });
-
-
         }
       } catch (error) {
         console.error('Submission error:', error);
         setSuccessMessage("An error occurred. Please try again.");
         setTimeout(() => setSuccessMessage(""), 5000);
         divRef.current.scrollIntoView({ behavior: "smooth" });
-
-
       }
     } else {
       setSuccessMessage("Invalid form entries. Please check and try again.");
       setTimeout(() => setSuccessMessage(""), 5000);
       divRef.current.scrollIntoView({ behavior: "smooth" });
-
-
     }
-
+  
     setTimeout(() => setSuccessMessage(""), 5000);
     divRef.current.scrollIntoView({ behavior: "smooth" });
-
   };
+  
+  // New function to insert data into the applicant_progress table
+  const addApplicantProgress = async (enrollment_id) => {
+    try {
+      const response = await fetch('https://cvsu-backend-system.vercel.app/add_applicant_progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          enrollment_id,
+          docs_verification: 'pending',
+          eval_assessment: 'pending',
+          docs_submission: 'pending',
+          society_payment: 'pending',
+          student_enrollment: 'pending'
+        })
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to insert data into applicant_progress');
+      }
+  
+      console.log('Data successfully added to applicant_progress table');
+    } catch (error) {
+      console.error('Error inserting data into applicant_progress:', error);
+    }
+  };
+  
 
   return (
     <div 

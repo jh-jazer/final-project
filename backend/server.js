@@ -376,83 +376,74 @@ app.get('/api/getFamilyInfo', async (req, res) => {
   }
 });
 
+app.post('/submit_family', async (req, res) => {
+  try {
+    let {
+      enrollment_id,  // Enrollment ID (foreign key)
+      fatherName,
+      fatherOccupation,
+      fatherContact,
+      isFatherNotApplicable,
+      motherName,
+      motherOccupation,
+      motherContact,
+      isMotherNotApplicable,
+      guardianName,
+      guardianOccupation,
+      guardianContact,
+      numberOfSiblings,
+      familyIncome,
+    } = req.body;
 
-app.post('/submit_family', (req, res) => {
-  let {
-    enrollment_id,  // Enrollment ID (foreign key)
-    fatherName,  // Father name
-    fatherOccupation,  // Father occupation
-    fatherContact,  // Father contact
-    isFatherNotApplicable,  // Is father not applicable
-    motherName,  // Mother name
-    motherOccupation,  // Mother occupation
-    motherContact,  // Mother contact
-    isMotherNotApplicable,  // Is mother not applicable
-    guardianName,  // Guardian name
-    guardianOccupation,  // Guardian occupation
-    guardianContact,  // Guardian contact
-    numberOfSiblings,  // Number of siblings
-    familyIncome,  // Annual income
-  } = req.body;
-
-  // Validate that required fields are present
-  if (!enrollment_id) {
-    return res.status(400).send({ error: 'Missing required fields' });
-  }
-
-  // Ensure optional fields (like fatherName, motherName, etc.) are not undefined
-  fatherName = fatherName || null;
-  fatherOccupation = fatherOccupation || null;
-  fatherContact = fatherContact || null;
-  isFatherNotApplicable = isFatherNotApplicable || false;  // default to false if not provided
-
-  motherName = motherName || null;
-  motherOccupation = motherOccupation || null;
-  motherContact = motherContact || null;
-  isMotherNotApplicable = isMotherNotApplicable || false;  // default to false if not provided
-
-  guardianName = guardianName || null;
-  guardianOccupation = guardianOccupation || null;
-  guardianContact = guardianContact || null;
-  numberOfSiblings = numberOfSiblings || null;
-  familyIncome = familyIncome || null;
-
-  // SQL query to insert or replace form data into the student_family_profile table, including enrollment_id
-  const query = `
-    REPLACE INTO student_family_profile (
-      enrollment_id, father_name, father_occupation, father_contact, isFatherNotApplicable, 
-      mother_name, mother_occupation, mother_contact, isMotherNotApplicable, 
-      guardian_name, guardian_occupation, guardian_contact, 
-      num_of_siblings, family_annual_income
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-  `;
-
-  const values = [
-    enrollment_id,  // Foreign key: enrollment_id
-    fatherName,  // Father name
-    fatherOccupation,  // Father occupation
-    fatherContact,  // Father contact
-    isFatherNotApplicable,  // Father not applicable (default false)
-    motherName,  // Mother name
-    motherOccupation,  // Mother occupation
-    motherContact,  // Mother contact
-    isMotherNotApplicable,  // Mother not applicable (default false)
-    guardianName,  // Guardian name
-    guardianOccupation,  // Guardian occupation
-    guardianContact,  // Guardian contact
-    numberOfSiblings,  // Number of siblings
-    familyIncome,  // Family annual income
-  ];
-
-  // Execute the query to insert/replace data
-  db.execute(query, values, (err, result) => {
-    if (err) {
-      console.error('Error inserting data:', err);
-      return res.status(500).send({ error: 'Failed to submit family form data' });
+    // Validate that required fields are present
+    if (!enrollment_id) {
+      return res.status(400).json({ error: 'Missing required fields' });
     }
-    console.log('Family data inserted successfully');
+
+    // Ensure optional fields are not undefined, defaulting as necessary
+    fatherName = fatherName || null;
+    fatherOccupation = fatherOccupation || null;
+    fatherContact = fatherContact || null;
+    isFatherNotApplicable = isFatherNotApplicable || false;
+
+    motherName = motherName || null;
+    motherOccupation = motherOccupation || null;
+    motherContact = motherContact || null;
+    isMotherNotApplicable = isMotherNotApplicable || false;
+
+    guardianName = guardianName || null;
+    guardianOccupation = guardianOccupation || null;
+    guardianContact = guardianContact || null;
+    numberOfSiblings = numberOfSiblings || null;
+    familyIncome = familyIncome || null;
+
+    // SQL query
+    const query = `
+      REPLACE INTO student_family_profile (
+        enrollment_id, father_name, father_occupation, father_contact, isFatherNotApplicable, 
+        mother_name, mother_occupation, mother_contact, isMotherNotApplicable, 
+        guardian_name, guardian_occupation, guardian_contact, 
+        num_of_siblings, family_annual_income
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    `;
+
+    const values = [
+      enrollment_id, fatherName, fatherOccupation, fatherContact, isFatherNotApplicable,
+      motherName, motherOccupation, motherContact, isMotherNotApplicable,
+      guardianName, guardianOccupation, guardianContact,
+      numberOfSiblings, familyIncome,
+    ];
+
+    // Execute the query
+    const [result] = await db.execute(query, values);
+
+    console.log('Family data inserted successfully:', result);
     res.status(201).json({ message: 'Family application updated successfully!' });
-  });
+
+  } catch (err) {
+    console.error('Error inserting family data:', err);
+    res.status(500).json({ error: 'Failed to submit family form data' });
+  }
 });
 
 // Get all Personal Info

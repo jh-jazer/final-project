@@ -58,7 +58,6 @@ const Personal = () => {
     try {
       // Update the fetch URL to include the enrollment_id as a query parameter
       const response = await fetch(`https://cvsu-backend-system.vercel.app/api/getPersonalInfo?enrollment_id=${enrollment_id}`);
-  
       if (!response.ok) {
         throw new Error("Failed to fetch data");
       }
@@ -142,7 +141,7 @@ const Personal = () => {
     }));
   };
   
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, item) => {
     e.preventDefault();
     const isValid = validate();
   
@@ -151,56 +150,36 @@ const Personal = () => {
         ...formData,
         enrollment_id: enrollment_id,
       };
+      divRef.current.scrollIntoView({ behavior: "smooth" });
+  
+      // Set success message to "Loading..." when the request starts
+      setSuccessMessage("Loading...");
   
       try {
-        // Show the loading message or initial response
-        setSuccessMessage("Processing, please wait...");
-        divRef.current.scrollIntoView({ behavior: "smooth" });
+        const response = await fetch('https://cvsu-backend-system.vercel.app/submit_personal', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedFormData),
+        });
   
-        // Add timeout to the fetch request to avoid indefinite waiting
-        const response = await Promise.race([
-          fetch('https://cvsu-backend-system.vercel.app/submit_personal', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(updatedFormData),
-          }),
-          new Promise((_, reject) =>
-            setTimeout(() => reject(new Error("Request timed out")), 5000) // 5 seconds timeout
-          ),
-        ]);
-  
-        if (!response.ok) {
-          // If response is not OK, handle error
-          setSuccessMessage("There was an issue with the submission. Please try again.");
-          setTimeout(() => setSuccessMessage(""), 5000);
-        } else {
-          // If response is OK, proceed with success
+        if (response.ok) {
           const result = await response.json();
           console.log(response.status); // Check the actual response status code here
+          setSuccessMessage("Application updated successfully!");
   
-          // Reset form data
-          setFormData({
-            givenName: '', 
-            familyName: '', 
-            lrn: '', 
-            sex: '', 
-            dob: '', 
-            contactNumber: ''
-          });
+          // Set a timeout before navigating to give the user time to see the message
+          setTimeout(() => {
+            // Navigate to the desired route after 2 seconds
+            navigate("/createapplication/family");  // Use item (which is '/family' in this case)
+            setActiveItem(item); // Set active item (pass '/family')
+          }, 2000); // Delay of 2 seconds
   
-          // Show success message
-          if (result.message === 'Application updated successfully!') {
-            setSuccessMessage("Application updated successfully!");
-  
-            // Navigate to the desired route after successful submission
-            navigate('/createapplication/family');
-            setActiveItem(item);
-          } else {
-            setSuccessMessage("An error occurred. Please try again.");
-          }
-  
+          // Clear the success message after the timeout
+          setTimeout(() => setSuccessMessage(""), 5000);
+        } else {
+          setSuccessMessage("There was an issue with the submission. Please try again.");
           setTimeout(() => setSuccessMessage(""), 5000);
         }
       } catch (error) {
@@ -599,7 +578,7 @@ const Personal = () => {
           className="px-6 py-2 bg-green-500 text-white font-bold rounded-lg hover:bg-red-700 focus:outline-none"
           onClick={(e) => {
             // You can call the handleSubmit function or directly trigger scroll-to-top here.
-            handleSubmit(e); // If you want to run the handleSubmit logic
+            handleSubmit(e,'/family'); // If you want to run the handleSubmit logic
             
           }}
         

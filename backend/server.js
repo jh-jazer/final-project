@@ -254,81 +254,82 @@ app.get('/api/getEducationInfo', async (req, res) => {
   }
 });
 
+app.post('/submit_education', async (req, res) => {
+  try {
+    let {
+      enrollment_id, 
+      elementarySchoolName,
+      elementarySchoolAddress,
+      elementarySchoolYearGraduated,
+      highSchoolName,
+      highSchoolAddress,
+      highSchoolYearGraduated,
+      seniorHighSchoolName,
+      seniorHighSchoolAddress,
+      seniorHighSchoolYearGraduated,
+      collegeName,
+      collegeAddress,
+      collegeYearGraduated,
+      collegeDegree,
+    } = req.body;
 
-app.post('/submit_education', (req, res) => {
-  let {
-    enrollment_id, // Foreign key
-    elementarySchoolName,
-    elementarySchoolAddress,
-    elementarySchoolYearGraduated,
-    highSchoolName,
-    highSchoolAddress,
-    highSchoolYearGraduated,
-    seniorHighSchoolName,
-    seniorHighSchoolAddress,
-    seniorHighSchoolYearGraduated,
-    collegeName,
-    collegeAddress,
-    collegeYearGraduated,
-    collegeDegree,
-  } = req.body;
-
-  // Validate required field
-  if (!enrollment_id) {
-    return res.status(400).send({ error: 'Missing required field: enrollment_id' });
-  }
-
-  // Ensure optional fields have default values of NULL
-  elementarySchoolName = elementarySchoolName || null;
-  elementarySchoolAddress = elementarySchoolAddress || null;
-  elementarySchoolYearGraduated = elementarySchoolYearGraduated || null;
-  highSchoolName = highSchoolName || null;
-  highSchoolAddress = highSchoolAddress || null;
-  highSchoolYearGraduated = highSchoolYearGraduated || null;
-  seniorHighSchoolName = seniorHighSchoolName || null;
-  seniorHighSchoolAddress = seniorHighSchoolAddress || null;
-  seniorHighSchoolYearGraduated = seniorHighSchoolYearGraduated || null;
-  collegeName = collegeName || null;
-  collegeAddress = collegeAddress || null;
-  collegeYearGraduated = collegeYearGraduated || null;
-  collegeDegree = collegeDegree || null;
-
-  // SQL query to insert or update educational info
-  const query = `
-    REPLACE INTO student_educational_info (
-      enrollment_id, elementarySchoolName, elementarySchoolAddress, elementarySchoolYearGraduated,
-      highSchoolName, highSchoolAddress, highSchoolYearGraduated,
-      seniorHighSchoolName, seniorHighSchoolAddress, seniorHighSchoolYearGraduated,
-      collegeName, collegeAddress, collegeYearGraduated, collegeDegree
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-  `;
-
-  const values = [
-    enrollment_id,
-    elementarySchoolName,
-    elementarySchoolAddress,
-    elementarySchoolYearGraduated,
-    highSchoolName,
-    highSchoolAddress,
-    highSchoolYearGraduated,
-    seniorHighSchoolName,
-    seniorHighSchoolAddress,
-    seniorHighSchoolYearGraduated,
-    collegeName,
-    collegeAddress,
-    collegeYearGraduated,
-    collegeDegree,
-  ];
-
-  // Execute the query
-  db.execute(query, values, (err, result) => {
-    if (err) {
-      console.error('Error inserting/updating educational info:', err);
-      return res.status(500).send({ error: 'Failed to submit educational info' });
+    // Validate required field
+    if (!enrollment_id) {
+      return res.status(400).json({ error: 'Missing required field: enrollment_id' });
     }
-    console.log('Educational info inserted/updated successfully');
+
+    // Ensure optional fields default to null if undefined
+    elementarySchoolName = elementarySchoolName || null;
+    elementarySchoolAddress = elementarySchoolAddress || null;
+    elementarySchoolYearGraduated = elementarySchoolYearGraduated || null;
+    highSchoolName = highSchoolName || null;
+    highSchoolAddress = highSchoolAddress || null;
+    highSchoolYearGraduated = highSchoolYearGraduated || null;
+    seniorHighSchoolName = seniorHighSchoolName || null;
+    seniorHighSchoolAddress = seniorHighSchoolAddress || null;
+    seniorHighSchoolYearGraduated = seniorHighSchoolYearGraduated || null;
+    collegeName = collegeName || null;
+    collegeAddress = collegeAddress || null;
+    collegeYearGraduated = collegeYearGraduated || null;
+    collegeDegree = collegeDegree || null;
+
+    // SQL query to insert or update educational info
+    const query = `
+      REPLACE INTO student_educational_info (
+        enrollment_id, elementarySchoolName, elementarySchoolAddress, elementarySchoolYearGraduated,
+        highSchoolName, highSchoolAddress, highSchoolYearGraduated,
+        seniorHighSchoolName, seniorHighSchoolAddress, seniorHighSchoolYearGraduated,
+        collegeName, collegeAddress, collegeYearGraduated, collegeDegree
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    `;
+
+    const values = [
+      enrollment_id,
+      elementarySchoolName,
+      elementarySchoolAddress,
+      elementarySchoolYearGraduated,
+      highSchoolName,
+      highSchoolAddress,
+      highSchoolYearGraduated,
+      seniorHighSchoolName,
+      seniorHighSchoolAddress,
+      seniorHighSchoolYearGraduated,
+      collegeName,
+      collegeAddress,
+      collegeYearGraduated,
+      collegeDegree,
+    ];
+
+    // Execute the query
+    const [result] = await db.execute(query, values);
+
+    console.log('Educational info inserted/updated successfully:', result);
     res.status(201).json({ message: 'Educational info updated successfully!' });
-  });
+
+  } catch (err) {
+    console.error('Error inserting/updating educational info:', err);
+    res.status(500).json({ error: 'Failed to submit educational info' });
+  }
 });
 
 

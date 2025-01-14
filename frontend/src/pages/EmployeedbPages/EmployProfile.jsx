@@ -40,17 +40,12 @@ const EmployeeProfile = () => {
   return (
     <div className="p-8 bg-green-500 min-h-screen">
       <div className="bg-white shadow-lg rounded-lg p-6 max-w-4xl mx-auto">
-        <div className="flex items-center space-x-2">
-          <img
-            src={employee.profilePicture || '/default-profile.png'}
-            alt="Profile"
-            className="rounded-full w-24 h-24 border-4 border-green-600"
-          />
+        
           <div>
-            <h1 className="text-3xl xs:text-xl xs:text-left sm:text-left sm:text-2xl font-semibold text-gray-800">{employee.full_name}</h1>
+            <h1 className="display-column text-3xl md:text-3xl xs:text-3xl xs:text-left sm:text-left sm:text-3xl font-semibold text-gray-800">{employee.full_name}</h1>
             <p className="text-xl text-gray-600">{employee.employee_type}</p>
           </div>
-        </div>
+      
 
         <div className="mt-8">
           <h2 className="text-2xl font-semibold text-gray-700">Personal Information</h2>

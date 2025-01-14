@@ -500,7 +500,7 @@ app.get('/api/getPersonalInfo', async (req, res) => {
   }
 });
 
-app.post('/submit_personal', (req, res) => {
+app.post('/submit_personal', async (req, res) => {
   let {
     enrollment_id,
     givenName,
@@ -562,22 +562,23 @@ app.post('/submit_personal', (req, res) => {
     streetAddress, region, province, municipality, zipCode, country,
   ];
 
-  // Execute query and handle response
-  db.execute(query, values, (err, result) => {
-    if (err) {
-      console.error('Error inserting data:', err);
-      return res.status(500).send({ error: 'Failed to submit form data' });
-    }
-
+  try {
+    // Await the database query execution
+    const [result] = await db.execute(query, values);
+    
     // Log success and send a response after a short delay if necessary
     console.log('Data inserted successfully:', result);
-    
+
     // Explicitly send the response after a short delay
     setTimeout(() => {
       return res.status(201).send({ message: 'Application updated successfully!' });
     }, 3000); // Optional delay of 3 seconds
-  });
+  } catch (err) {
+    console.error('Error inserting data:', err);
+    return res.status(500).send({ error: 'Failed to submit form data' });
+  }
 });
+
 
 
 

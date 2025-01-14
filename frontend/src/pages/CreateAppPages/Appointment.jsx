@@ -95,8 +95,25 @@ const Appointment = () => {
 
   const isExisting = () => isExistingAppointment
 
-
   const validate = () => formData.scheduled_date && formData.time_period && isCheckboxChecked;
+
+  const updateSlotCount = async (date, timePeriod) => {
+    try {
+      const response = await fetch('http://localhost:5005/update_slot_count', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date, timePeriod })
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Failed to update slots for ${timePeriod} on ${date}`);
+      }
+      console.log('Slot count updated successfully');
+    } catch (error) {
+      console.error('Error updating slot count:', error);
+    }
+  };
+  
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -119,9 +136,9 @@ const Appointment = () => {
         if (response.ok) {
           setSuccessMessage("Appointment scheduled successfully!");
           setTimeout(() => setSuccessMessage(""), 5000);
+            
+          await updateSlotCount(formData.scheduled_date, formData.time_period);
 
-          setFormData({ scheduled_date: '', time_period: '' });
-          setStartDate(null);
         } else {
           setSuccessMessage("Submission issue. Please try again.");
           setTimeout(() => setSuccessMessage(""), 5000);
@@ -203,8 +220,13 @@ const Appointment = () => {
       <div className="appointment-form-container">
         {isExistingAppointment ? (
           <div className="bg-yellow-100 text-yellow-700 px-4 py-3 rounded mb-4">
-            You already have an appointment scheduled for {formData.scheduled_date} at {formData.time_period}. Please contact support to make changes.
-          </div>
+          You already have an appointment scheduled for {new Date(formData.scheduled_date).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })} at {formData.time_period}. Please contact support to make changes.
+        </div>
+        
         ) : (
           <form onSubmit={handleSubmit}>
             <div className="form-group">

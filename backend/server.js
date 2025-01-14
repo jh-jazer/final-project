@@ -61,7 +61,6 @@ testDatabaseConnection();
 
 
 
-// Get all Personal Info
 app.get('/api/appointments', async (req, res) => {
   try {
     const [appointments] = await db.query('SELECT * FROM appointments');
@@ -71,6 +70,7 @@ app.get('/api/appointments', async (req, res) => {
     res.status(500).json({ message: 'Error fetching appointments' });
   }
 });
+
 // Define the endpoint to get available slots by date
 app.get('/api/available-slots', async (req, res) => {
   const { date } = req.query;  // Get the date from the query parameters
@@ -126,6 +126,34 @@ app.get('/api/available-slots', async (req, res) => {
   }
 });
 
+// Update available slots for a specific appointment
+app.put('/api/appointments/:id', async (req, res) => {
+  const appointmentId = req.params.id;
+  const { available_slots } = req.body; // Get available_slots from the request body
+  
+  if (!available_slots || isNaN(available_slots)) {
+    return res.status(400).json({ message: 'Available slots must be a valid number.' });
+  }
+  try {
+    // Update the available slots in the database for the specified appointment
+    const [result] = await db.query(
+      'UPDATE appointments SET available_slots = ? WHERE id = ?',
+      [available_slots, appointmentId]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+    // Send the updated appointment as the response
+    const [updatedAppointment] = await db.query(
+      'SELECT * FROM appointments WHERE id = ?',
+      [appointmentId]
+    );
+    res.status(200).json(updatedAppointment[0]);
+  } catch (err) {
+    console.error('Error updating available slots:', err);
+    res.status(500).json({ message: 'Error updating available slots' });
+  }
+});
 
 app.post('/submit_appointment', (req, res) => {
   let {

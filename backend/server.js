@@ -500,36 +500,35 @@ app.get('/api/getPersonalInfo', async (req, res) => {
   }
 });
 
-
 app.post('/submit_personal', (req, res) => {
   let {
-    enrollment_id,  // Enrollment ID (foreign key)
-    givenName,  // First name
-    familyName,  // Last name
-    middleName,  // Middle name
-    suffix,  // Suffix (e.g., Jr., Sr.)
-    lrn,  // Learner's Reference Number (15 digits)
-    sex,  // Sex
-    dob,  // Date of birth
-    civilStatus,  // Civil status
-    religion,  // Religion
-    nationality,  // Nationality
-    contactNumber,  // Contact number
-    houseNumber,  // House number
-    streetAddress,  // Street address
-    region,  // Region
-    province,  // Province
-    municipality,  // Municipality
-    zipCode,  // Zip code
-    country,  // Country
+    enrollment_id,
+    givenName,
+    familyName,
+    middleName,
+    suffix,
+    lrn,
+    sex,
+    dob,
+    civilStatus,
+    religion,
+    nationality,
+    contactNumber,
+    houseNumber,
+    streetAddress,
+    region,
+    province,
+    municipality,
+    zipCode,
+    country,
   } = req.body;
 
-  // Validate that required fields are present
+  // Validate required fields
   if (!enrollment_id || !givenName || !familyName || !lrn || !sex || !dob) {
     return res.status(400).send({ error: 'Missing required fields' });
   }
 
-  // Ensure that optional fields (like middleName, suffix, etc.) are not undefined
+  // Set optional fields to null if undefined
   middleName = middleName || null;
   suffix = suffix || null;
   civilStatus = civilStatus || null;
@@ -544,13 +543,12 @@ app.post('/submit_personal', (req, res) => {
   zipCode = zipCode || null;
   country = country || null;
 
-  // Validate the format of lrn (should be a 15-digit number)
+  // Validate LRN format (12 digits)
   const lrnPattern = /^\d{12}$/;
   if (!lrnPattern.test(lrn)) {
     return res.status(400).send({ error: 'LRN must be a 12-digit number' });
   }
 
-  // SQL query to insert form data into the student_personal_info table, including enrollment_id and lrn
   const query = `
     REPLACE INTO student_personal_info (
       enrollment_id, fname, lname, mname, suffix, lrn, sex, bday, civil_status, religion, nationality,
@@ -559,35 +557,25 @@ app.post('/submit_personal', (req, res) => {
   `;
 
   const values = [
-    enrollment_id,  // Foreign key: enrollment_id
-    givenName,  // First name
-    familyName,  // Last name
-    middleName,  // Middle name (or null if not provided)
-    suffix,  // Suffix (or null if not provided)
-    lrn,  // Learner's Reference Number (15 digits)
-    sex,  // Sex
-    dob,  // Date of birth
-    civilStatus,  // Civil status (or null if not provided)
-    religion,  // Religion (or null if not provided)
-    nationality,  // Nationality (or null if not provided)
-    contactNumber,  // Contact number (or null if not provided)
-    houseNumber,  // House number (or null if not provided)
-    streetAddress,  // Street address (or null if not provided)
-    region,  // Region (or null if not provided)
-    province,  // Province (or null if not provided)
-    municipality,  // Municipality (or null if not provided)
-    zipCode,  // Zip code (or null if not provided)
-    country,  // Country (or null if not provided)
+    enrollment_id, givenName, familyName, middleName, suffix, lrn, sex, dob,
+    civilStatus, religion, nationality, contactNumber, houseNumber,
+    streetAddress, region, province, municipality, zipCode, country,
   ];
 
-  // Execute the query to insert data
+  // Execute query and handle response
   db.execute(query, values, (err, result) => {
     if (err) {
       console.error('Error inserting data:', err);
       return res.status(500).send({ error: 'Failed to submit form data' });
     }
-    console.log('Data inserted successfully');  // Check if the data is inserted
-  res.status(201).json({ message: 'Application updated successfully!' });
+
+    // Log success and send a response after a short delay if necessary
+    console.log('Data inserted successfully:', result);
+    
+    // Explicitly send the response after a short delay
+    setTimeout(() => {
+      return res.status(201).json({ message: 'Application updated successfully!' });
+    }, 3000); // Optional delay of 3 seconds
   });
 });
 

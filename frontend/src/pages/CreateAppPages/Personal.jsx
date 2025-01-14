@@ -54,26 +54,41 @@ const Personal = () => {
       fetchFormData(enrollment_id);
     }
   }, [enrollment_id]);
-  
   const fetchFormData = async (enrollment_id) => {
     try {
       // Update the fetch URL to include the enrollment_id as a query parameter
       const response = await fetch(`https://cvsu-backend-system.vercel.app/api/getPersonalInfo?enrollment_id=${enrollment_id}`);
+  
       if (!response.ok) {
         throw new Error("Failed to fetch data");
       }
+  
       const data = await response.json();
-
+  
+      // Format date fields if present
+      const formattedData = {
+        ...data,
+        dob: data.dob ? formatDateForInput(data.dob) : '',
+      };
+  
       setFormData((prevData) => ({
         ...prevData,
-        ...data,  // Populate form with fetched data
+        ...formattedData,
       }));
       setIsExistingAppointment(true);
+  
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
   
+  // Helper function to format dates
+  const formatDateForInput = (isoDate) => {
+    const date = new Date(isoDate);
+    return date.toISOString().split('T')[0]; // Extracts the "yyyy-MM-dd" format
+  };
+  
+
 
 
   // Effect to enable or disable the button based on form completion
@@ -130,36 +145,62 @@ const Personal = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const isValid = validate();
-
+  
     if (isValid) {
       const updatedFormData = {
         ...formData,
         enrollment_id: enrollment_id,
       };
-      divRef.current.scrollIntoView({ behavior: "smooth" });
-      setSuccessMessage("Application updated successfully!");
-      navigate('/createapplication/family');// Navigate to the desired route
-      setActiveItem(item);
   
       try {
-        const response = await fetch('https://cvsu-backend-system.vercel.app/submit_personal', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(updatedFormData),
-        });
+        // Show the loading message or initial response
+        setSuccessMessage("Processing, please wait...");
+        divRef.current.scrollIntoView({ behavior: "smooth" });
   
-        if (response.ok) {
-          const result = await response.json();
-          console.log(response.status); // Check the actual response status code here
-          setFormData({ ...formData, givenName: '', familyName: '', lrn: '', sex: '', dob: '', contactNumber: '' }); // Reset form
-          divRef.current.scrollIntoView({ behavior: "smooth" });
-          setSuccessMessage("Application updated successfully!");
+        // Add timeout to the fetch request to avoid indefinite waiting
+        const response = await Promise.race([
+          fetch('https://cvsu-backend-system.vercel.app/submit_personal', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedFormData),
+          }),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("Request timed out")), 5000) // 5 seconds timeout
+          ),
+        ]);
+  
+        if (!response.ok) {
+          // If response is not OK, handle error
+          setSuccessMessage("There was an issue with the submission. Please try again.");
           setTimeout(() => setSuccessMessage(""), 5000);
         } else {
-          
-          setSuccessMessage("There was an issue with the submission. Please try again.");
+          // If response is OK, proceed with success
+          const result = await response.json();
+          console.log(response.status); // Check the actual response status code here
+  
+          // Reset form data
+          setFormData({
+            givenName: '', 
+            familyName: '', 
+            lrn: '', 
+            sex: '', 
+            dob: '', 
+            contactNumber: ''
+          });
+  
+          // Show success message
+          if (result.message === 'Application updated successfully!') {
+            setSuccessMessage("Application updated successfully!");
+  
+            // Navigate to the desired route after successful submission
+            navigate('/createapplication/family');
+            setActiveItem(item);
+          } else {
+            setSuccessMessage("An error occurred. Please try again.");
+          }
+  
           setTimeout(() => setSuccessMessage(""), 5000);
         }
       } catch (error) {
@@ -173,7 +214,8 @@ const Personal = () => {
       setTimeout(() => setSuccessMessage(""), 5000);
     }
   };
-
+  
+  
   return (
     <div 
     ref={divRef}
@@ -191,7 +233,7 @@ const Personal = () => {
       <div className="relative text-center my-10">
       <button 
             onClick={() => handleSecondClick('/createapplication')}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2text-[#345e34] hover:text-green-900">
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 text-[#345e34] hover:text-green-900">
             <svg 
             xmlns="http://www.w3.org/2000/svg" 
             className="w-8 h-8" 
@@ -232,7 +274,7 @@ const Personal = () => {
             type="text"
             className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
             placeholder="Given Name"
-            value={formData.givenName}
+            value={formData.givenName|| ''}
             onChange={handleChange}
           />
           {errors.givenName && <p className="text-red-500 text-sm">{errors.givenName}</p>}
@@ -249,7 +291,7 @@ const Personal = () => {
             type="text"
             className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
             placeholder="Family Name"
-            value={formData.familyName}
+            value={formData.familyName|| ''}
             onChange={handleChange}
           />
           {errors.familyName && <p className="text-red-500 text-sm">{errors.familyName}</p>}
@@ -266,7 +308,7 @@ const Personal = () => {
             type="text"
             className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
             placeholder="Middle Name"
-            value={formData.middleName}
+            value={formData.middleName|| ''}
             onChange={handleChange}
           />
           <p className="text-gray-500 text-sm mt-1">This is optional</p>
@@ -285,7 +327,7 @@ const Personal = () => {
             type="text"
             className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
             placeholder="Suffix"
-            value={formData.suffix}
+            value={formData.suffix|| ''}
             onChange={handleChange}
           />
            <p className="text-gray-500 text-sm mt-1">This is optional</p>
@@ -302,7 +344,7 @@ const Personal = () => {
           type="number"
           className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#345e34]"
           placeholder="Enter LRN"
-          value={formData.lrn}
+          value={formData.lrn|| ''}
           onChange={handleChange}
         />
         {errors.lrn && <p className="text-red-500 text-sm">{errors.lrn}</p>}
@@ -385,7 +427,7 @@ const Personal = () => {
           </div>
 
           <div className="form-group text-lg font-sans text-gray-600">
-          <label className="text-gray-600 text-lg font-semibold" htmlFor="ationality">
+          <label className="text-gray-600 text-lg font-semibold" htmlFor="nationality">
           Nationality*
           </label>
             <input

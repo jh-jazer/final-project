@@ -59,35 +59,6 @@ const testDatabaseConnection = async () => {
 
 testDatabaseConnection();
 
-// Get applicant progress for a specific enrollment_id
-app.get('/api/applicant-progress', async (req, res) => {
-  const { enrollment_id } = req.query; // Get enrollment_id from query parameter
-
-  if (!enrollment_id) {
-    return res.status(400).json({ message: 'Enrollment ID is required.' });
-  }
-
-  try {
-    // Query to get data from applicant_progress table based on enrollment_id
-    const [rows] = await db.query(
-      'SELECT * FROM applicant_progress WHERE enrollment_id = ?',
-      [enrollment_id]
-    );
-
-    if (rows.length === 0) {
-      return res.status(404).json({ message: 'No applicant found with this enrollment ID' });
-    }
-
-    // Send the applicant progress data as the response
-    const applicantProgress = rows[0]; // Assuming there's only one record for the enrollment_id
-    res.status(200).json(applicantProgress);
-  } catch (err) {
-    console.error('Error fetching applicant progress:', err);
-    res.status(500).json({ message: 'Error fetching applicant progress' });
-  }
-});
-
-
 app.get('/api/appointments', async (req, res) => {
   try {
     const [appointments] = await db.query('SELECT * FROM appointments');
@@ -325,6 +296,47 @@ app.get('/api/getSchedule', async (req, res) => {
     if (rows.length === 0) {
       console.log(`No educational info found for enrollment_id: ${enrollment_id}`);
       return res.status(404).json({ error: 'Educational info not found' });
+    }
+
+    // Respond with the fetched data
+    res.json(rows[0]);
+  } catch (err) {
+    console.error('Database error:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
+// Define the endpoint to get applicant progress by enrollment_id
+app.get('/api/getApplicantProgress', async (req, res) => {
+  const { enrollment_id } = req.query;
+
+  // Validate required field
+  if (!enrollment_id) {
+    return res.status(400).json({ error: 'Enrollment ID is required' });
+  }
+
+  try {
+    // SQL query to fetch progress information
+    const query = `
+      SELECT 
+        id,
+        enrollment_id,
+        docs_verification,
+        eval_assessment,
+        docs_submission,
+        society_payment,
+        student_enrollment
+      FROM applicant_progress
+      WHERE enrollment_id = ?;
+    `;
+
+    // Execute query and get results
+    const [rows] = await db.execute(query, [enrollment_id]);
+
+    // Handle case where no records are found
+    if (rows.length === 0) {
+      console.log(`No progress info found for enrollment_id: ${enrollment_id}`);
+      return res.status(404).json({ error: 'Applicant progress not found' });
     }
 
     // Respond with the fetched data

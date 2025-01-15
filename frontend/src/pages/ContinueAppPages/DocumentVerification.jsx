@@ -6,10 +6,12 @@ import { useOutletContext } from 'react-router-dom';
 const DocumentVerification = () => {
   const { userDetails } = useOutletContext(); 
   const enrollment_id = userDetails?.enrollment_id || "No id provided"; 
-  const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(false);
+  const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true);
   const divRef = useRef(null);
   const { setActiveItem } = useActiveItem();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const [scheduleDate, setScheduleDate] = useState(null);
   const [scheduleTimePeriod, setScheduleTimePeriod] = useState(null);
@@ -34,34 +36,32 @@ const DocumentVerification = () => {
   }, [enrollment_id]);
 
   const fetchFormData = async (enrollment_id) => {
+    setLoading(true);
+    setError(null);
     try {
-      // Fetch schedule data
-      const scheduleResponse = await fetch(`https://cvsu-backend-system.vercel.app/api/getSchedule?enrollment_id=${enrollment_id}`);
-      if (!scheduleResponse.ok) {
-        throw new Error("Failed to fetch schedule data");
-      }
-      const scheduleData = await scheduleResponse.json();
-      
-      // Set schedule date and time period
-      if (scheduleData.scheduled_date && scheduleData.time_period) {
-        setScheduleDate(scheduleData.scheduled_date); 
-        setScheduleTimePeriod(scheduleData.time_period); 
+      const [scheduleResponse, progressResponse] = await Promise.all([
+        fetch(`http://localhost:5005/api/getSchedule?enrollment_id=${enrollment_id}`),
+        fetch(`http://localhost:5005/api/getApplicantProgress?enrollment_id=${enrollment_id}`)
+      ]);
+  
+      if (!scheduleResponse.ok || !progressResponse.ok) {
+        throw new Error("Failed to fetch data");
       }
   
-      // Fetch applicant progress data
-      const progressResponse = await fetch(`https://cvsu-backend-system.vercel.app/api/getApplicantProgress?enrollment_id=${enrollment_id}`);
-      if (!progressResponse.ok) {
-        throw new Error("Failed to fetch applicant progress data");
-      }
+      const scheduleData = await scheduleResponse.json();
       const progressData = await progressResponse.json();
   
-      // Check the docs_verification status and set the status state
-      if (progressData && progressData.docs_verification) {
-        setStatus(progressData.docs_verification); // Set status to 'pending' or 'approved'
-      }
+      setScheduleDate(scheduleData.scheduled_date || null);
+      setScheduleTimePeriod(scheduleData.time_period || null);
+      setStatus(progressData.docs_verification || 'pending');
+
+      setIsNextButtonDisabled(false);
   
-    } catch (error) {
-      console.error("Error fetching data:", error);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load data. Please try again later.");
+    } finally {
+      setLoading(false);
     }
   };
   
@@ -84,9 +84,17 @@ const DocumentVerification = () => {
     <div 
       ref={divRef}
       className="w-full min-h-screen bg-gradient-to-br from-green-100 to-white p-8 pt-12 shadow-lg rounded-lg flex flex-col">
-      
+        <div>
+         {loading ? (
+      <p>Loading...</p>
+    ) : error ? (
+      <p className="text-red-600">{error}</p>
+    ) : (
+      <p className="text-red-600 hidden">{error}</p>    )}
+    </div>
       {/* Header Section */}
       <div className="relative text-center mb-10">
+        
         <button 
           onClick={() => handleSecondClick('/appointment')}
           className="absolute left-0 top-1/2 transform -translate-y-1/2 text-[#4f7c4f] hover:text-green-800 transition-all">
@@ -112,7 +120,7 @@ const DocumentVerification = () => {
       <div className="w-full shadow-xl py-[5%] px-6 rounded-lg items-center flex-col lg:grid lg:grid-cols-2 gap-8">
 
         {/* Left Column: Schedule Section */}
-        <div className="lg:col-span-1 flex flex-col items-center space-y-6">
+        <div className="lg:col-span-1 flex flex-col items-center space-y-6 my-5">
           <h5 className="text-2xl font-extrabold text-[#2a2a2a]">Your Appointed Schedule</h5>
 
           {/* Schedule Date and Time */}
@@ -126,14 +134,13 @@ const DocumentVerification = () => {
             <p className="text-lg text-gray-500">No appointment scheduled.</p>
           )}
 
-           {/* Status Section */}
-           <div className="w-full p-6 bg-yellow-100 border-l-4 border-yellow-500 text-gray-700 rounded-lg">
-            <h5 className="font-semibold text-lg">Status:</h5>
-            <p className={`text-lg font-medium ${status === 'approved' ? 'text-green-600' : 'text-red-600'}`}>
-              {status === 'approved' ? 'Approved' : 'Pending..'} <br/> Please bring the required documents to the Campus for verification.
-            </p>
-          </div>
-        </div>
+            <h5 className="text-2xl font-extrabold text-[#2a2a2a]">Your Verification Status</h5>
+
+            {/* Status Display */}
+            <div className="text-lg font-medium text-[#4f7c4f] p-6 bg-white shadow-md rounded-lg w-full text-center">
+              <p className="mb-2">{`Status: ${status}`}</p>
+            </div>
+                    </div>
         
 
         {/* Right Column: Reminder and Important Notice */}

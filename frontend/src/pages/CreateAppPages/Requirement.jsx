@@ -238,7 +238,7 @@ const Requirement = () => {
         </ul>
         
         {/* Action Buttons */}
-        <div className="flex justify-end gap-5 mb-5 mx-5">
+        <div className="flex justify-end gap-5 mb-5 mx-5 my-5">
           <div className="text-left">
             <button
               className="px-6 py-2 bg-green-500 text-white font-bold rounded-lg hover:bg-red-700 focus:outline-none"

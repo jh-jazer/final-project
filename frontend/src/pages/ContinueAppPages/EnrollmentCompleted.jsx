@@ -9,16 +9,16 @@ const EnrollmentCompletion = () => {
   const { setActiveItem } = useActiveItem();
   const navigate = useNavigate();
 
-  const handleFirstClick = (item) => {
+  const handleFirstClick = () => {
     if (!isNextButtonDisabled) {
       navigate('/createapplication/enrollment-completed');
-      setActiveItem(item);
+      setActiveItem({ id: 11, route: "enrollment-completed" }); 
     }
   };
 
-  const handleSecondClick = (item) => {
-    navigate('/createapplication/document-submission');
-    setActiveItem(item);
+  const handleSecondClick = () => {
+    navigate('/createapplication/applicant-society-payment');
+    setActiveItem({ id: 10, route: "applicant-society-payment" }); 
   };
 
   useEffect(() => {

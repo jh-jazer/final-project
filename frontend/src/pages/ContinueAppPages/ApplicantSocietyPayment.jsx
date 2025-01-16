@@ -13,16 +13,16 @@ const SocietyPayment = () => {
 
   const [paymentStatus, setPaymentStatus] = useState('Pending'); // Default to 'Pending'
 
-  const handleFirstClick = (item) => {
+  const handleFirstClick = () => {
     if (!isNextButtonDisabled) {
       navigate('/createapplication/enrollment-completed'); 
-      setActiveItem(item); 
+      setActiveItem({ id: 11, route: "enrollment-completed" }); 
     } 
   };
 
-  const handleSecondClick = (item) => {
+  const handleSecondClick = () => {
     navigate('/createapplication/document-submission'); 
-    setActiveItem(item); 
+    setActiveItem({ id: 9, route: "document-submission" });  
   };
 
   useEffect(() => {

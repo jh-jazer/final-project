@@ -13,16 +13,16 @@ const DocumentSubmission = () => {
 
   const [status, setStatus] = useState('Pending'); // Default to 'Pending'
 
-  const handleFirstClick = (item) => {
+  const handleFirstClick = () => {
     if (!isNextButtonDisabled) {
       navigate('/createapplication/applicant-society-payment'); 
-      setActiveItem(item); 
+      setActiveItem({ id: 10, route: "applicant-society-payment" }); 
     } 
   };
 
-  const handleSecondClick = (item) => {
+  const handleSecondClick = () => {
     navigate('/createapplication/entrance-examination'); 
-    setActiveItem(item); 
+    setActiveItem({ id: 8, route: "entrance-examination" }); 
   };
 
   useEffect(() => {

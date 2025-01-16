@@ -64,17 +64,17 @@ const Appointment = () => {
     }
   }, [formData.scheduled_date, isExistingAppointment]);
 
-  const handleFirstClick = (item) => {
+  const handleFirstClick = () => {
     if (!isNextButtonDisabled) {
       navigate('/createapplication/document-verification');// Navigate to the desired route
-      setActiveItem(item);
+      setActiveItem({ id: 7, route: "document-verification" });
     } 
   };
+  
 
   const handleSecondClick = (item) => {
     navigate('/createapplication/requirements');// Navigate to the desired route
     setActiveItem(item);
-   
 };
 
   const handleInputChange = (e, isDatePicker = false) => {

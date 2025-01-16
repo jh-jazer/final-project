@@ -8,12 +8,12 @@ export const useActiveItem = () => {
   if (!context) {
     throw new Error('useActiveItem must be used within an ActiveItemProvider');
   }
-  return useContext(ActiveItemContext);
+  return context;
 };
 
 export const ActiveItemProvider = ({ children }) => {
-  const [activeItem, setActiveItem] = useState(null);
-  
+  const [activeItem, setActiveItem] = useState({ id: null, route: null }); // Initializing as an object
+
   return (
     <ActiveItemContext.Provider value={{ activeItem, setActiveItem }}>
       {children}

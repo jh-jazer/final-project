@@ -19,7 +19,10 @@ const port = process.env.PORT || 5005;
 
 // Middleware
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "10mb" }));
+
+// Set payload limit to 10MB or any desired size
+app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
 // Get the directory of the current module using import.meta.url
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -59,15 +62,136 @@ const testDatabaseConnection = async () => {
 
 testDatabaseConnection();
 
-app.get('/api/appointments', async (req, res) => {
+// Route to check if enrollment_id is already in the database
+app.get('/api/check-enrollment/:enrollment_id', async (req, res) => {
+  const enrollmentId = req.params.enrollment_id;
+
   try {
-    const [appointments] = await db.query('SELECT * FROM appointments');
-    res.status(200).json(appointments);
-  } catch (err) {
-    console.error('Error fetching appointments:', err);
-    res.status(500).json({ message: 'Error fetching appointments' });
+    // Validate input to ensure it's in the expected format
+    if (!enrollmentId) {
+      return res.status(400).json({ error: 'Enrollment ID is required.' });
+    }
+
+    // SQL query to check if the enrollment_id exists in the database
+    const query = 'SELECT COUNT(*) AS count FROM student_documents WHERE enrollment_id = ?';
+    const [rows] = await db.execute(query, [enrollmentId]);
+
+    // Check query result and respond accordingly
+    const exists = rows[0].count > 0;
+    return res.status(200).json({
+      exists,
+      message: exists ? 'Enrollment ID exists in the database.' : 'Enrollment ID does not exist in the database.',
+    });
+  } catch (error) {
+    // Log the error for debugging purposes
+    console.error('Error while checking enrollment ID:', error);
+
+    // Respond with a generic error message
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+
+app.get("/api/check-appointment/:enrollment_id", async (req, res) => {
+  const { enrollment_id } = req.params;
+
+  try {
+    // Query to fetch student documents based on the enrollment_id
+    const [rows] = await db.query(
+      "SELECT * FROM student_documents WHERE enrollment_id = ?",
+      [enrollment_id]
+    );
+
+    if (rows && rows.length > 0) {
+      // If data is found, process the result
+      const documents = rows[0]; // Only need the first row because enrollment_id should be unique
+
+      // Convert longblob data to base64-encoded string if it exists
+      const responseData = {
+        enrollment_id: documents.enrollment_id,
+        transcripts_or_grades: documents.transcripts_or_grades ? documents.transcripts_or_grades.toString('base64') : null,
+        college_eligibility_rating: documents.college_eligibility_rating ? documents.college_eligibility_rating.toString('base64') : null,
+        grade_11_report_card: documents.grade_11_report_card ? documents.grade_11_report_card.toString('base64') : null,
+        grade_12_enrollment_cert: documents.grade_12_enrollment_cert ? documents.grade_12_enrollment_cert.toString('base64') : null,
+        complete_transcript: documents.complete_transcript ? documents.complete_transcript.toString('base64') : null,
+        photo: documents.photo ? documents.photo.toString('base64') : null,
+      };
+
+      return res.json({ exists: true, documents: responseData });
+    } else {
+      // If no data found, return exists as false
+      return res.json({ exists: false, documents: [] });
+    }
+  } catch (error) {
+    console.error("Error fetching enrollment data:", error);
+    return res.status(500).json({ message: "Failed to fetch data. Please try again." });
+  }
+});
+
+app.post("/api/upload-student-documents", async (req, res) => {
+  const { enrollment_id, applicantType, documents } = req.body;
+
+  if (!enrollment_id || !applicantType || !documents || typeof documents !== "object") {
+    return res.status(400).json({ error: "Invalid request data." });
+  }
+
+  let connection; // Declare connection outside try block for proper scoping
+
+  try {
+    connection = await db.getConnection(); // Use the correct pool name
+    await connection.beginTransaction();
+
+    // Map applicant types to required fields
+    const fieldsMapping = {
+      shs: { grade_11_report_card: documents.grade_11_report_card, photo: documents.photo || null },
+      transferee: { transcripts_or_grades: documents.transcripts_or_grades, photo: documents.photo || null },
+      als: { college_eligibility_rating: documents.college_eligibility_rating, photo: documents.photo || null },
+      grade12: {
+        grade_11_report_card: documents.grade_11_report_card,
+        grade_12_enrollment_cert: documents.grade_12_enrollment_cert,
+        photo: documents.photo || null,
+      },
+    };
+
+    // Extract the required fields for the applicant type
+    const fields = fieldsMapping[applicantType] || {};
+    const fieldKeys = Object.keys(fields);
+    const fieldValues = Object.values(fields).map((value) => (value === undefined ? null : value)); // Replace undefined with null
+
+    // Validate that required fields are present
+    if (fieldKeys.length === 0) {
+      return res.status(400).json({ error: "No valid documents provided for this applicant type." });
+    }
+
+    // Build and execute the SQL query
+    const placeholders = fieldKeys.map(() => "?").join(", ");
+    const query = `
+      INSERT INTO student_documents (
+        enrollment_id, ${fieldKeys.join(", ")}, date_uploaded
+      ) VALUES (?, ${placeholders}, CURRENT_TIMESTAMP)
+      ON DUPLICATE KEY UPDATE 
+      ${fieldKeys.map((key) => `${key} = VALUES(${key})`).join(", ")}; 
+    `;
+    await connection.execute(query, [enrollment_id, ...fieldValues]);
+
+    // Commit the transaction
+    await connection.commit();
+    connection.release();
+
+    res.status(200).json({ message: "Documents uploaded successfully!" });
+  } catch (error) {
+    console.error("Error uploading student documents:", error.message);
+
+    // Rollback transaction and release the connection in case of an error
+    if (connection) {
+      await connection.rollback();
+      connection.release();
+    }
+
+    res.status(500).json({ error: "Failed to upload student documents. Please try again." });
+  }
+});
+
 
 // Define the endpoint to get available slots by date
 app.get('/api/available-slots', async (req, res) => {

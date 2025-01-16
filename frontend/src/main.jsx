@@ -29,7 +29,7 @@ import EmployAcads from "./pages/EmployeedbPages/EmployAcads.jsx";
 import EmployStuds from "./pages/EmployeedbPages/EmployStuds.jsx";
 import EmployHome from "./pages/EmployeedbPages/EmployHome.jsx";
 import EmployInstructors from "./pages/EmployeedbPages/EmployInstructors.jsx";
-import ManageCourses from "./pages/EmployeedbPages/ManageClass.jsx";
+import ManageAppointment from "./pages/EmployeedbPages/ManageAppointment.jsx";
 import ManageSections from "./pages/EmployeedbPages/ManageSections.jsx";
 import EmployeeAccounts from "./pages/EmployeedbPages/EmployeeAccounts.jsx";
 import StudentAccounts from "./pages/EmployeedbPages/StudentAccounts.jsx";
@@ -265,8 +265,8 @@ const router = createBrowserRouter([
         element: <EmployInstructors />, // Component for /studentdb/instructors
       },
       {
-        path: "manage-classes",
-        element: <ManageCourses />, // Component to render when /studentdb/courses is visited
+        path: "manage-appointments",
+        element: <ManageAppointment/>, // Component to render when /studentdb/courses is visited
       },
       {
         path: "manage-sections",

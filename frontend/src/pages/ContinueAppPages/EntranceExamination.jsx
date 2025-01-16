@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useAppContext } from '../../contexts/AppContext';
 import { useActiveItem } from '../../contexts/CreateAppContext';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import axios from 'axios';
 
 const EntranceExamination = () => {
   const { userDetails } = useOutletContext();

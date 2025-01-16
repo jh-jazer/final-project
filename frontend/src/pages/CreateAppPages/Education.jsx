@@ -282,7 +282,7 @@ const Education = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-        <h1 className="text-3xl font-extrabold text-[#001800]">Education Information</h1>
+        <h1 className="text-3xl font-extrabold text-[#001800]">Educational Info</h1>
         <button
           onClick={() => handleFirstClick('/requirements')}
           className={`absolute right-0 top-1/2 transform -translate-y-1/2 text-[#345e34] hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}

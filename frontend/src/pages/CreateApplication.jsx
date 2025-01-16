@@ -25,6 +25,14 @@ const AdmissionsPage = () => {
     );
   };
 
+  useEffect(() => {
+    if (activeItem.id >= 7) {
+      setActiveSection("Second Section");
+    } else {
+      setActiveSection("First Section");
+    }
+  }, [activeItem.id]);  // Watch for changes to `id` in activeItem
+  
 
   const fullNames = {
     als: "ALS Passer",
@@ -201,48 +209,32 @@ const AdmissionsPage = () => {
             {/* Second Section Links */}
             {activeSection === 'Second Section' && (
               <>
-                <li className={activeItem === '/document-verification' ? 'active' : ''}>
-                  <button
-                    className="px-4 py-2 flex items-center space-x-3  rounded-lg cursor-default
-                     text-white"
-                  >
+                <li className={activeItem.id === 7 ? 'active' : ''}>
+                  <button className="px-4 py-2 flex items-center space-x-3 rounded-lg cursor-default text-white">
                     <span className="text-xl font-semibold">7.</span>
                     <span>Documents Verification</span>
                   </button>
                 </li>
-                <li className={activeItem === '/entrance-examination' ? 'active' : ''}>
-                  <button
-                    className="px-4 py-2 flex items-center space-x-3  rounded-lg cursor-default
-                     text-white"
-                  >
+                <li className={activeItem.id === 8 ? 'active' : ''}>
+                  <button className="px-4 py-2 flex items-center space-x-3 rounded-lg cursor-default text-white">
                     <span className="text-xl font-semibold">8.</span>
                     <span>Student Evaluation</span>
                   </button>
                 </li>
-                <li className={activeItem === '/document-submission' ? 'active' : ''}>
-                  <button
-                    className="px-4 py-2 flex items-center space-x-3  rounded-lg cursor-default
-                     text-white"
-                  >
+                <li className={activeItem.id === 9 ? 'active' : ''}>
+                  <button className="px-4 py-2 flex items-center space-x-3 rounded-lg cursor-default text-white">
                     <span className="text-xl font-semibold">9.</span>
-                    <span>Documents Submission</span>
+                    <span>Document Submission</span>
                   </button>
                 </li>
-                <li className={activeItem === '/applicant-society-payment' ? 'active' : ''}>
-                  <button
-                    className="px-4 py-2 flex items-center space-x-3  rounded-lg cursor-default
-                     text-white"
-                  >
+                <li className={activeItem.id === 10 ? 'active' : ''}>
+                  <button className="px-4 py-2 flex items-center space-x-3 rounded-lg cursor-default text-white">
                     <span className="text-xl font-semibold">10.</span>
                     <span>Society Payment</span>
                   </button>
                 </li>
-               
-                <li className={activeItem === '/enrollment-completed' ? 'active' : ''}>
-                  <button
-                    className="px-4 py-2 flex items-center space-x-3  rounded-lg cursor-default
-                     text-white"
-                  >
+                <li className={activeItem.id === 11 ? 'active' : ''}>
+                  <button className="px-4 py-2 flex items-center space-x-3 rounded-lg cursor-default text-white">
                     <span className="text-xl font-semibold">11.</span>
                     <span>Enrollment Completion</span>
                   </button>

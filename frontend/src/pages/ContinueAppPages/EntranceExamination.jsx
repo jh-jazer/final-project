@@ -15,16 +15,16 @@ const EntranceExamination = () => {
   const navigate = useNavigate();
 
   
-    const handleFirstClick = (item) => {
+    const handleFirstClick = () => {
       if (!isNextButtonDisabled) {
         navigate('/createapplication/document-submission'); // Navigate to the desired route
-        setActiveItem(item); 
+        setActiveItem({ id: 9, route: "document-submission" }); 
       } 
     };
     
-    const handleSecondClick = (item) => {
+    const handleSecondClick = () => {
         navigate('/createapplication/document-verification'); // Navigate to the desired route
-        setActiveItem(item);
+        setActiveItem({ id: 7, route: "document-verification" }); 
       
   
   };

@@ -15,10 +15,10 @@ const DocumentVerification = () => {
   const [scheduleTimePeriod, setScheduleTimePeriod] = useState(null);
   const [status, setStatus] = useState('pending'); // Default status is 'pending'
 
-  const handleFirstClick = (item) => {
+  const handleFirstClick = () => {
     if (!isNextButtonDisabled) {
       navigate('/createapplication/entrance-examination'); 
-      setActiveItem(item); 
+      setActiveItem({ id: 8, route: "entrance-examination" }); 
     } 
   };
 

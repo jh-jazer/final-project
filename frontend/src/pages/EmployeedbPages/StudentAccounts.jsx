@@ -26,15 +26,16 @@ const StudentAccountManagement = () => {
   const [statusMessage, setStatusMessage] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [semesterOptions, setSemesterOptions] = useState([]);
   const [formData, setFormData] = useState({
     student_id: '',
     full_name: '',
     student_type: '',
     program_id: '', // Change to program_id
     email: '',
-    phone_number: '',
+    semester: '',
     dob: '',
-    emergency_contact: '',
+    class_section: '',
     status: '',
     password: '',
   });
@@ -55,6 +56,12 @@ const StudentAccountManagement = () => {
       return () => clearTimeout(timer);
     }
   }, [statusMessage]);
+
+  const getSemesterLabel = (semesterValue) => {
+    // Use semesterOptions to find the label for the semester value
+    const semesterOption = semesterOptions.find(option => option.value === semesterValue);
+    return semesterOption ? semesterOption.label : 'Unknown Semester';
+  };
 
   const closeModal = () => {
     setModalOpen(false);
@@ -91,9 +98,9 @@ const StudentAccountManagement = () => {
         student_type: '',
         program_id: '', // Set program_id to an empty string
         email: '',
-        phone_number: '',
+        semester: '',
         dob: '',
-        emergency_contact: '',
+        class_section: '',
         status: '',
         password: '',
       });
@@ -101,6 +108,37 @@ const StudentAccountManagement = () => {
     }
     setModalOpen(true); // Open the modal
   };
+
+  useEffect(() => {
+    // Conditionally set semester options based on the selected program_id
+    if (formData.program_id === 1) {
+      setSemesterOptions([
+        { value: 1, label: 'First Year, First Semester' },
+        { value: 2, label: 'First Year, Second Semester' },
+        { value: 3, label: 'Second Year, First Semester' },
+        { value: 4, label: 'Second Year, Second Semester' },
+        { value: 5, label: 'Third Year, First Semester' },
+        { value: 6, label: 'Third Year, Second Semester' },
+        { value: 7, label: 'Third Year, Mid Year' },
+        { value: 8, label: 'Fourth Year, First Semester' },
+        { value: 9, label: 'Fourth Year, Second Semester' },
+      ]);
+    } else if (formData.program_id === 2) {
+      setSemesterOptions([
+        { value: 10, label: 'First Year, First Semester' },
+        { value: 11, label: 'First Year, Second Semester' },
+        { value: 12, label: 'Second Year, First Semester' },
+        { value: 13, label: 'Second Year, Second Semester' },
+        { value: 14, label: 'Second Year, Mid Year' },
+        { value: 15, label: 'Third Year, First Semester' },
+        { value: 16, label: 'Third Year, Second Semester' },
+        { value: 17, label: 'Fourth Year, First Semester' },
+        { value: 18, label: 'Fourth Year, Second Semester' },
+      ]);
+    } else {
+      setSemesterOptions([]); // Clear options if no program_id is selected
+    }
+  }, [formData.program_id]);
   
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -217,7 +255,7 @@ const StudentAccountManagement = () => {
               <th className="px-4 py-2 text-left">Full Name</th>
               <th className="px-4 py-2 text-left">Student Type</th>
               <th className="px-4 py-2 text-left">Program</th>
-              <th className="px-4 py-2 text-left">Phone</th>
+              <th className="px-4 py-2 text-left">Semester</th>
               <th className="px-4 py-2 text-left">Status</th>
               <th className="px-4 py-2 text-left">Actions</th>
             </tr>
@@ -232,7 +270,7 @@ const StudentAccountManagement = () => {
                   <td className="px-4 py-2">
                     {student.program_id === 1 ? 'BSCS' : student.program_id === 2 ? 'BSIT' : 'Unknown Program'}
                   </td>
-                  <td className="px-4 py-2">{student.phone_number}</td>
+                  <td className="px-4 py-2">{getSemesterLabel(student.semester)}</td> {/* Display semester label */}
                   <td className="px-4 py-2">{student.status}</td>
                   <td className="px-4 py-2">
                     <button
@@ -315,14 +353,19 @@ const StudentAccountManagement = () => {
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
                 />
-                <input
-                  type="tel"
-                  placeholder="Phone Number"
+                 <select
                   className="w-full px-4 py-2 mb-2 border"
-                  value={formData.phone_number}
-                  onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
+                  value={formData.semester}
+                  onChange={(e) => setFormData({ ...formData, semester: parseInt(e.target.value, 10) })}
                   required
-                />
+                >
+                  <option value="">Select Semester</option>
+                  {semesterOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
                 
                 <input
                   type="date"
@@ -333,10 +376,10 @@ const StudentAccountManagement = () => {
                 />
                 <input
                   type="text"
-                  placeholder="Emergency Contact"
+                  placeholder="Class Section"
                   className="w-full px-4 py-2 mb-2 border"
-                  value={formData.emergency_contact}
-                  onChange={(e) => setFormData({ ...formData, emergency_contact: e.target.value })}
+                  value={formData.class_section}
+                  onChange={(e) => setFormData({ ...formData, class_section: e.target.value })}
                   required
                 />
                 <select

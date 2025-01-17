@@ -10,7 +10,7 @@ const DocumentSubmission = () => {
   const divRef = useRef(null);
 
   const [status, setStatus] = useState('Loading...');
-  const [reminderMessage, setReminderMessage] = useState('');
+  const [reminderMessage, setReminderMessage] = useState('');  // Static reminder message
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true);
 
   useEffect(() => {
@@ -22,16 +22,13 @@ const DocumentSubmission = () => {
           throw new Error(`Failed to fetch: ${response.status}`);
         }
 
-        const { docs_submission, appointment_date } = await response.json();
+        const { docs_submission } = await response.json();
 
         setStatus(docs_submission);
         setIsNextButtonDisabled(docs_submission !== 'approved');
 
-        if (appointment_date) {
-          setDynamicReminderMessage(appointment_date);
-        } else {
-          setReminderMessage('Appointment date not available.');
-        }
+        // Set a static reminder message
+        setReminderMessage('Ensure that all required documents are submitted before the deadline.');
       } catch (error) {
         console.error('Error fetching applicant progress:', error);
         setStatus('Error fetching data');
@@ -42,30 +39,6 @@ const DocumentSubmission = () => {
       fetchApplicantProgress();
     }
   }, [enrollment_id]);
-
-  const setDynamicReminderMessage = (appointmentDateStr) => {
-    const currentDate = new Date();
-    const appointmentDate = new Date(appointmentDateStr);
-
-    if (isNaN(appointmentDate)) {
-      setReminderMessage('Invalid appointment date.');
-      return;
-    }
-
-    const timeDiff = appointmentDate - currentDate;
-    const hoursLeft = Math.floor(timeDiff / (1000 * 60 * 60));
-
-    let message;
-    if (hoursLeft < 24) {
-      message = 'Your examination is in less than 24 hours. Please prepare the required documents and materials.';
-    } else if (hoursLeft < 48) {
-      message = 'You have an examination in the next 48 hours. Don’t forget to bring the required documents and materials.';
-    } else {
-      message = 'You have some time before your examination. Make sure to bring the required documents and materials.';
-    }
-
-    setReminderMessage(message);
-  };
 
   const handleFirstClick = (item) => {
     if (!isNextButtonDisabled) {

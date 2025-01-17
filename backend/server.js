@@ -24,6 +24,7 @@ app.use(bodyParser.json({ limit: "10mb" }));
 // Set payload limit to 10MB or any desired size
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
+
 // Get the directory of the current module using import.meta.url
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -61,6 +62,76 @@ const testDatabaseConnection = async () => {
 };
 
 testDatabaseConnection();
+
+// Update applicant data by ID
+app.put('/api/applicant_progress/:id', async (req, res) => {
+  const { id } = req.params; // ID of the applicant
+  const updates = req.body; // Updated fields from the client
+
+  try {
+    // Construct dynamic SQL query based on provided updates
+    const fields = Object.keys(updates);
+    const values = Object.values(updates);
+
+    if (fields.length === 0) {
+      return res.status(400).json({ message: 'No fields provided for update' });
+    }
+
+    // Create SET clause dynamically
+    const setClause = fields.map((field) => `${field} = ?`).join(', ');
+
+    // Execute the update query
+    const query = `UPDATE applicant_progress SET ${setClause} WHERE id = ?`;
+    const [result] = await db.query(query, [...values, id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Applicant not found' });
+    }
+
+    res.status(200).json({ message: 'Applicant updated successfully' });
+  } catch (error) {
+    console.error('Error updating applicant:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+
+// Get all Personal Info
+app.get('/api/appointments', async (req, res) => {
+  try {
+    const [appointments] = await db.query('SELECT * FROM appointments');
+    res.status(200).json(appointments);
+  } catch (err) {
+    console.error('Error fetching appointments:', err);
+    res.status(500).json({ message: 'Error fetching appointments' });
+  }
+});
+
+app.get('/api/manage-application', async (req, res) => {
+  try {
+    // Execute the query and get the rows
+    const [rows] = await db.query('SELECT * FROM applicant_progress');
+
+    // Send only the rows as the response
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error('Error fetching applications:', error.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+
+app.get('/api/manage-application', async (req, res) => {
+  try {
+    const applications = await db.query('SELECT * FROM applicant_progress');
+    res.status(200).json(applications);
+  } catch (error) {
+    console.error('Error fetching applications:', error);
+    res.status(500).send('Server Error');
+  }
+});
+
+
 
 // Route to check if enrollment_id is already in the database
 app.get('/api/check-enrollment/:enrollment_id', async (req, res) => {
@@ -1142,7 +1213,7 @@ app.get('/api/students', async (req, res) => {
 
 // Add a new Student
 app.post('/api/students', async (req, res) => {
-  const { student_id, full_name, student_type, program_id, email, phone_number, dob, emergency_contact, status, password } = req.body;
+  const { student_id, full_name, student_type, program_id, email, semester, dob, class_section, status, password } = req.body;
   
   // Check for required fields
   if (!full_name || !student_type || !program_id || !email) {
@@ -1164,8 +1235,8 @@ app.post('/api/students', async (req, res) => {
 
     // Insert the student if the program exists
     const [result] = await db.query(
-      'INSERT INTO students (student_id, full_name, student_type, program_id, email, phone_number, dob, emergency_contact, status, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [student_id, full_name, student_type, program_id, email, phone_number, dob, emergency_contact, status, password]
+      'INSERT INTO students (student_id, full_name, student_type, program_id, email, semester, dob, class_section, status, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [student_id, full_name, student_type, program_id, email, semester, dob, class_section, status, password]
     );
 
     if (result.affectedRows === 0) {

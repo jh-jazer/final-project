@@ -21,16 +21,18 @@ const EntranceExamination = () => {
           throw new Error(`Failed to fetch: ${response.status}`);
         }
         
-        const { eval_assessment, appointment_date } = await response.json();
+        const { eval_assessment } = await response.json();
         
         setStatus(eval_assessment);
         setIsNextButtonDisabled(eval_assessment !== 'approved');
   
-        // Calculate reminder based on appointment date
-        if (appointment_date) {
-          setDynamicReminderMessage(appointment_date);
+        // Static reminder message based on status
+        if (eval_assessment === 'approved') {
+          setReminderMessage('You can now proceed to Document Submission.');
+        } else if (eval_assessment === 'pending') {
+          setReminderMessage('Once your evaluation is approved, you can proceed to Document Submission.');
         } else {
-          setReminderMessage('Appointment date not available.');
+          setReminderMessage('Awaiting evaluation status.');
         }
         
       } catch (error) {
@@ -44,32 +46,6 @@ const EntranceExamination = () => {
     }
   }, [enrollment_id]);
   
-  // Dynamic Schedule-Based Reminders
-  const setDynamicReminderMessage = (appointmentDateStr) => {
-    const currentDate = new Date();
-    const appointmentDate = new Date(appointmentDateStr);
-  
-    if (isNaN(appointmentDate)) {
-      setReminderMessage('Invalid appointment date.');
-      return;
-    }
-  
-    const timeDiff = appointmentDate - currentDate;
-    const hoursLeft = Math.floor(timeDiff / (1000 * 60 * 60));
-  
-    let message;
-    if (hoursLeft < 24) {
-      message = 'Your examination is in less than 24 hours. Please prepare the required documents and materials.';
-    } else if (hoursLeft < 48) {
-      message = 'You have an examination in the next 48 hours. Don’t forget to bring the required documents and materials.';
-    } else {
-      message = 'You have some time before your examination. Make sure to bring the required documents and materials.';
-    }
-  
-    setReminderMessage(message);
-  };
-  
-
   const handleFirstClick = (item) => {
     if (!isNextButtonDisabled) {
       navigate('/createapplication/document-submission');
@@ -141,7 +117,7 @@ const EntranceExamination = () => {
             <h5 className="font-semibold text-lg">Important Notice:</h5>
             <ul className="list-disc pl-6 space-y-2">
               <li>You can only take your examination on your scheduled date. Arriving on a different date without a valid appointment will not be entertained.</li>
-              <li>For inquiries, please contact the office of student affairs and services.</li>
+              <li>For irregulars, you must take an evaluation to continue.</li>
               <li>
                 For more information about the admission procedures,{' '}
                 <a href="https://www.your-website-link.com/admissionprocedures" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">

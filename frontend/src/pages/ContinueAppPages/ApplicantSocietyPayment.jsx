@@ -6,7 +6,7 @@ const SocietyPayment = () => {
   const { userDetails } = useOutletContext();
   const enrollment_id = userDetails?.enrollment_id || 'No ID provided';
   const [paymentStatus, setPaymentStatus] = useState('Pending');
-  const [reminderMessage, setReminderMessage] = useState('');
+  const [reminderMessage, setReminderMessage] = useState('Please complete your payment to proceed.');
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true);
   const { setActiveItem } = useActiveItem();
   const navigate = useNavigate();
@@ -23,13 +23,12 @@ const SocietyPayment = () => {
       const response = await fetch(`http://localhost:5005/api/getApplicantProgress?enrollment_id=${enrollmentId}`);
       if (!response.ok) throw new Error(`Failed to fetch data: ${response.status}`);
 
-      const { society_payment, appointment_date } = await response.json();
+      const { society_payment } = await response.json();
       setPaymentStatus(society_payment || 'Pending');
       setIsNextButtonDisabled(society_payment !== 'approved');
 
-      setReminderMessage(appointment_date
-        ? `Your appointment is scheduled for ${appointment_date}.`
-        : 'Appointment date not available.');
+      // Static reminder message
+      setReminderMessage('Please complete your payment to proceed.');
     } catch (error) {
       console.error('Error fetching payment details:', error);
       setPaymentStatus('Error fetching data');

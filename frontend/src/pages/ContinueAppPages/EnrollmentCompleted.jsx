@@ -96,17 +96,6 @@ const EnrollmentCompletion = () => {
 
         <h1 className="text-4xl font-extrabold text-[#003d1f] px-5">Enrollment Completion</h1>
 
-        <button
-          onClick={() => handleFirstClick('/document-submission')}
-          className={`absolute right-0 top-1/2 transform -translate-y-1/2 text-[#4f7c4f] hover:text-green-800 transition-all ${
-            isNextButtonDisabled ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
-          disabled={isNextButtonDisabled}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
       </div>
 
       {/* Content Section */}

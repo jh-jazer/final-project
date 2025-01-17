@@ -19,14 +19,14 @@ const apiRequest = async (url, method, body = null) => {
 };
 
 const ManageApplication = () => {
-  const [applications, setApplications] = useState([]);
+  const [enrollees, setEnrollees] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [editedFields, setEditedFields] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
-  const applicationsPerPage = 25;
+  const enrolleesPerPage = 25;
   const [showPassword, setShowPassword] = useState(false);
     const [semesterOptions, setSemesterOptions] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -85,20 +85,20 @@ const ManageApplication = () => {
       };
       
         useEffect(() => {
-          fetchApplications();
+          fetchEnrollees();
         }, []);
 
-        // Fetch all applications data from the backend
-        const fetchApplications = async () => {
+        // Fetch all enrollees data from the backend
+        const fetchEnrollees = async () => {
           try {
-            const response = await fetch('http://localhost:5005/api/manage-application');
+            const response = await fetch('http://localhost:5005/api/manage-enrollees');
             if (!response.ok) {
-              throw new Error('Failed to fetch applications');
+              throw new Error('Failed to fetch enrollees');
             }
             const data = await response.json();
-            setApplications(data);
+            setEnrollees(data);
           } catch (error) {
-            console.error('Error fetching applications:', error);
+            console.error('Error fetching Enrollees:', error);
           }
         };
 
@@ -165,8 +165,8 @@ const ManageApplication = () => {
       console.log(result.message);
 
       // Update frontend state after successful save
-      setApplications((prevApplications) =>
-        prevApplications.map((application) =>
+      setEnrollees((prevEnrollees) =>
+        prevEnrollees.map((application) =>
           application.id === editingId ? { ...application, ...editedFields } : application
         )
       );
@@ -225,19 +225,19 @@ const ManageApplication = () => {
   };
   
 
-  const paginateApplications = (applications) => {
-    const startIndex = (currentPage - 1) * applicationsPerPage;
-    const endIndex = startIndex + applicationsPerPage;
-    return applications.slice(startIndex, endIndex);
+  const paginateEnrollees = (enrollees) => {
+    const startIndex = (currentPage - 1) * enrolleesPerPage;
+    const endIndex = startIndex + enrolleesPerPage;
+    return enrollees.slice(startIndex, endIndex);
   };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-  const totalPages = Math.ceil(applications.length / applicationsPerPage);
+  const totalPages = Math.ceil(enrollees.length / enrolleesPerPage);
 
-  const filteredApplications = applications.filter((application) =>
+  const filteredEnrollees = enrollees.filter((application) =>
     application.student_enrollment !== "approved" &&
     application.enrollment_id &&
     application.enrollment_id.toLowerCase().includes(searchTerm.toLowerCase())
@@ -247,7 +247,7 @@ const ManageApplication = () => {
   return (
     <div className="p-6 bg-green-500 min-h-screen">
       <div className="bg-white shadow-lg rounded-lg p-6 mx-auto max-w-full sm:max-w-6xl">
-        <h2 className="text-2xl font-semibold text-gray-700 mb-4">Manage Application</h2>
+        <h2 className="text-2xl font-semibold text-gray-700 mb-4">Manage Enrollments</h2>
 
         {/* Search */}
         <div className="mb-6">
@@ -260,100 +260,97 @@ const ManageApplication = () => {
           />
         </div>
 
-        {/* Table for Applications */}
-        <div className="overflow-x-auto">
-          <table className="min-w-full table-auto border-collapse">
-            <thead>
-            <tr className="bg-gray-200">
-              <th className="px-4 py-2 text-left border border-gray-300">
-                Enrollment<br />ID
-              </th>
-              <th className="px-4 py-2 text-left border border-gray-300">
-                Docs<br />Verification
-              </th>
-              <th className="px-4 py-2 text-left border border-gray-300">
-                Evaluation<br />Assessment
-              </th>
-              <th className="px-4 py-2 text-left border border-gray-300">
-                Docs<br />Submission
-              </th>
-              <th className="px-4 py-2 text-left border border-gray-300">
-                Society<br />Payment
-              </th>
-              <th className="px-4 py-2 text-left border border-gray-300">
-                Actions
-              </th>
-            </tr>
-          </thead>
-            <tbody>
-              {paginateApplications(filteredApplications).map((application) => (
-                <tr key={application.id} className="hover:bg-gray-100">
-                  <td className="px-4 py-2 border border-gray-300">{application.enrollment_id}</td>
-                  {['docs_verification', 'eval_assessment', 'docs_submission', 'society_payment'].map(
-                    (field) => (
-                      <td key={field} className="px-4 py-2 border border-gray-300">
-                        {editingId === application.id ? (
-                          <select
-                            value={editedFields[field] || ''}
-                            onChange={(e) => handleFieldChange(field, e.target.value)}
-                            className="p-2 border border-gray-300 rounded-md"
-                          >
-                            <option value="pending">Pending</option>
-                            <option value="approved">Approved</option>
-                          </select>
-                        ) : (
-                          application[field]
-                        )}
-                      </td>
-                    )
-                  )}
-                  <td className="px-4 py-2 border border-gray-300">
-                    {editingId === application.id ? (
-                      <button
-                        onClick={handleSave}
-                        className="bg-blue-500 text-white px-4 py-1 rounded-md"
-                      >
-                        Save
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleEdit(application)}
-                        className="bg-yellow-500 text-white px-4 py-1 rounded-md"
-                      >
-                        Edit
-                      </button>
-                    )}
-                    <button
-                      onClick={() => openModal(application.enrollment_id)}
-                      disabled={
-                        application.docs_verification !== 'approved' ||
-                        application.eval_assessment !== 'approved' ||
-                        application.docs_submission !== 'approved' ||
-                        application.society_payment !== 'approved'
-                      }
-                      className={`ml-2 px-4 py-1 rounded-md ${
-                        application.docs_verification === 'approved' &&
-                        application.eval_assessment === 'approved' &&
-                        application.docs_submission === 'approved' &&
-                        application.society_payment === 'approved'
-                          ? 'bg-green-500 text-white'
-                          : 'bg-gray-400 text-gray-700 cursor-not-allowed'
-                      }`}
-                    >
-                      Enroll
-                    </button>
-                  </td>
+                {/* Table for Student Progress */}
+          <div className="overflow-x-auto">
+            <table className="min-w-full table-auto border-collapse">
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="px-4 py-2 text-left border border-gray-300">
+                    Student ID
+                  </th>
+                  <th className="px-4 py-2 text-left border border-gray-300">
+                    Checklist Verification
+                  </th>
+                  <th className="px-4 py-2 text-left border border-gray-300">
+                    Society Payment
+                  </th>
+                  <th className="px-4 py-2 text-left border border-gray-300">
+                    Advising Requirement
+                  </th>
+                  <th className="px-4 py-2 text-left border border-gray-300">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {paginateEnrollees(filteredEnrollees).map((studentProgress) => (
+                  <tr key={studentProgress.id} className="hover:bg-gray-100">
+                    <td className="px-4 py-2 border border-gray-300">
+                      {studentProgress.student_id}
+                    </td>
+                    {['checklist_verification', 'society_payment', 'advising_requirement'].map(
+                      (field) => (
+                        <td key={field} className="px-4 py-2 border border-gray-300">
+                          {editingId === studentProgress.id ? (
+                            <select
+                              value={editedFields[field] || ''}
+                              onChange={(e) => handleFieldChange(field, e.target.value)}
+                              className="p-2 border border-gray-300 rounded-md"
+                            >
+                              <option value="pending">Pending</option>
+                              <option value="approved">Approved</option>
+                            </select>
+                          ) : (
+                            studentProgress[field]
+                          )}
+                        </td>
+                      )
+                    )}
+                    <td className="px-4 py-2 border border-gray-300">
+                      {editingId === studentProgress.id ? (
+                        <button
+                          onClick={handleSave}
+                          className="bg-blue-500 text-white px-4 py-1 rounded-md"
+                        >
+                          Save
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleEdit(studentProgress)}
+                          className="bg-yellow-500 text-white px-4 py-1 rounded-md"
+                        >
+                          Edit
+                        </button>
+                      )}
+                      <button
+                        onClick={() => openModal(studentProgress.student_id)}
+                        disabled={
+                          studentProgress.checklist_verification !== 'approved' ||
+                          studentProgress.society_payment !== 'approved' ||
+                          studentProgress.advising_requirement !== 'approved'
+                        }
+                        className={`ml-2 px-4 py-1 rounded-md ${
+                          studentProgress.checklist_verification === 'approved' &&
+                          studentProgress.society_payment === 'approved' &&
+                          studentProgress.advising_requirement === 'approved'
+                            ? 'bg-green-500 text-white'
+                            : 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                        }`}
+                      >
+                        Enroll
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           {/* Modal for adding/editing a student */}
         {modalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-10">
             <div className="bg-white p-6 rounded-lg shadow-md max-w-4xl  ml-[250px] w-full">
-              <h3 className="text-xl mb-4">Enroll Applicant</h3>
+              <h3 className="text-xl mb-4">Enroll Student</h3>
               <form onSubmit={handleFormSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                 <input
@@ -503,7 +500,7 @@ const ManageApplication = () => {
                         ></path>
                       </svg>
                     ) : (
-                      "Enroll Applicant"
+                      "Enroll Student"
                     )}
                   </button>
                 </div>

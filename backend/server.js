@@ -63,6 +63,31 @@ const testDatabaseConnection = async () => {
 
 testDatabaseConnection();
 
+app.put('/api/applicant-progress/:enrollment_id', async (req, res) => {
+  const { enrollment_id } = req.params;
+  const { student_enrollment } = req.body;
+
+  try {
+    const sql = `
+      UPDATE applicant_progress
+      SET student_enrollment = ?
+      WHERE enrollment_id = ?
+    `;
+
+    const [result] = await db.query(sql, [student_enrollment, enrollment_id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Enrollment ID not found' });
+    }
+
+    res.status(200).json({ message: 'Applicant progress updated successfully' });
+  } catch (error) {
+    console.error('Error updating applicant progress:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
 // Update applicant data by ID
 app.put('/api/applicant_progress/:id', async (req, res) => {
   const { id } = req.params; // ID of the applicant
@@ -95,6 +120,38 @@ app.put('/api/applicant_progress/:id', async (req, res) => {
   }
 });
 
+// Update student progress data by ID
+app.put('/api/student_progress/:id', async (req, res) => {
+  const { id } = req.params; // ID of the student
+  const updates = req.body; // Updated fields from the client
+
+  try {
+    // Construct dynamic SQL query based on provided updates
+    const fields = Object.keys(updates);
+    const values = Object.values(updates);
+
+    if (fields.length === 0) {
+      return res.status(400).json({ message: 'No fields provided for update' });
+    }
+
+    // Create SET clause dynamically
+    const setClause = fields.map((field) => `${field} = ?`).join(', ');
+
+    // Execute the update query
+    const query = `UPDATE student_progress SET ${setClause} WHERE id = ?`;
+    const [result] = await db.query(query, [...values, id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Student progress not found' });
+    }
+
+    res.status(200).json({ message: 'Student progress updated successfully' });
+  } catch (error) {
+    console.error('Error updating student progress:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
 
 // Get all Personal Info
 app.get('/api/appointments', async (req, res) => {
@@ -120,17 +177,18 @@ app.get('/api/manage-application', async (req, res) => {
   }
 });
 
-
-app.get('/api/manage-application', async (req, res) => {
+app.get('/api/manage-enrollees', async (req, res) => {
   try {
-    const applications = await db.query('SELECT * FROM applicant_progress');
-    res.status(200).json(applications);
+    // Execute the query and get the rows
+    const [rows] = await db.query('SELECT * FROM student_progress');
+
+    // Send only the rows as the response
+    res.status(200).json(rows);
   } catch (error) {
-    console.error('Error fetching applications:', error);
+    console.error('Error fetching enrollees:', error.message);
     res.status(500).send('Server Error');
   }
 });
-
 
 
 // Route to check if enrollment_id is already in the database
@@ -1213,7 +1271,7 @@ app.get('/api/students', async (req, res) => {
 
 // Add a new Student
 app.post('/api/students', async (req, res) => {
-  const { student_id, full_name, student_type, program_id, email, semester, dob, class_section, status, password } = req.body;
+  const { student_id, full_name, student_type, program_id, email, semester, dob, class_section, status, password, enrollment_id } = req.body;
   
   // Check for required fields
   if (!full_name || !student_type || !program_id || !email) {
@@ -1235,8 +1293,8 @@ app.post('/api/students', async (req, res) => {
 
     // Insert the student if the program exists
     const [result] = await db.query(
-      'INSERT INTO students (student_id, full_name, student_type, program_id, email, semester, dob, class_section, status, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [student_id, full_name, student_type, program_id, email, semester, dob, class_section, status, password]
+      'INSERT INTO students (student_id, full_name, student_type, program_id, email, semester, dob, class_section, status, password, enrollment_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [student_id, full_name, student_type, program_id, email, semester, dob, class_section, status, password, enrollment_id]
     );
 
     if (result.affectedRows === 0) {
@@ -1253,7 +1311,7 @@ app.post('/api/students', async (req, res) => {
 // Update a student's details
 app.put('/api/students/:student_id', async (req, res) => {
   const { student_id } = req.params;
-  const { full_name, student_type, program_id, email, phone_number, dob, emergency_contact, status } = req.body;
+  const { full_name, student_type, program_id, email, semester, dob, class_section, status, enrollment_id } = req.body;
 
   // Basic field validation
   if (!full_name || !student_type || !email) {
@@ -1275,8 +1333,8 @@ app.put('/api/students/:student_id', async (req, res) => {
 
     // Update student details in the database
     const [result] = await db.query(
-      'UPDATE students SET full_name = ?, student_type = ?, program_id = ?, email = ?, phone_number = ?, dob = ?, emergency_contact = ?, status = ? WHERE student_id = ?',
-      [full_name, student_type, program_id, email, phone_number, dob, emergency_contact, status, student_id]
+      'UPDATE students SET full_name = ?, student_type = ?, program_id = ?, email = ?, semester = ?, dob = ?, class_section = ?, status = ?, enrollment_id = ?, WHERE student_id = ?',
+      [full_name, student_type, program_id, email, semester, dob, class_section, status, enrollment_id, student_id]
     );
 
     // Check if the student exists and was updated

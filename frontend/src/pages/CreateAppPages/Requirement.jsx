@@ -69,6 +69,7 @@ const Requirement = () => {
 
   const handleFirstClick = (item) => {
     if (!isNextButtonDisabled) {
+      localStorage.setItem('requirementFormComplete', 'true');
       navigate('/createapplication/appointment');
       setActiveItem(item);
     }
@@ -78,6 +79,17 @@ const Requirement = () => {
     navigate('/createapplication/education');
     setActiveItem(item);
   };
+
+   useEffect(() => {
+          // Check if the personal form is completed by checking localStorage
+          const educationFormComplete = localStorage.getItem('educationFormComplete');
+          if (!educationFormComplete) {
+            // Redirect to the personal form if it's not completed
+            navigate('/createapplication');
+          }
+        }, [navigate]);
+
+
 
   const handleImageChange = (e, index) => {
     const file = e.target.files[0];
@@ -187,6 +199,7 @@ const Requirement = () => {
       // Set a timeout before navigating to give the user time to see the message
       setTimeout(() => {
         // Navigate to the desired route after 2 seconds
+        localStorage.setItem('requirementFormComplete', 'true');
         navigate("/createapplication/appointment");  // Use item (which is '/family' in this case)
         setActiveItem(item); // Set active item (pass '/family')
       }, 2000); // Delay of 2 seconds

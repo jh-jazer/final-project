@@ -35,6 +35,7 @@ const Education = () => {
 
     const handleFirstClick = (item) => {
       if (!isNextButtonDisabled) {
+        localStorage.setItem('educationFormComplete', 'true');
         navigate('/createapplication/requirements');// Navigate to the desired route
         setActiveItem(item);
       } 
@@ -45,6 +46,15 @@ const Education = () => {
         setActiveItem(item);
        
     };
+
+     useEffect(() => {
+        // Check if the personal form is completed by checking localStorage
+        const familyFormComplete = localStorage.getItem('familyFormComplete');
+        if (!familyFormComplete) {
+          // Redirect to the personal form if it's not completed
+          navigate('/createapplication');
+        }
+      }, [navigate]);
 
         useEffect(() => {
           if (enrollment_id && enrollment_id !== "No ID provided") {
@@ -234,6 +244,7 @@ const Education = () => {
             // Set a timeout before navigating to give the user time to see the message
             setTimeout(() => {
               // Navigate to the desired route after 2 seconds
+              localStorage.setItem('educationFormComplete', 'true');
               navigate("/createapplication/requirements");  // Use item (which is '/family' in this case)
               setActiveItem(item); // Set active item (pass '/family')
             }, 2000); // Delay of 2 seconds

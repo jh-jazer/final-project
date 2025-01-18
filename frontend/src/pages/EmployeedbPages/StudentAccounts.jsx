@@ -47,7 +47,7 @@ const StudentAccountManagement = () => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-  
+
   useEffect(() => {
     if (statusMessage) {
       const timer = setTimeout(() => {
@@ -259,7 +259,6 @@ const StudentAccountManagement = () => {
               <th className="px-4 py-2 text-left">Student Type</th>
               <th className="px-4 py-2 text-left">Program</th>
               <th className="px-4 py-2 text-left">Semester</th>
-              <th className="px-4 py-2 text-left">Status</th>
               <th className="px-4 py-2 text-left">Actions</th>
             </tr>
           </thead>
@@ -274,7 +273,6 @@ const StudentAccountManagement = () => {
                   {student.program_id === 1 ? 'BSCS' : student.program_id === 2 ? 'BSIT' : 'Unknown Program'}
                 </td>
                 <td className="px-4 py-2">{getSemesterLabel(student.semester)}</td>
-                <td className="px-4 py-2">{student.status}</td>
                 <td className="px-4 py-2">
                   <button
                     className="px-4 py-2 bg-yellow-500 text-white rounded-md"

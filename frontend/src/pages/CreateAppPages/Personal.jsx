@@ -38,6 +38,7 @@ const Personal = () => {
     // Handle button click to set the active item
   const handleFirstClick = (item) => {
     if (!isNextButtonDisabled) {
+      localStorage.setItem('personalFormComplete', 'true');
       navigate('/createapplication/family');// Navigate to the desired route
       setActiveItem(item);
     } 
@@ -87,8 +88,6 @@ const Personal = () => {
     return date.toISOString().split('T')[0]; // Extracts the "yyyy-MM-dd" format
   };
   
-
-
 
   // Effect to enable or disable the button based on form completion
   useEffect(() => {
@@ -172,6 +171,7 @@ const Personal = () => {
           // Set a timeout before navigating to give the user time to see the message
           setTimeout(() => {
             // Navigate to the desired route after 2 seconds
+            localStorage.setItem('personalFormComplete', 'true');
             navigate("/createapplication/family");  // Use item (which is '/family' in this case)
             setActiveItem(item); // Set active item (pass '/family')
           }, 2000); // Delay of 2 seconds

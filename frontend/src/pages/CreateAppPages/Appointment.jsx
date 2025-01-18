@@ -66,6 +66,7 @@ const Appointment = () => {
 
   const handleFirstClick = (item) => {
     if (!isNextButtonDisabled) {
+      localStorage.setItem('appointmentFormComplete', 'true');
       navigate('/createapplication/document-verification');// Navigate to the desired route
       setActiveItem(item);
     } 
@@ -76,6 +77,15 @@ const Appointment = () => {
     setActiveItem(item);
    
 };
+
+ useEffect(() => {
+          // Check if the personal form is completed by checking localStorage
+          const requirementFormComplete = localStorage.getItem('requirementFormComplete');
+          if (!requirementFormComplete) {
+            // Redirect to the personal form if it's not completed
+            navigate('/createapplication');
+          }
+        }, [navigate]);
 
   const handleInputChange = (e, isDatePicker = false) => {
     if (isDatePicker) {
@@ -148,6 +158,7 @@ const Appointment = () => {
             // Set a timeout before navigating to give the user time to see the message
             setTimeout(() => {
               // Navigate to the desired route after 2 seconds
+              localStorage.setItem('appointmentFormComplete', 'true');
               navigate("/createapplication/document-verification");  // Use item (which is '/family' in this case)
               setActiveItem(item); // Set active item (pass '/family')
             }, 2000); // Delay of 2 seconds

@@ -62,6 +62,192 @@ const testDatabaseConnection = async () => {
 };
 
 testDatabaseConnection();
+app.post('/api/update-student-semester', async (req, res) => {
+  const { student_id } = req.body;  // Only student_id is required from the frontend
+
+  try {
+    // Get the current semester of the student from the database
+    const [student] = await db.query(
+      'SELECT semester FROM students WHERE student_id = ?',
+      [student_id]
+    );
+
+    if (!student || student.length === 0) {
+      return res.status(404).json({ success: false, message: 'Student not found.' });
+    }
+
+    // Ensure the current semester is a valid number
+    const currentSemester = student[0].semester;
+    if (isNaN(currentSemester)) {
+      return res.status(400).json({ success: false, message: 'Invalid semester value.' });
+    }
+
+    // Increment the current semester
+    const newSemester = currentSemester + 1;
+
+    // Update the student's semester in the database
+    await db.query(
+      'UPDATE students SET semester = ? WHERE student_id = ?',
+      [newSemester, student_id]
+    );
+
+    // If the update is successful, send a success response
+    res.json({ success: true, message: 'Student semester updated successfully.' });
+  } catch (error) {
+    console.error('Error updating student semester:', error);
+    res.status(500).json({ success: false, message: 'Failed to update student semester.' });
+  }
+});
+
+app.post('/api/update-student-status', async (req, res) => {
+  const { student_id } = req.body;  // Only student_id is required from the frontend
+
+  try {
+    // Update the student's status to 'enrolled' in the student_progress table
+    await db.query(
+      'UPDATE student_progress SET status = ? WHERE student_id = ?',
+      ['enrolled', student_id]
+    );
+
+    // If the update is successful, send a success response
+    res.json({ success: true, message: 'Student status updated to enrolled.' });
+  } catch (error) {
+    console.error('Error updating student status:', error);
+    res.status(500).json({ success: false, message: 'Failed to update student status.' });
+  }
+});
+
+
+
+// Endpoint to check progress status
+app.get('/api/check-progress-status/:student_id', async (req, res) => {
+  const { student_id } = req.params;
+
+  console.log('Checking progress for student ID:', student_id);
+
+  // Validate the input
+  if (!student_id || isNaN(student_id)) {
+    return res.status(400).json({ error: 'Invalid student ID.' });
+  }
+
+  // Prepare the SQL query
+  const query = `
+    SELECT checklist_verification, society_payment, advising_requirement, status
+    FROM student_progress
+    WHERE student_id = ?
+  `;
+
+  try {
+    // Promisify the database query
+    const [results] = await db.query(query, [student_id]);
+
+    // Check if results exist
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'Progress not found for this student.' });
+    }
+
+    // Respond with the progress status data
+    const progress = results[0];
+    res.status(200).json({
+      checklist_verification: progress.checklist_verification,
+      society_payment: progress.society_payment,
+      advising_requirement: progress.advising_requirement,
+      status: progress.status
+
+    });
+
+  } catch (error) {
+    // Handle any errors during the query execution
+    console.error('Database Error:', error);
+    res.status(500).json({
+      error: 'Database error occurred.',
+      details: error.sqlMessage || error.message,
+    });
+  }
+});
+
+
+// Endpoint to check if a student progress record exists (Async version)
+app.get('/api/check-progress/:student_id', async (req, res) => {
+  const { student_id } = req.params;
+
+  // Validate the student_id
+  if (!student_id || isNaN(student_id)) {
+    return res.status(400).json({ error: 'Invalid student ID.' });
+  }
+
+  try {
+    // Query to check if the student progress exists in the database
+    const query = `
+      SELECT COUNT(*) AS count
+      FROM student_progress
+      WHERE student_id = ?
+    `;
+
+    // Use promise-based query to handle async operations
+    const [results] = await db.query(query, [student_id]);
+
+    // Check if the student progress exists
+    if (results[0].count > 0) {
+      return res.status(200).json({ exists: true });
+    } else {
+      return res.status(200).json({ exists: false });
+    }
+  } catch (error) {
+    console.error('Database Error:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+app.post('/api/student-progress', async (req, res) => {
+  const { student_id, checklist_verification, society_payment, advising_requirement } = req.body;
+
+  console.log('Request Body:', req.body);
+
+  // Validate the input
+  if (
+    !student_id || typeof student_id !== 'number' ||
+    !checklist_verification || typeof checklist_verification !== 'string' ||
+    !society_payment || typeof society_payment !== 'string' ||
+    !advising_requirement || typeof advising_requirement !== 'string'
+  ) {
+    return res.status(400).json({ error: 'Invalid input: Ensure all fields are correctly formatted.' });
+  }
+
+  // Prepare the SQL query
+  const query = `
+    INSERT INTO student_progress (student_id, checklist_verification, society_payment, advising_requirement)
+    VALUES (?, ?, ?, ?)
+  `;
+
+  try {
+    // Promisify the database query
+    const [results] = await db.query(query, [
+      student_id, checklist_verification, society_payment, advising_requirement
+    ]);
+    
+    // Respond with success
+    res.status(201).json({
+      message: 'Student progress record created successfully.',
+      data: {
+        id: results.insertId,
+        student_id,
+        checklist_verification,
+        society_payment,
+        advising_requirement,
+      },
+    });
+  } catch (error) {
+    // Handle any errors during the query execution
+    console.error('Database Error:', error);
+    res.status(500).json({
+      error: 'Database error occurred.',
+      details: error.sqlMessage || error.message,
+    });
+  }
+});
+
 
 app.put('/api/applicant-progress/:enrollment_id', async (req, res) => {
   const { enrollment_id } = req.params;
@@ -1258,6 +1444,39 @@ app.get('/api/numberOfPeoplePerRoles', async (req, res )=> {
   }
 });
 
+app.get('/api/fetchstudents', async (req, res) => {
+  const { studentId } = req.query;
+
+  // Check if studentId is provided
+  if (!studentId) {
+    return res.status(400).json({ error: 'studentId query parameter is required' });
+  }
+
+  // Ensure studentId is an integer
+  const parsedStudentId = parseInt(studentId, 10);
+
+  // Validate if the parsed studentId is a valid number
+  if (isNaN(parsedStudentId)) {
+    return res.status(400).json({ error: 'studentId must be an integer' });
+  }
+
+  try {
+    // Query the database to fetch student details using the parsed integer studentId
+    const [rows] = await db.query('SELECT * FROM students WHERE student_id = ?', [parsedStudentId]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
+
+    // Send the student data as a response
+    res.json(rows[0]);
+  } catch (error) {
+    console.error('Error fetching student information:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 // Get all students
 app.get('/api/students', async (req, res) => {
   try {
@@ -1333,7 +1552,7 @@ app.put('/api/students/:student_id', async (req, res) => {
 
     // Update student details in the database
     const [result] = await db.query(
-      'UPDATE students SET full_name = ?, student_type = ?, program_id = ?, email = ?, semester = ?, dob = ?, class_section = ?, status = ?, enrollment_id = ?, WHERE student_id = ?',
+      'UPDATE students SET full_name = ?, student_type = ?, program_id = ?, email = ?, semester = ?, dob = ?, class_section = ?, status = ?, enrollment_id = ? WHERE student_id = ?',
       [full_name, student_type, program_id, email, semester, dob, class_section, status, enrollment_id, student_id]
     );
 

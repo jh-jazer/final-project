@@ -1,93 +1,108 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { useActiveItem } from "../../contexts/CreateAppContext";
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext } from "react-router-dom";
 
 const Requirement = () => {
-  const { userDetails } = useOutletContext(); // Access the passed data (userDetails)
+  const { userDetails } = useOutletContext();
   const [applicantRequirements, setApplicantRequirements] = useState([]);
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [binaryData, setBinaryData] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true);
-  const divRef = useRef(null);
   const navigate = useNavigate();
   const { setActiveItem } = useActiveItem();
-
+  const divRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isExistingAppointment, setIsExistingAppointment] = useState(false);
   
-  const handleFirstClick = (item) => {
-    if (!isNextButtonDisabled) {
-      navigate('/createapplication/appointment');// Navigate to the desired route
-      setActiveItem(item);
-    } 
-  };
 
-  const handleSecondClick = (item) => {
-    if (isNextButtonDisabled) {
-      navigate('/createapplication/education');// Navigate to the desired route
-      setActiveItem(item);
-    } 
-  };
 
-  // Requirements based on the applicant type
   const requirementMapping = {
-    shs: [
-      'Grade 12 Report Card',
-      '2x2 Picture',
-      'Certificate of non-issuance of Form 137',
-    ],
-    transferee: [
-      'Certificate of grades or transcript of records of all enrolled semesters',
-      '2x2 Picture',
-    ],
-    als: [
-      'Certificate of rating with college eligibility remark',
-      '2x2 Picture',
-    ],
-    grade12: [
-      'Accomplished Grade 11 Report Card',
-      'Certification of Grade 12 Enrollment with strand',
-      '2x2 Picture',
-    ],
-    bachelors: [
-      'Complete Transcript of Records with date of graduation',
-      '2x2 Picture',
-    ],
+    shs: ["Grade 12 Report Card", "Certificate of non-issuance of Form 137", "2x2 Picture"],
+    transferee: ["Certificate of grades or transcript of records of all enrolled semesters", "2x2 Picture"],
+    als: ["Certificate of rating with college eligibility remark", "2x2 Picture"],
+    grade12: ["Accomplished Grade 11 Report Card", "Certification of Grade 12 Enrollment with strand", "2x2 Picture"],
   };
 
   useEffect(() => {
     if (userDetails?.applicant_type && requirementMapping[userDetails.applicant_type]) {
       setApplicantRequirements(requirementMapping[userDetails.applicant_type]);
       setUploadedFiles(Array(requirementMapping[userDetails.applicant_type].length).fill(null));
+      setBinaryData(Array(requirementMapping[userDetails.applicant_type].length).fill(null));
       setImagePreviews(Array(requirementMapping[userDetails.applicant_type].length).fill(null));
     }
   }, [userDetails]);
 
+           // Effect to enable or disable the button based on form completion
+   useEffect(() => {
+     setIsNextButtonDisabled(!isExisting());
+   }, [isExistingAppointment]);
+ 
+   const isExisting = () => isExistingAppointment
+  
   useEffect(() => {
-    const isFormValid =
-      applicantRequirements.length > 0 &&
-      uploadedFiles.length === applicantRequirements.length &&
-      uploadedFiles.every((file) => file !== null);
-    setIsNextButtonDisabled(!isFormValid);
-  }, [uploadedFiles, applicantRequirements]);
+    if (userDetails?.enrollment_id) {
+      const checkEnrollmentId = async () => {
+        try {
+          const response = await fetch(`https://cvsu-backend-system.vercel.app/api/check-enrollment/${userDetails.enrollment_id}`);
+          const data = await response.json();
+  
+          if (data.exists) {
+            setSuccessMessage("Enrollment ID is already in use.");
+            setIsExistingAppointment(true);
+
+          } else {
+            setSuccessMessage("Enrollment ID is available.");
+          }
+        } catch (error) {
+          setErrorMessage("Error checking enrollment ID.");
+        }
+      };
+  
+      checkEnrollmentId();
+    }
+  }, [userDetails?.enrollment_id]);
+  
+
+  const handleFirstClick = (item) => {
+    if (!isNextButtonDisabled) {
+      navigate('/createapplication/appointment');
+      setActiveItem(item);
+    }
+  };
+
+  const handleSecondClick = (item) => {
+    navigate('/createapplication/education');
+    setActiveItem(item);
+  };
 
   const handleImageChange = (e, index) => {
     const file = e.target.files[0];
-    const validTypes = ['image/png', 'image/jpeg', 'image/bmp'];
+    const validTypes = ["image/png", "image/jpeg", "image/bmp"];
 
     if (!file || !validTypes.includes(file.type)) {
-      alert('Please upload a valid image file (PNG, JPEG, BMP).');
+      alert("Please upload a valid image file (PNG, JPEG, BMP).");
       return;
     }
 
     if (file.size > 1024 * 1024) {
-      alert('File size must be less than 1MB.');
+      alert("File size must be less than 1MB.");
       return;
     }
 
     const updatedFiles = [...uploadedFiles];
     const updatedPreviews = [...imagePreviews];
+    const updatedBinaryData = [...binaryData];
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      updatedBinaryData[index] = reader.result;
+      setBinaryData(updatedBinaryData);
+    };
+    reader.readAsArrayBuffer(file);
 
     updatedFiles[index] = file;
     updatedPreviews[index] = URL.createObjectURL(file);
@@ -99,58 +114,91 @@ const Requirement = () => {
   const handleRemoveImage = (index) => {
     const updatedFiles = [...uploadedFiles];
     const updatedPreviews = [...imagePreviews];
+    const updatedBinaryData = [...binaryData];
 
     updatedFiles[index] = null;
     updatedPreviews[index] = null;
+    updatedBinaryData[index] = null;
 
     setUploadedFiles(updatedFiles);
     setImagePreviews(updatedPreviews);
+    setBinaryData(updatedBinaryData);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, item) => {
     e.preventDefault();
-    setSuccessMessage('');
-    setErrorMessage('');
-    divRef.current.scrollIntoView({ behavior: "smooth" });
+    setSuccessMessage("");
+    setErrorMessage("");
+
+    const documents = {};
+
+    const documentKeys = {
+      shs: ["grade_11_report_card", "photo", "certificate_of_non_issuance_of_form_137"],
+      transferee: ["transcripts_or_grades", "photo"],
+      als: ["college_eligibility_rating", "photo"],
+      grade12: ["grade_11_report_card", "grade_12_enrollment_cert", "photo"],
+    };
+
+    const keysForType = documentKeys[userDetails.applicant_type] || [];
+
+    keysForType.forEach((key, index) => {
+      if (uploadedFiles[index]) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          documents[key] = reader.result.split(',')[1]; // Extract Base64 string from data URL
+          if (Object.keys(documents).length === keysForType.length) {
+            sendPayload(documents);
+          }
+        };
+        reader.readAsDataURL(uploadedFiles[index]); // Convert to Base64
+      } else {
+        documents[key] = null; // Set null if no file is uploaded
+      }
+    });
+  };
+
+  const sendPayload = async (documents, item) => {
+    const payload = {
+      enrollment_id: userDetails.enrollment_id,
+      applicantType: userDetails.applicant_type,
+      documents: documents,
+    };
+
+    setIsLoading(true); // Set loading
+
 
     try {
-      const formData = new FormData();
-      uploadedFiles.forEach((file, index) => {
-        formData.append(`file${index}`, file);
-      });
-      formData.append('applicantType', userDetails?.applicant_type);
-
-      // Replace with your actual API endpoint
-      const response = await fetch('/api/upload-requirements', {
-        method: 'POST',
-        body: formData,
+      const response = await fetch("https://cvsu-backend-system.vercel.app/api/upload-student-documents", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to upload requirements. Please try again.');
+        throw new Error("Failed to upload requirements. Please try again.");
       }
 
-      const result = await response.json();
-      setSuccessMessage('Requirements uploaded successfully!');
       setUploadedFiles(Array(applicantRequirements.length).fill(null));
       setImagePreviews(Array(applicantRequirements.length).fill(null));
+      setBinaryData(Array(applicantRequirements.length).fill(null));
+
+      
+      setSuccessMessage("Requirements uploaded successfully!");
+      // Set a timeout before navigating to give the user time to see the message
+      setTimeout(() => {
+        // Navigate to the desired route after 2 seconds
+        navigate("/createapplication/appointment");  // Use item (which is '/family' in this case)
+        setActiveItem(item); // Set active item (pass '/family')
+      }, 2000); // Delay of 2 seconds
+
     } catch (error) {
-      setErrorMessage(error.message || 'An unexpected error occurred.');
+      setErrorMessage(error.message || "An unexpected error occurred.");
     }
   };
 
-  useEffect(() => {
-    return () => {
-      imagePreviews.forEach((url) => {
-        if (url) URL.revokeObjectURL(url);
-      });
-    };
-  }, [imagePreviews]);
-
   return (
-    <div 
-      ref={divRef}
-      className="w-full min-h-screen bg-white p-8 pt-12 shadow-xl rounded-lg flex flex-col">
+    <div ref={divRef} className="w-full min-h-screen bg-white p-8 pt-12 shadow-xl rounded-lg flex flex-col">
+      {/* Render success and error messages */}
       {successMessage && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
           {successMessage}
@@ -162,16 +210,18 @@ const Requirement = () => {
         </div>
       )}
 
-      {/* Header Section */}
+      {/* Render form elements for requirements */}
       <div className="relative text-center my-10">
-        <button 
+        <button
           onClick={() => handleSecondClick('/education')}
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 text-[#345e34] hover:text-green-900">
+          className="absolute left-0 top-1/2 transform -translate-y-1/2 text-[#345e34] hover:text-green-900"
+        >
           <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h1 className="text-3xl font-extrabold text-[#001800]">Requirement Submission</h1>
+        <h1 className="text-3xl font-extrabold text-[#001800]">Upload Requirements</h1>
+        
         <button
           onClick={() => handleFirstClick('/appointment')}
           className={`absolute right-0 top-1/2 transform -translate-y-1/2 text-[#345e34] hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
@@ -182,8 +232,9 @@ const Requirement = () => {
           </svg>
         </button>
       </div>
-      
-      <div className="bg-gray-800 text-white px-4 rounded pb-6 mb-3">
+
+      {/* Directions */}
+      <div className="bg-gray-800 text-white px-4 rounded p-6 mb-3">
         <h3 className="text-lg text-white font-bold mb-2">Directions</h3>
         <ul className="list-disc pl-6">
           <li>Upload the scanned pages of your requirements individually.</li>
@@ -192,7 +243,8 @@ const Requirement = () => {
         </ul>
       </div>
 
-      <form onSubmit={handleSubmit}>
+      {/* Form for uploading files */}
+      <form onSubmit={(e) => handleSubmit(e, '/appointment')}>
       <ul>
           {applicantRequirements.map((req, index) => (
             <li key={index} className="space-y-4">
@@ -208,45 +260,36 @@ const Requirement = () => {
                   required={!uploadedFiles[index]}
                   className="border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
-                {imagePreviews[index] && uploadedFiles[index] && (
-                  <div className="flex items-center gap-4">
+                {imagePreviews[index] && (
+                  <div className="flex items-center gap-2">
                     <img
                       src={imagePreviews[index]}
                       alt={`Preview ${index}`}
                       className="w-24 h-24 object-cover rounded-lg"
                     />
-                    <div className="flex flex-col gap-2">
-                      <p className="text-sm text-gray-600">
-                        {`(${(uploadedFiles[index].size / 1024).toFixed(2)} KB of 1024 KB used)`}
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveImage(index)}
-                        className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700"
-                      >
-                        Remove
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(index)}
+                      className="text-red-600 hover:text-red-800"
+                    >
+                      Remove
+                    </button>
                   </div>
                 )}
               </div>
-              {index < applicantRequirements.length - 1 && (
-                <hr className="border-gray-300" />
-              )}
+              {index < applicantRequirements.length - 1 && <hr className="border-gray-300" />}
             </li>
           ))}
         </ul>
-        
-        {/* Action Buttons */}
-        <div className="flex justify-end gap-5 mb-5 mx-5">
-          <div className="text-left">
-            <button
-              className="px-6 py-2 bg-green-500 text-white font-bold rounded-lg hover:bg-red-700 focus:outline-none"
-              onClick={(e) => handleSubmit(e)}
-            >
-              Update Application
-            </button>
-          </div>
+        <div className="flex justify-end gap-5 mt-5">
+        <button
+          type="submit"
+          className={`px-6 py-2 ${isLoading ? "bg-gray-400" : "bg-green-500"} text-white font-bold rounded-lg`}
+          disabled={isLoading}
+        >
+          {isLoading ? "Uploading..." : "Submit"}
+        </button>
+
         </div>
       </form>
     </div>

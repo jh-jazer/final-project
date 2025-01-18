@@ -26,17 +26,19 @@ const StudentAccountManagement = () => {
   const [statusMessage, setStatusMessage] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [semesterOptions, setSemesterOptions] = useState([]);
   const [formData, setFormData] = useState({
     student_id: '',
     full_name: '',
     student_type: '',
     program_id: '', // Change to program_id
     email: '',
-    phone_number: '',
+    semester: '',
     dob: '',
-    emergency_contact: '',
+    class_section: '',
     status: '',
     password: '',
+    enrollment_id: '', // Added enrollment_id field
   });
   
   const [isEditing, setIsEditing] = useState(false);
@@ -45,6 +47,7 @@ const StudentAccountManagement = () => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+  
   useEffect(() => {
     if (statusMessage) {
       const timer = setTimeout(() => {
@@ -55,6 +58,12 @@ const StudentAccountManagement = () => {
       return () => clearTimeout(timer);
     }
   }, [statusMessage]);
+
+  const getSemesterLabel = (semesterValue) => {
+    // Use semesterOptions to find the label for the semester value
+    const semesterOption = semesterOptions.find(option => option.value === semesterValue);
+    return semesterOption ? semesterOption.label : 'Unknown Semester';
+  };
 
   const closeModal = () => {
     setModalOpen(false);
@@ -91,16 +100,48 @@ const StudentAccountManagement = () => {
         student_type: '',
         program_id: '', // Set program_id to an empty string
         email: '',
-        phone_number: '',
+        semester: '',
         dob: '',
-        emergency_contact: '',
+        class_section: '',
         status: '',
         password: '',
+        enrollment_id: '', // Added enrollment_id field
       });
       setIsEditing(false); // Set the state to adding
     }
     setModalOpen(true); // Open the modal
   };
+
+  useEffect(() => {
+    // Conditionally set semester options based on the selected program_id
+    if (formData.program_id === 1) {
+      setSemesterOptions([
+        { value: 1, label: 'First Year, First Semester' },
+        { value: 2, label: 'First Year, Second Semester' },
+        { value: 3, label: 'Second Year, First Semester' },
+        { value: 4, label: 'Second Year, Second Semester' },
+        { value: 5, label: 'Third Year, First Semester' },
+        { value: 6, label: 'Third Year, Second Semester' },
+        { value: 7, label: 'Third Year, Mid Year' },
+        { value: 8, label: 'Fourth Year, First Semester' },
+        { value: 9, label: 'Fourth Year, Second Semester' },
+      ]);
+    } else if (formData.program_id === 2) {
+      setSemesterOptions([
+        { value: 10, label: 'First Year, First Semester' },
+        { value: 11, label: 'First Year, Second Semester' },
+        { value: 12, label: 'Second Year, First Semester' },
+        { value: 13, label: 'Second Year, Second Semester' },
+        { value: 14, label: 'Second Year, Mid Year' },
+        { value: 15, label: 'Third Year, First Semester' },
+        { value: 16, label: 'Third Year, Second Semester' },
+        { value: 17, label: 'Fourth Year, First Semester' },
+        { value: 18, label: 'Fourth Year, Second Semester' },
+      ]);
+    } else {
+      setSemesterOptions([]); // Clear options if no program_id is selected
+    }
+  }, [formData.program_id]);
   
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -123,8 +164,8 @@ const StudentAccountManagement = () => {
     payload.dob = formattedDob;
   
     const url = isEditing
-      ? `https://cvsu-backend-system.vercel.app/api/students/${formData.student_id}` // Use student ID for update
-      : 'https://cvsu-backend-system.vercel.app/api/students'; // Use POST for new students
+      ? `http://localhost:5005/api/students/${formData.student_id}` // Use student ID for update
+      : 'http://localhost:5005/api/students'; // Use POST for new students
     const method = isEditing ? 'PUT' : 'POST'; // Use PUT for updates, POST for new student
   
     try {
@@ -178,7 +219,7 @@ const StudentAccountManagement = () => {
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">Student Accounts</h2>
         {statusMessage && <div className="mb-4 text-center text-red-600">{statusMessage}</div>}
 
-        <div className="mb-4 flex justify-between items-center">
+        <div className="mb-4 flex justify-between items-center overflow-x-auto">
           <button
             className="px-4 py-2 bg-blue-500 text-white rounded-md"
             onClick={() => openModal()}
@@ -217,174 +258,190 @@ const StudentAccountManagement = () => {
               <th className="px-4 py-2 text-left">Full Name</th>
               <th className="px-4 py-2 text-left">Student Type</th>
               <th className="px-4 py-2 text-left">Program</th>
-              <th className="px-4 py-2 text-left">Phone</th>
+              <th className="px-4 py-2 text-left">Semester</th>
               <th className="px-4 py-2 text-left">Status</th>
               <th className="px-4 py-2 text-left">Actions</th>
             </tr>
           </thead>
-          <tbody>
-            {filteredStudents.length > 0 ? (
-              filteredStudents.map((student) => (
-                <tr key={student.student_id} className="border-b hover:bg-gray-100">
-                  <td className="px-4 py-2">{student.student_id}</td>
-                  <td className="px-4 py-2">{student.full_name}</td>
-                  <td className="px-4 py-2">{student.student_type}</td>
-                  <td className="px-4 py-2">
-                    {student.program_id === 1 ? 'BSCS' : student.program_id === 2 ? 'BSIT' : 'Unknown Program'}
-                  </td>
-                  <td className="px-4 py-2">{student.phone_number}</td>
-                  <td className="px-4 py-2">{student.status}</td>
-                  <td className="px-4 py-2">
-                    <button
-                      className="px-4 py-2 bg-yellow-500 text-white rounded-md"
-                      onClick={() => openModal(student)}
-                      title="Edit student"
-                    >
-                      <FaEdit className="text-white" />
-                    </button>
-                    <button
-                      className="ml-2 px-4 py-2 bg-red-500 text-white rounded-md"
-                      onClick={() => handleDelete(student.student_id)}
-                      title="Delete student"
-                    >
-                      <FaTrashAlt className="text-white" />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="7" className="px-4 py-2 text-center">
-                  No students found.
+                  <tbody>
+          {filteredStudents.length > 0 ? (
+            filteredStudents.map((student) => (
+              <tr key={student.student_id} className="border-b hover:bg-gray-100">
+                <td className="px-4 py-2">{student.student_id}</td>
+                <td className="px-4 py-2">{student.full_name}</td>
+                <td className="px-4 py-2">{student.student_type}</td>
+                <td className="px-4 py-2">
+                  {student.program_id === 1 ? 'BSCS' : student.program_id === 2 ? 'BSIT' : 'Unknown Program'}
+                </td>
+                <td className="px-4 py-2">{getSemesterLabel(student.semester)}</td>
+                <td className="px-4 py-2">{student.status}</td>
+                <td className="px-4 py-2">
+                  <button
+                    className="px-4 py-2 bg-yellow-500 text-white rounded-md"
+                    onClick={() => openModal(student)}
+                    title="Edit student"
+                  >
+                    <FaEdit className="text-white" />
+                  </button>
+                  <button
+                    className="ml-2 px-4 py-2 bg-red-500 text-white rounded-md"
+                    onClick={() => handleDelete(student.student_id)}
+                    title="Delete student"
+                  >
+                    <FaTrashAlt className="text-white" />
+                  </button>
                 </td>
               </tr>
-            )}
-          </tbody>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="7" className="px-4 py-2 text-center">
+                No students found.
+              </td>
+            </tr>
+          )}
+        </tbody>
+
         </table>
         </div>
 
-        {/* Modal for adding/editing an student */}
-        {modalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-10">
-            <div className="bg-white p-6 rounded-lg shadow-md max-w-sm w-full">
-              <h3 className="text-xl mb-4">{isEditing ? 'Edit student' : 'Add New student'}</h3>
-              <form onSubmit={handleFormSubmit}>
-                <input
-                  type="text"
-                  placeholder="Student ID"
-                  className="w-full px-4 py-2 mb-2 border"
-                  value={formData.student_id}
-                  onChange={(e) => setFormData({ ...formData, student_id: e.target.value })}
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Full Name"
-                  className="w-full px-4 py-2 mb-2 border"
-                  value={formData.full_name}
-                  onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                  required
-                />
-                <select
-                  className="w-full px-4 py-2 mb-2 border"
-                  value={formData.student_type}
-                  onChange={(e) => setFormData({ ...formData, student_type: e.target.value })}
-                  required
-                >
-                  <option value="">Select Student Type</option>
-                  <option value="Regular">Regular</option>
-                  <option value="Irregular">Irregular</option>
-                
-                </select>
-                <select
-                className="w-full px-4 py-2 mb-2 border"
-                value={formData.program_id} // Bind to program_id
-                onChange={(e) => setFormData({ ...formData, program_id: parseInt(e.target.value, 10) })} // Parse as integer
-                required
-              >
-                <option value="">Select Student Program</option>
-                <option value="1">BSCS</option> {/* Assuming 1 is the ID for BSCS */}
-                <option value="2">BSIT</option> {/* Assuming 2 is the ID for BSIT */}
-              </select>
-
-                <input
-                  type="email"
-                  placeholder="email"
-                  className="w-full px-4 py-2 mb-2 border"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  required
-                />
-                <input
-                  type="tel"
-                  placeholder="Phone Number"
-                  className="w-full px-4 py-2 mb-2 border"
-                  value={formData.phone_number}
-                  onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
-                  required
-                />
-                
-                <input
-                  type="date"
-                  className="w-full px-4 py-2 mb-2 border"
-                  value={formData.dob}
-                  onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Emergency Contact"
-                  className="w-full px-4 py-2 mb-2 border"
-                  value={formData.emergency_contact}
-                  onChange={(e) => setFormData({ ...formData, emergency_contact: e.target.value })}
-                  required
-                />
-                <select
-                  className="w-full px-4 py-2 mb-2 border"
-                  value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                  required
-                >
-                  <option value="">Select Account Status </option>
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
-                <div className="relative">
+        {/* Modal for adding/editing a student */}
+{modalOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-10">
+    <div className="bg-white p-6 rounded-lg shadow-md max-w-4xl w-full">
+      <h3 className="text-xl mb-4">{isEditing ? 'Edit student' : 'Add New student'}</h3>
+      <form onSubmit={handleFormSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
         <input
-          type={showPassword ? 'text' : 'password'} // Toggle between text and password input
-          placeholder="Password"
-          className="w-full px-4 py-2 mb-2 border"
-          value={formData.password}
-          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-          required={!isEditing} // Password required only for new students
-        />
-        <button
-          type="button"
-          onClick={togglePasswordVisibility}
-          className="absolute right-3 top-3 text-gray-500"
-        >
-          {showPassword ? <FaEyeSlash /> : <FaEye />} {/* Show/hide icon */}
-        </button>
-      </div>
-                <div className="flex justify-between mt-4">
-                  <button
-                    type="button"
-                    onClick={closeModal}
-                    className="px-4 py-2 bg-gray-300 text-black rounded-md"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-blue-500 text-white rounded-md"
-                  >
-                    {isEditing ? 'Update student' : 'Add student'}
-                  </button>
-                </div>
-              </form>
-            </div>
+            type="text"
+            placeholder="Enrollment ID"
+            className="w-full px-4 py-2 mb-2 border"
+            value={formData.enrollment_id}
+            onChange={(e) => setFormData({ ...formData, enrollment_id: e.target.value })}
+            required
+          />
+          <input
+            type="text"
+            placeholder="Student ID"
+            className="w-full px-4 py-2 mb-2 border"
+            value={formData.student_id}
+            onChange={(e) => setFormData({ ...formData, student_id: e.target.value })}
+            required
+          />
+          <input
+            type="text"
+            placeholder="Full Name"
+            className="w-full px-4 py-2 mb-2 border"
+            value={formData.full_name}
+            onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+            required
+          />
+          <select
+            className="w-full px-4 py-2 mb-2 border"
+            value={formData.student_type}
+            onChange={(e) => setFormData({ ...formData, student_type: e.target.value })}
+            required
+          >
+            <option value="">Select Student Type</option>
+            <option value="Regular">Regular</option>
+            <option value="Irregular">Irregular</option>
+          </select>
+          <select
+            className="w-full px-4 py-2 mb-2 border"
+            value={formData.program_id}
+            onChange={(e) => setFormData({ ...formData, program_id: parseInt(e.target.value, 10) })}
+            required
+          >
+            <option value="">Select Student Program</option>
+            <option value="1">BSCS</option>
+            <option value="2">BSIT</option>
+          </select>
+          <input
+            type="email"
+            placeholder="Email"
+            className="w-full px-4 py-2 mb-2 border"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            required
+          />
+        </div>
+        <div>
+          <select
+            className="w-full px-4 py-2 mb-2 border"
+            value={formData.semester}
+            onChange={(e) => setFormData({ ...formData, semester: parseInt(e.target.value, 10) })}
+            required
+          >
+            <option value="">Select Semester</option>
+            {semesterOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <input
+            type="date"
+            className="w-full px-4 py-2 mb-2 border"
+            value={formData.dob}
+            onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
+            required
+          />
+          <input
+            type="text"
+            placeholder="Class Section"
+            className="w-full px-4 py-2 mb-2 border"
+            value={formData.class_section}
+            onChange={(e) => setFormData({ ...formData, class_section: e.target.value })}
+            required
+          />
+          <select
+            className="w-full px-4 py-2 mb-2 border"
+            value={formData.status}
+            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+            required
+          >
+            <option value="">Select Account Status</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Password"
+              className="w-full px-4 py-2 mb-2 border"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              required={!isEditing}
+            />
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className="absolute right-3 top-3 text-gray-500"
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
           </div>
-        )}
+        </div>
+        <div className="flex justify-between mt-4 col-span-2">
+          <button
+            type="button"
+            onClick={closeModal}
+            className="px-4 py-2 bg-gray-300 text-black rounded-md"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-500 text-white rounded-md"
+          >
+            {isEditing ? 'Update student' : 'Add student'}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+
       </div>
     </div>
   );

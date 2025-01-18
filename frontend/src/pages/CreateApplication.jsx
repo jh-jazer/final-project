@@ -25,6 +25,24 @@ const AdmissionsPage = () => {
     );
   };
 
+  useEffect(() => {
+    const firstSectionRoutes = [
+      '/createapplication',
+      '/personal',
+      '/family',
+      '/education',
+      '/requirements',
+      '/appointment',
+    ];
+  
+    if (firstSectionRoutes.includes(activeItem)) {
+      setActiveSection("First Section");
+    } else {
+      setActiveSection("Second Section");
+    }
+  }, [activeItem]);
+  
+
 
   const fullNames = {
     als: "ALS Passer",

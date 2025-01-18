@@ -11,6 +11,7 @@ const Education = () => {
   const showSeniorHighYearField = userDetails?.applicant_type !== "grade12"; // Check if senior high year should be shown
   const navigate = useNavigate();
   const { setActiveItem } = useActiveItem();
+  const [isExistingAppointment, setIsExistingAppointment] = useState(false);
   const [formData, setFormData] = useState({
     elementarySchoolName: "",
     elementarySchoolAddress: "",
@@ -31,12 +32,6 @@ const Education = () => {
   const [errors, setErrors] = useState({});
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true); // Tracks if 'Next' button is disabled after form update
   const divRef = useRef(null);
-
-    // Effect to enable or disable the button based on form completion
-    useEffect(() => {
-      const isFormValid = validate(); // Checks if the form is valid based on `validate` function
-      setIsNextButtonDisabled(!(isFormValid )); // Enables "Next" only if valid and updated
-    }, [formData]);
 
     const handleFirstClick = (item) => {
       if (!isNextButtonDisabled) {
@@ -69,11 +64,19 @@ const Education = () => {
               ...prevData,
               ...data,  // Populate form with fetched data
             }));
+            setIsExistingAppointment(true);
+
           } catch (error) {
             console.error("Error fetching data:", error);
           }
         };
         
+          // Effect to enable or disable the button based on form completion
+  useEffect(() => {
+    setIsNextButtonDisabled(!isExisting());
+  }, [isExistingAppointment]);
+
+  const isExisting = () => isExistingAppointment
     
 
   const validate = () => {
@@ -200,19 +203,19 @@ const Education = () => {
     setFormData(prevData => ({ ...prevData, [name]: value }));
   };
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e, item) => {
     e.preventDefault();
-  
     const isValid = validate();
+
     if (isValid) {
       const updatedFormData = {
         ...formData,
         enrollment_id: enrollment_id,
       };
       divRef.current.scrollIntoView({ behavior: "smooth" });
-      setSuccessMessage("Application updated successfully!");
-      setIsNextButtonDisabled(false);
-      
+     
+      setSuccessMessage("Loading...");
+
   
       try {
         const response = await fetch('https://cvsu-backend-system.vercel.app/submit_education', {
@@ -226,29 +229,23 @@ const handleSubmit = async (e) => {
         if (response.ok) {
           const result = await response.json();
           console.log(response.status); // Check the actual response status code here
+          setSuccessMessage("Application updated successfully!");
 
-          setFormData({
-            ...formData,
-            elementarySchoolName: "",
-            elementarySchoolAddress: "",
-            elementarySchoolYearGraduated: "",
-            highSchoolName: "",
-            highSchoolAddress: "",
-            highSchoolYearGraduated: "",
-            seniorHighSchoolName: "",
-            seniorHighSchoolAddress: "",
-            seniorHighSchoolYearGraduated: "",
-            collegeName: "",
-            collegeAddress: "",
-            collegeYearGraduated: "",
-            collegeDegree: "",
-          }); // Reset family form data
-          
+            // Set a timeout before navigating to give the user time to see the message
+            setTimeout(() => {
+              // Navigate to the desired route after 2 seconds
+              navigate("/createapplication/requirements");  // Use item (which is '/family' in this case)
+              setActiveItem(item); // Set active item (pass '/family')
+            }, 2000); // Delay of 2 seconds
+    
+            // Clear the success message after the timeout
+            setTimeout(() => setSuccessMessage(""), 5000);
+
+      
                     divRef.current.scrollIntoView({ behavior: "smooth" });
           setSuccessMessage("Application updated successfully!");
           setTimeout(() => setSuccessMessage(""), 5000);
         } else {
-          
           setSuccessMessage("There was an issue with the submission. Please try again.");
           setTimeout(() => setSuccessMessage(""), 5000);
         }
@@ -263,7 +260,8 @@ const handleSubmit = async (e) => {
       setTimeout(() => setSuccessMessage(""), 5000);
     }
   };
-  
+
+
   return (
     <div 
     ref={divRef}
@@ -279,12 +277,12 @@ const handleSubmit = async (e) => {
       <div className="relative text-center my-10">
       <button 
             onClick={() => handleSecondClick('/family')}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2text-[#345e34] hover:text-green-900">
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 text-[#345e34] hover:text-green-900">
             <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-        <h1 className="text-3xl font-extrabold text-[#001800]">Education Information</h1>
+        <h1 className="text-3xl font-extrabold text-[#001800]">Educational Info</h1>
         <button
           onClick={() => handleFirstClick('/requirements')}
           className={`absolute right-0 top-1/2 transform -translate-y-1/2 text-[#345e34] hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
@@ -475,7 +473,7 @@ const handleSubmit = async (e) => {
           className="px-6 py-2 bg-green-500 text-white font-bold rounded-lg hover:bg-red-700 focus:outline-none"
           onClick={(e) => {
             // You can call the handleSubmit function or directly trigger scroll-to-top here.
-            handleSubmit(e); // If you want to run the handleSubmit logic
+            handleSubmit(e,'/education'); // If you want to run the handleSubmit logic
             
           }}
         

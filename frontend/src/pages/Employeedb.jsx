@@ -319,7 +319,7 @@ const EmployeeDashboard = () => {
             {/* Manage Classes Section */}
             <li>
               <Link
-                to="manage-classes"
+                to="manage-appointments"
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >
@@ -422,7 +422,7 @@ const EmployeeDashboard = () => {
             {/* Manage Classes Section */}
             <li>
               <Link
-                to="manage-classes"
+                to="manage-appointments"
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >

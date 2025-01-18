@@ -59,11 +59,33 @@ const StudentAccountManagement = () => {
     }
   }, [statusMessage]);
 
-  const getSemesterLabel = (semesterValue) => {
-    // Use semesterOptions to find the label for the semester value
-    const semesterOption = semesterOptions.find(option => option.value === semesterValue);
-    return semesterOption ? semesterOption.label : 'Unknown Semester';
-  };
+  // Define a mapping for semesters and their labels
+const semesterMapping = {
+  1: 'First Year, First Semester',
+  2: 'First Year, Second Semester',
+  3: 'Second Year, First Semester',
+  4: 'Second Year, Second Semester',
+  5: 'Third Year, First Semester',
+  6: 'Third Year, Second Semester',
+  7: 'Third Year, Mid Year',
+  8: 'Fourth Year, First Semester',
+  9: 'Fourth Year, Second Semester',
+  10: 'First Year, First Semester',
+  11: 'First Year, Second Semester',
+  12: 'Second Year, First Semester',
+  13: 'Second Year, Second Semester',
+  14: 'Second Year, Mid Year',
+  15: 'Third Year, First Semester',
+  16: 'Third Year, Second Semester',
+  17: 'Fourth Year, First Semester',
+  18: 'Fourth Year, Second Semester',
+};
+
+// Rewrite getSemesterLabel to use the semesterMapping
+const getSemesterLabel = (semesterValue) => {
+  return semesterMapping[semesterValue] || 'Unknown Semester';
+};
+
 
   const closeModal = () => {
     setModalOpen(false);
@@ -214,7 +236,7 @@ const StudentAccountManagement = () => {
   );
 
   return (
-    <div className="p-6 bg-green-500 min-h-screen">
+    <div className="p-6 bg-gradient-to-r from-green-800 to-green-500 min-h-screen">
       <div className="bg-white shadow-lg rounded-lg p-6 mx-auto max-w-7xl">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">Student Accounts</h2>
         {statusMessage && <div className="mb-4 text-center text-red-600">{statusMessage}</div>}

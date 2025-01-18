@@ -1,201 +1,227 @@
 import React, { useState, useEffect } from 'react';
 
-const StudentInformation = () => {
-  // Sample data to simulate all student information
-  const [students, setStudents] = useState([
-    // Enrolled Students
-    {
-      id: 1,
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      phone: '09123456789',
-      address: '123 Main St, Cavite',
-      year: '3rd Year',
-      section: 'A',
-      course: 'Computer Science',
-      enrollmentStatus: 'Enrolled',
-    },
-    {
-      id: 2,
-      name: 'Jane Smith',
-      email: 'janesmith@example.com',
-      phone: '09123456788',
-      address: '456 Oak St, Cavite',
-      year: '2nd Year',
-      section: 'B',
-      course: 'Information Technology',
-      enrollmentStatus: 'Graduated',
-    },
-  ]);
-  
-  const [applicants, setApplicants] = useState([
-    {
-      applicantId: 1,
-      applicantName: 'Emily Johnson',
-      applicantType: 'Transfer',
-      preferredPrograms: 'Computer Science, Software Engineering',
-      proofOfRequirements: 'Completed',
-      enrollmentStatus: 'Applicant',
-    },
-    {
-      applicantId: 2,
-      applicantName: 'Michael Brown',
-      applicantType: 'Freshman',
-      preferredPrograms: 'Information Technology',
-      proofOfRequirements: 'Pending',
-      enrollmentStatus: 'Applicant',
-    },
-  ]);
-
-  const [activeTab, setActiveTab] = useState('Applicants');
+const StudentInformations = () => {
+  const [students, setStudents] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  
-  // Separate states for filtered data
-  const [filteredApplicants, setFilteredApplicants] = useState([]);
-  const [filteredEnrolled, setFilteredEnrolled] = useState([]);
-  const [filteredGraduated, setFilteredGraduated] = useState([]);
+  const [activeTab, setActiveTab] = useState('Active');
+  const [statusMessage, setStatusMessage] = useState('');
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [personalInfo, setPersonalInfo] = useState(null); // State for personal info
 
-  // Filter applicants, enrolled, and graduated students based on search term
-  const filterData = () => {
-    // Filter applicants based on search term
-    const filteredApplicants = applicants.filter(
-      (applicant) =>
-        applicant.applicantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        applicant.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        applicant.phone?.includes(searchTerm)
-    );
+  const semesterMapping = { /* ... Your semester mapping ... */ };
 
-    // Filter students based on search term
-    const filteredEnrolled = students.filter(
-      (student) =>
-        student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        student.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        student.phone?.includes(searchTerm)
-    );
-    
-    // Filter graduated students based on search term
-    const filteredGraduated = students.filter(
-      (student) =>
-        student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        student.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        student.phone?.includes(searchTerm)
-    );
-
-    // Set filtered data based on active tab
-    setFilteredApplicants(filteredApplicants);
-    setFilteredEnrolled(filteredEnrolled.filter((student) => student.enrollmentStatus === 'Enrolled'));
-    setFilteredGraduated(filteredGraduated.filter((student) => student.enrollmentStatus === 'Graduated'));
+  const getSemesterLabel = (semesterValue) => {
+    return semesterMapping[semesterValue] || 'Unknown Semester';
   };
 
-  // Trigger filter function when searchTerm or any of the data changes
   useEffect(() => {
-    filterData();
-  }, [searchTerm, students, applicants]);
+    const fetchStudents = async () => {
+      try {
+        const response = await fetch('https://cvsu-backend-system.vercel.app/api/students');
+        const result = await response.json();
+        setStudents(result);
+      } catch (error) {
+        setStatusMessage('Failed to fetch student data.');
+      }
+    };
+    fetchStudents();
+  }, []);
+
+  
+  const handleRowClick = (student) => {
+    setSelectedStudent(student);
+    if (student.enrollment_id) {
+      fetchFormData(student.enrollment_id);
+    }
+  };
+  
+  const fetchFormData = async (enrollment_id) => {
+    try {
+      const response = await fetch(
+        `https://cvsu-backend-system.vercel.app/api/getPersonalInfo?enrollment_id=${enrollment_id}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch data");
+      }
+  
+      const data = await response.json();
+  
+      // Format date fields if present
+      const formattedData = {
+        ...data,
+        dob: data.dob ? formatDateForInput(data.dob) : "",
+      };
+  
+      setPersonalInfo(formattedData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setPersonalInfo(null); // Clear previous data on error
+    }
+  };
+  
+  const formatDateForInput = (dateString) => {
+    const date = new Date(dateString);
+    return date.toISOString().split("T")[0]; // Format date as YYYY-MM-DD
+  };
+
+  const filteredStudents = students.filter(
+    (student) =>
+      (student.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.student_id.toString().includes(searchTerm)) &&
+      student.status === activeTab
+  );
 
   return (
-    <div className="p-6 bg-green-500 min-h-screen">
-      <div className="bg-white shadow-lg rounded-lg p-6 mx-auto max-w-full sm:max-w-6xl">
-        <h2 className="text-2xl font-semibold text-gray-700 mb-4">Student Information</h2>
+    <div className="p-6 bg-gradient-to-r from-green-800 to-green-500 min-h-screen">
+      <div className="bg-white shadow-lg rounded-lg p-6 mx-auto max-w-7xl">
+        <h2 className="text-2xl font-semibold text-gray-700 mb-4">Student Informations</h2>
+        {statusMessage && <div className="mb-4 text-center text-red-600">{statusMessage}</div>}
 
-        {/* Search bar */}
-        <input
-          type="text"
-          className="p-2 border border-gray-300 rounded-md w-full mb-4"
-          placeholder="Search by name, email, or phone"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+        {/* Search and Tab Filters */}
+        {/* ... Your existing code for search and tabs ... */}
 
-        {/* Tabs for Applicant, Enrolled, and Alumni */}
-        <div className="mb-4 flex flex-wrap">
-          <div className="space-x-1 sm:space-x-6 md:space-x-8">
-            <button
-              onClick={() => setActiveTab('Applicants')}
-              className={`${activeTab === 'Applicants' ? 'text-blue-600 font-semibold' : 'text-gray-600'} px-4 py-2 flex-wrap`}
-            >
-              Applicants
-            </button>
-            <button
-              onClick={() => setActiveTab('Enrolled')}
-              className={`${activeTab === 'Enrolled' ? 'text-blue-600 font-semibold' : 'text-gray-600'} px-4 py-2 flex-wrap`}
-            >
-              Enrolled Students
-            </button>
-            <button
-              onClick={() => setActiveTab('Graduated')}
-              className={`${activeTab === 'Graduated' ? 'text-blue-600 font-semibold' : 'text-gray-600'} px-4 py-2 flex-wrap`}
-            >
-              Alumni
-            </button>
-          </div>
+        {/* Student Table */}
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border-collapse shadow-md">
+            <thead className="bg-gray-800 text-white">
+              <tr>
+                <th className="px-4 py-2 text-left">ID</th>
+                <th className="px-4 py-2 text-left">Full Name</th>
+                <th className="px-4 py-2 text-left">Student Type</th>
+                <th className="px-4 py-2 text-left">Program</th>
+                <th className="px-4 py-2 text-left">Semester</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredStudents.length > 0 ? (
+                filteredStudents.map((student) => (
+                  <tr
+                    key={student.student_id}
+                    className="border-b hover:bg-gray-100 cursor-pointer"
+                    onClick={() => handleRowClick(student)}
+                  >
+                    <td className="px-4 py-2">{student.student_id}</td>
+                    <td className="px-4 py-2">{student.full_name}</td>
+                    <td className="px-4 py-2">{student.student_type}</td>
+                    <td className="px-4 py-2">
+                      {student.program_id === 1 ? 'BSCS' : student.program_id === 2 ? 'BSIT' : 'Unknown Program'}
+                    </td>
+                    <td className="px-4 py-2">{getSemesterLabel(student.semester)}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="px-4 py-2 text-center">
+                    No students found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
 
-        {/* Table for Applicants */}
-        {activeTab === 'Applicants' && (
-          <div className="overflow-x-auto">
-            <table className="min-w-full table-auto border-collapse">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th className="px-4 py-2 text-left border border-gray-300">Applicant ID</th>
-                  <th className="px-4 py-2 text-left border border-gray-300">Applicant Name</th>
-                  <th className="px-4 py-2 text-left border border-gray-300">Applicant Type</th>
-                  <th className="px-4 py-2 text-left border border-gray-300">Preferred Programs</th>
-                  <th className="px-4 py-2 text-left border border-gray-300">Proof of Requirements</th>
-                  <th className="px-4 py-2 text-left border border-gray-300">Enrollment Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredApplicants.map((applicant) => (
-                  <tr key={applicant.applicantId} className="hover:bg-gray-100">
-                    <td className="px-4 py-2 border border-gray-300">{applicant.applicantId}</td>
-                    <td className="px-4 py-2 border border-gray-300">{applicant.applicantName}</td>
-                    <td className="px-4 py-2 border border-gray-300">{applicant.applicantType}</td>
-                    <td className="px-4 py-2 border border-gray-300">{applicant.preferredPrograms}</td>
-                    <td className="px-4 py-2 border border-gray-300">{applicant.proofOfRequirements}</td>
-                    <td className="px-4 py-2 border border-gray-300">{applicant.enrollmentStatus}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        {selectedStudent && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-10">
+    <div className="bg-white w-full md:w-3/4 lg:w-2/3 xl:w-1/2 h-[90%] rounded-lg shadow-lg relative overflow-hidden"
+    style={{
+      marginLeft: '250px', // Adjust this value based on the sidebar's width
+    }}
+    >
+      {/* Close Button */}
+      <button
+        className="absolute top-4 right-4 text-gray-500 hover:text-red-500"
+        onClick={() => {
+          setSelectedStudent(null);
+          setPersonalInfo(null);
+        }}
+      >
+        ✕
+      </button>
+
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-green-500 p-6 text-white">
+        <h2 className="text-2xl font-semibold">Student Details</h2>
+        <p className="text-sm opacity-90">Manage and review information for {selectedStudent.full_name}</p>
+      </div>
+
+      {/* Tab Navigation */}
+      <div className="flex justify-between bg-gray-100 px-6 py-3 border-b">
+        {['General Info', 'Personal Info', 'Additional Info'].map((tab, index) => (
+          <button
+            key={index}
+            className={`px-4 py-2 rounded-t-md ${
+              activeTab === tab ? 'bg-white border-t-2 border-blue-500 text-blue-500 font-bold' : 'text-gray-500'
+            }`}
+            onClick={() => setActiveTab(tab)}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab Content */}
+      <div className="p-6 overflow-y-auto h-[calc(100%-150px)]">
+        {activeTab === 'General Info' && (
+          <>
+            <h3 className="text-xl font-semibold mb-4">General Information</h3>
+            <p className="mb-2"><strong>ID:</strong> {selectedStudent.student_id}</p>
+            <p className="mb-2"><strong>Full Name:</strong> {selectedStudent.full_name}</p>
+            <p className="mb-2"><strong>Student Type:</strong> {selectedStudent.student_type}</p>
+            <p className="mb-2">
+              <strong>Program:</strong> {selectedStudent.program_id === 1 ? "BSCS" : "BSIT"}
+            </p>
+            <p className="mb-2"><strong>Semester:</strong> {getSemesterLabel(selectedStudent.semester)}</p>
+            <p className="mb-2"><strong>Status:</strong> {selectedStudent.status}</p>
+          </>
         )}
 
-        {/* Table for Enrolled and Graduated Students */}
-        {(activeTab === 'Enrolled' || activeTab === 'Graduated') && (
-          <div className="overflow-x-auto">
-            <table className="min-w-full table-auto border-collapse">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th className="px-4 py-2 text-left border border-gray-300">Student Name</th>
-                  <th className="px-4 py-2 text-left border border-gray-300">Email</th>
-                  <th className="px-4 py-2 text-left border border-gray-300">Phone</th>
-                  <th className="px-4 py-2 text-left border border-gray-300">Address</th>
-                  <th className="px-4 py-2 text-left border border-gray-300">Year</th>
-                  <th className="px-4 py-2 text-left border border-gray-300">Section</th>
-                  <th className="px-4 py-2 text-left border border-gray-300">Course</th>
-                  <th className="px-4 py-2 text-left border border-gray-300">Enrollment Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(activeTab === 'Enrolled' ? filteredEnrolled : filteredGraduated).map((student) => (
-                  <tr key={student.id} className="hover:bg-gray-100">
-                    <td className="px-4 py-2 border border-gray-300">{student.name}</td>
-                    <td className="px-4 py-2 border border-gray-300">{student.email}</td>
-                    <td className="px-4 py-2 border border-gray-300">{student.phone}</td>
-                    <td className="px-4 py-2 border border-gray-300">{student.address}</td>
-                    <td className="px-4 py-2 border border-gray-300">{student.year}</td>
-                    <td className="px-4 py-2 border border-gray-300">{student.section}</td>
-                    <td className="px-4 py-2 border border-gray-300">{student.course}</td>
-                    <td className="px-4 py-2 border border-gray-300">{student.enrollmentStatus}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        {activeTab === 'Personal Info' && personalInfo ? (
+          <>
+            <h3 className="text-xl font-semibold mb-4">Personal Information</h3>
+            <p><strong>Enrollment ID:</strong> {personalInfo.enrollment_id}</p>
+            <p><strong>Given Name:</strong> {personalInfo.givenName}</p>
+            <p><strong>Family Name:</strong> {personalInfo.familyName}</p>
+            <p><strong>Middle Name:</strong> {personalInfo.middleName}</p>
+            <p><strong>Date of Birth:</strong> {personalInfo.dob}</p>
+            <p><strong>Contact Number:</strong> {personalInfo.contactNumber}</p>
+            <p>
+              <strong>Address:</strong> {personalInfo.houseNumber} {personalInfo.streetAddress}, 
+              {personalInfo.municipality}, {personalInfo.province}, {personalInfo.zipCode}, 
+              {personalInfo.country}
+            </p>
+          </>
+        ) : (
+          activeTab === 'Personal Info' && <p className="text-gray-500">Loading personal information...</p>
         )}
+
+        {activeTab === 'Additional Info' && (
+          <>
+            <h3 className="text-xl font-semibold mb-4">Additional Information</h3>
+            <p className="mb-2 text-gray-500 italic">This section can contain custom data about the student, such as academic achievements, extracurricular activities, or disciplinary actions.</p>
+          </>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="bg-gray-100 p-4 border-t flex justify-end">
+        <button
+          className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+          onClick={() => {
+            setSelectedStudent(null);
+            setPersonalInfo(null);
+          }}
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
       </div>
     </div>
   );
 };
 
-export default StudentInformation;
+export default StudentInformations;

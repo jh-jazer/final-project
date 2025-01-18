@@ -38,8 +38,8 @@ const EmployeeProfile = () => {
   };
 
   return (
-    <div className="p-8 bg-green-500 min-h-screen">
-      <div className="bg-white shadow-lg rounded-lg p-6 max-w-4xl mx-auto">
+    <div className="p-8 bg-gradient-to-r from-green-800 to-green-500 min-h-screen">
+      <div className="bg-white shadow-lg rounded-lg p-6 mx-auto max-w-7xl">
         
           <div>
             <h1 className="display-column text-3xl md:text-3xl xs:text-3xl xs:text-left sm:text-left sm:text-3xl font-semibold text-gray-800">{employee.full_name}</h1>

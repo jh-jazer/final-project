@@ -160,7 +160,7 @@ const EmployeeAccountManagement = () => {
   );
 
   return (
-    <div className="p-6 bg-green-500 min-h-screen">
+    <div className="p-6 bg-gradient-to-r from-green-800 to-green-500 min-h-screen">
       <div className="bg-white shadow-lg rounded-lg p-6 mx-auto max-w-7xl">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">Employee Accounts</h2>
         {statusMessage && <div className="mb-4 text-center text-red-600">{statusMessage}</div>}
@@ -205,7 +205,6 @@ const EmployeeAccountManagement = () => {
               <th className="px-4 py-2 text-left">Employee Type</th>
               <th className="px-4 py-2 text-left">Email</th>
               <th className="px-4 py-2 text-left">Phone</th>
-              <th className="px-4 py-2 text-left">Status</th>
               <th className="px-4 py-2 text-left">Actions</th>
             </tr>
           </thead>
@@ -218,7 +217,6 @@ const EmployeeAccountManagement = () => {
                   <td className="px-4 py-2">{employee.employee_type}</td>
                   <td className="px-4 py-2">{employee.email}</td>
                   <td className="px-4 py-2">{employee.phone_number}</td>
-                  <td className="px-4 py-2">{employee.status}</td>
                   <td className="px-4 py-2">
                     <button
                       className="px-4 py-2 bg-yellow-500 text-white rounded-md"

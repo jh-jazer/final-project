@@ -28,8 +28,14 @@ const ManageApplication = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const applicationsPerPage = 25;
   const [showPassword, setShowPassword] = useState(false);
-    const [semesterOptions, setSemesterOptions] = useState([]);
-    const [loading, setLoading] = useState(false);
+  const [semesterOptions, setSemesterOptions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('General');
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [enrollmentInfo, setEnrollmentInfo] = useState(null); // State for personal info
+  const [personalInfo, setPersonalInfo] = useState(null); // State for personal info
+  const [familyInfo, setFamilyInfo] = useState(null); // State for family info
+  const [educationalInfo, setEducationalInfo] = useState(null); // State for family info
     const [formData, setFormData] = useState({
       student_id: '',
       full_name: '',
@@ -43,6 +49,128 @@ const ManageApplication = () => {
       password: '',
       enrollment_id: '', // Added enrollment_id field
     });
+
+    
+  // Full names mapping for display
+  const fullNames = {
+    als: "Alternative Learning System (ALS) Passer",
+    foreign: "Foreign Undergraduate Student Applicant",
+    shs: "Senior High School Graduate",
+    grade12: "Currently Enrolled Grade 12 Student",
+    bachelors: "Bachelor's Degree Graduate",
+    transferee: "Transferee",
+    stem: "Science, Technology, Engineering, and Mathematics (STEM)",
+    abm: "Accountancy, Business, and Management (ABM)",
+    humss: "Humanities and Social Sciences (HUMSS)",
+    gas: "General Academic Strand (GAS)",
+    afa: "Agri-Fishery Arts (AFA)",
+    he: "Home Economics (HE)",
+    ia: "Industrial Arts (IA)",
+    ict: "Information and Communications Technology (ICT)",
+    ad: "Arts and Design",
+    sports: "Sports",
+    it: "Bachelor of Science in Information Technology",
+    cs: "Bachelor of Science in Computer Science",
+  };
+
+  // Rewrite getSemesterLabel to use the semesterMapping
+const getFullName = (Value) => {
+  return fullNames[Value] || 'Unknown Semester';
+};
+
+    
+  const handleRowClick = (application) => {
+    setSelectedStudent(application);
+    if (application.enrollment_id) {
+      // Fetch both Personal Info and Family Info when a student is selected
+      fetchEnrollmentInfo(application.enrollment_id);
+      fetchPersonalInfo(application.enrollment_id);
+      fetchFamilyInfo(application.enrollment_id);
+      fetchEducationalInfo(application.enrollment_id);
+
+    }
+  };
+  
+  const fetchPersonalInfo = async (enrollment_id) => {
+    try {
+      const response = await fetch(
+        `https://cvsu-backend-system.vercel.app/api/getPersonalInfo?enrollment_id=${enrollment_id}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch personal data");
+      }
+  
+      const data = await response.json();
+  
+      // Format date fields if present
+      const formattedData = {
+        ...data,
+        dob: data.dob ? formatDateForInput(data.dob) : "",
+      };
+  
+      setPersonalInfo(formattedData);
+    } catch (error) {
+      console.error("Error fetching personal data:", error);
+      setPersonalInfo(null); // Clear previous data on error
+    }
+  };
+
+  
+  const fetchEnrollmentInfo = async (enrollment_id) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5005/api/getEnrollmentInfo?enrollment_id=${enrollment_id}`
+      );
+      if (!response.ok) {
+        throw new Error('Failed to fetch family information');
+      }
+  
+      const data = await response.json();
+  
+      setEnrollmentInfo(data); // Store the fetched family information
+    } catch (error) {
+      console.error("Error fetching family info:", error);
+      setEnrollmentInfo(null); // Clear previous data on error
+    }
+  };
+  
+  const fetchFamilyInfo = async (enrollment_id) => {
+    try {
+      const response = await fetch(
+        `https://cvsu-backend-system.vercel.app/api/getFamilyInfo?enrollment_id=${enrollment_id}`
+      );
+      if (!response.ok) {
+        throw new Error('Failed to fetch family information');
+      }
+  
+      const data = await response.json();
+  
+      setFamilyInfo(data); // Store the fetched family information
+    } catch (error) {
+      console.error("Error fetching family info:", error);
+      setFamilyInfo(null); // Clear previous data on error
+    }
+  };
+
+  const fetchEducationalInfo = async (enrollment_id) => {
+    try {
+      const response = await fetch(
+        `https://cvsu-backend-system.vercel.app/api/getEducationInfo?enrollment_id=${enrollment_id}`
+      );
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch family information');
+      }
+  
+      const data = await response.json();
+  
+      setEducationalInfo(data); // Store the fetched family information
+    } catch (error) {
+      console.error("Error fetching family info:", error);
+      setEducationalInfo(null); // Clear previous data on error
+    }
+  };
+  
     
 
         // Toggle password visibility
@@ -66,23 +194,45 @@ const ManageApplication = () => {
         setLoading(false);
 
       };
-      const openModal = (enrollment_id) => {
-        // Initialize form for adding a new student
-        setFormData({
-          student_id: '',
-          full_name: '',
-          student_type: '',
-          program_id: '', // Set program_id to an empty string
-          email: '',
-          semester: '',
-          dob: '',
-          class_section: '',
-          status: '',
-          password: '',
-          enrollment_id: enrollment_id, // Added enrollment_id field
-        });
-        setModalOpen(true); // Open the modal
-      };
+
+    const openModal = async (enrollment_id) => {
+  try {
+    // Fetch student personal info based on the enrollment_id
+    const response = await fetch(
+      `https://cvsu-backend-system.vercel.app/api/getPersonalInfo?enrollment_id=${enrollment_id}`
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch student personal info');
+    }
+
+    const data = await response.json();
+
+    // Construct the full name from the response
+    const fullName = `${data.familyName}, ${data.givenName} ${data.middleName || ''}`.trim();
+
+    // Initialize form with fetched full name and enrollment_id
+    setFormData({
+      student_id: '',
+      full_name: fullName, // Set the full name from the fetched data
+      student_type: '',
+      program_id: '', // Set program_id to an empty string
+      email: '',
+      semester: '',
+      dob: '',
+      class_section: '',
+      status: '',
+      password: '',
+      enrollment_id: enrollment_id, // Keep the enrollment_id
+    });
+
+    setModalOpen(true); // Open the modal
+  } catch (error) {
+    console.error('Error fetching personal info:', error);
+    // Optionally display an error message or handle the error as needed
+  }
+};
+
       
         useEffect(() => {
           fetchApplications();
@@ -142,6 +292,11 @@ const ManageApplication = () => {
         setSemesterOptions([]); // Clear options if no program_id is selected
       }
     }, [formData.program_id]);
+
+    const formatDateForInput = (dateString) => {
+      const date = new Date(dateString);
+      return date.toISOString().split("T")[0]; // Format date as YYYY-MM-DD
+    };
     
 
   const handleSave = async () => {
@@ -287,7 +442,10 @@ const ManageApplication = () => {
           </thead>
             <tbody>
               {paginateApplications(filteredApplications).map((application) => (
-                <tr key={application.id} className="hover:bg-gray-100">
+                <tr key={application.id} 
+                className="border-b hover:bg-gray-100 cursor-pointer"
+                onClick={() => handleRowClick(application)}
+                >
                   <td className="px-4 py-2 border border-gray-300">{application.enrollment_id}</td>
                   {['docs_verification', 'eval_assessment', 'docs_submission', 'society_payment'].map(
                     (field) => (
@@ -296,6 +454,7 @@ const ManageApplication = () => {
                           <select
                             value={editedFields[field] || ''}
                             onChange={(e) => handleFieldChange(field, e.target.value)}
+                            onClick={(e) => e.stopPropagation()} // Prevent row click
                             className="p-2 border border-gray-300 rounded-md"
                           >
                             <option value="pending">Pending</option>
@@ -307,42 +466,52 @@ const ManageApplication = () => {
                       </td>
                     )
                   )}
-                  <td className="px-4 py-2 border border-gray-300">
-                    {editingId === application.id ? (
-                      <button
-                        onClick={handleSave}
-                        className="bg-blue-500 text-white px-4 py-1 rounded-md"
-                      >
-                        Save
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleEdit(application)}
-                        className="bg-yellow-500 text-white px-4 py-1 rounded-md"
-                      >
-                        Edit
-                      </button>
-                    )}
-                    <button
-                      onClick={() => openModal(application.enrollment_id)}
-                      disabled={
-                        application.docs_verification !== 'approved' ||
-                        application.eval_assessment !== 'approved' ||
-                        application.docs_submission !== 'approved' ||
-                        application.society_payment !== 'approved'
-                      }
-                      className={`ml-2 px-4 py-1 rounded-md ${
-                        application.docs_verification === 'approved' &&
-                        application.eval_assessment === 'approved' &&
-                        application.docs_submission === 'approved' &&
-                        application.society_payment === 'approved'
-                          ? 'bg-green-500 text-white'
-                          : 'bg-gray-400 text-gray-700 cursor-not-allowed'
-                      }`}
-                    >
-                      Enroll
-                    </button>
-                  </td>
+                <td className="px-4 py-2 border border-gray-300">
+  {editingId === application.id ? (
+    <button
+      onClick={(e) => {
+        e.stopPropagation(); // Prevent the row's onClick
+        handleSave();
+      }}
+      className="bg-blue-500 text-white px-4 py-1 rounded-md"
+    >
+      Save
+    </button>
+  ) : (
+    <button
+      onClick={(e) => {
+        e.stopPropagation(); // Prevent the row's onClick
+        handleEdit(application);
+      }}
+      className="bg-yellow-500 text-white px-4 py-1 rounded-md"
+    >
+      Edit
+    </button>
+  )}
+  <button
+    onClick={(e) => {
+      e.stopPropagation(); // Prevent the row's onClick
+      openModal(application.enrollment_id);
+    }}
+    disabled={
+      application.docs_verification !== 'approved' ||
+      application.eval_assessment !== 'approved' ||
+      application.docs_submission !== 'approved' ||
+      application.society_payment !== 'approved'
+    }
+    className={`ml-2 px-4 py-1 rounded-md ${
+      application.docs_verification === 'approved' &&
+      application.eval_assessment === 'approved' &&
+      application.docs_submission === 'approved' &&
+      application.society_payment === 'approved'
+        ? 'bg-green-500 text-white'
+        : 'bg-gray-400 text-gray-700 cursor-not-allowed'
+    }`}
+  >
+    Enroll
+  </button>
+</td>
+
                 </tr>
               ))}
             </tbody>
@@ -530,6 +699,201 @@ const ManageApplication = () => {
             Next
           </button>
         </div>
+
+
+        {/* Student Detail Modal */}
+        {selectedStudent && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-10">
+            <div className="bg-white w-full md:w-3/4 lg:w-2/3 xl:w-1/2 h-[90%] rounded-lg shadow-lg relative overflow-hidden"
+              style={{ marginLeft: '250px' }}> {/* Adjust this value based on the sidebar's width */}
+              {/* Close Button */}
+              <button
+                className="absolute top-4 right-4 text-gray-500 hover:text-red-500"
+                onClick={() => {
+                  setSelectedStudent(null);
+                  setPersonalInfo(null);
+                }}
+              >
+                ✕
+              </button>
+
+              {/* Header */}
+              <div className="bg-gradient-to-r from-blue-600 to-green-500 p-6 text-white">
+                <h2 className="text-2xl font-semibold">Student Details</h2>
+                <p className="text-sm opacity-90">Manage and review information for {selectedStudent.full_name}</p>
+              </div>
+
+              {/* Tab Navigation */}
+              <div className="flex justify-between bg-gray-100 px-6 py-3 border-b">
+                {['General', 'Personal', 'Family', 'Educational', 'Documents'].map((tab, index) => (
+                  <button
+                    key={index}
+                    className={`px-4 py-2 rounded-t-md ${activeTab === tab ? 'bg-white border-t-2 border-blue-500 text-blue-500 font-bold' : 'text-gray-500'}`}
+                    onClick={() => setActiveTab(tab)}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+
+              {/* Tab Content */}
+              <div className="p-6 overflow-y-auto h-[calc(100%-150px)]">
+
+                {activeTab === 'General' && enrollmentInfo ? (
+
+                  <>
+                  <h3 className="text-2xl font-semibold text-gray-800 text-center mb-6">General Information</h3>
+                  <div className="grid grid-cols-1 text-center gap-6">
+                    <div className="bg-white p-4 rounded-lg shadow-md">
+                      <p className="mb-2 text-gray-700"><strong>Enrollment ID:</strong> {enrollmentInfo.enrollment_id}</p>
+                      <p className="mb-2 text-gray-700"><strong>Applicant Type:</strong> {getFullName(enrollmentInfo.applicant_type)}</p>
+                      <p className="mb-2 text-gray-700"><strong>Email:</strong> {enrollmentInfo.email}</p>
+                      <p className="mb-2 text-gray-700"><strong>Preferred Program :</strong> {enrollmentInfo.preferred_program}</p>
+                      <p className="mb-2 text-gray-700"><strong>Senior High Track:</strong> {enrollmentInfo.senior_high_track}</p>
+                      <p className="mb-2 text-gray-700"><strong>Strand:</strong> {getFullName(enrollmentInfo.strand)}</p>
+                    </div>
+                  </div>
+                </>
+                
+              ) : (
+                activeTab === 'General' && <p className="text-gray-500">Loading personal information...</p>
+              )}
+
+                {activeTab === 'Personal' && personalInfo ? (
+                 <>
+                 <h3 className="text-2xl font-semibold text-gray-800 text-center mb-6">Personal Information</h3>
+                 <div className="grid grid-cols-1 text-center  gap-6">
+                   <div className="bg-white p-4 rounded-lg shadow-md">
+                     <p className="mb-2 text-gray-700"><strong>Full Name:</strong> {personalInfo.familyName}, {personalInfo.givenName} {personalInfo.middleName}</p>
+                     <p className="mb-2 text-gray-700"><strong>LRN:</strong> {personalInfo.lrn}</p>
+                     <p className="mb-2 text-gray-700"><strong>Sex</strong> {personalInfo.sex}</p>
+                     <p className="mb-2 text-gray-700"><strong>Birthday:</strong> {personalInfo.dob}</p>
+                     <p className="mb-2 text-gray-700"><strong>Civil Status:</strong> {personalInfo.civilStatus}</p>
+                     <p className="mb-2 text-gray-700"><strong>Religion:</strong> {personalInfo.religion}</p>
+                     <p className="mb-2 text-gray-700"><strong>Contact Number:</strong> {personalInfo.contactNumber}</p>
+                     <p className="mb-2 text-gray-700">
+                       <strong>Address:</strong> {personalInfo.houseNumber} {personalInfo.streetAddress},
+                       {personalInfo.municipality}, {personalInfo.province}, {personalInfo.zipCode},
+                       {personalInfo.country}
+                     </p>
+                   </div>
+                 </div>
+               </>
+               
+                ) : (
+                  activeTab === 'Personal' && <p className="text-gray-500">Loading personal information...</p>
+                )}
+
+                    {activeTab === 'Family' && familyInfo ? (
+                      <>
+                        <h3 className="text-xl font-semibold text-center mb-4">Family Information</h3>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {/* Father Information */}
+                          <div className="bg-white p-4 rounded-lg shadow-md">
+                            <p className="mb-2 text-gray-700"><strong>Father's Name:</strong> {familyInfo.fatherName || "Not provided"}</p>
+                            <p className="mb-2 text-gray-700"><strong>Father's Occupation:</strong> {familyInfo.fatherOccupation || "Not provided"}</p>
+                            <p className="mb-2 text-gray-700"><strong>Father's Contact:</strong> {familyInfo.fatherContact || "Not provided"}</p>
+                            <p className="mb-2 text-gray-700"><strong>Is Father Not Applicable:</strong> {familyInfo.isFatherNotApplicable ? "Yes" : "No"}</p>
+                          </div>
+
+                          {/* Mother Information */}
+                          <div className="bg-white p-4 rounded-lg shadow-md">
+                            <p className="mb-2 text-gray-700"><strong>Mother's Name:</strong> {familyInfo.motherName || "Not provided"}</p>
+                            <p className="mb-2 text-gray-700"><strong>Mother's Occupation:</strong> {familyInfo.motherOccupation || "Not provided"}</p>
+                            <p className="mb-2 text-gray-700"><strong>Mother's Contact:</strong> {familyInfo.motherContact || "Not provided"}</p>
+                            <p className="mb-2 text-gray-700"><strong>Is Mother Not Applicable:</strong> {familyInfo.isMotherNotApplicable ? "Yes" : "No"}</p>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                          {/* Guardian Information */}
+                          <div className="bg-white p-4 rounded-lg shadow-md">
+                            <p className="mb-2 text-gray-700"><strong>Guardian's Name:</strong> {familyInfo.guardianName || "Not provided"}</p>
+                            <p className="mb-2 text-gray-700"><strong>Guardian's Occupation:</strong> {familyInfo.guardianOccupation || "Not provided"}</p>
+                            <p className="mb-2 text-gray-700"><strong>Guardian's Contact:</strong> {familyInfo.guardianContact || "Not provided"}</p>
+                          </div>
+
+                          {/* Siblings Information */}
+                          <div className="bg-white p-4 rounded-lg shadow-md">
+                            <p className="mb-2 text-gray-700"><strong>Number of Siblings:</strong> {familyInfo.numOfSiblings || "Not provided"}</p>
+                            <p className="mb-2 text-gray-700"><strong>Family's Annual Income:</strong> {familyInfo.familyIncome || "Not provided"}</p>
+                          </div>
+                        </div>
+
+                      </>
+                    ) : (
+                      activeTab === 'Family' && <p className="text-gray-500">Loading family information...</p>
+                    )}
+
+
+                  {activeTab === 'Educational' && educationalInfo ? (
+                    <>
+                      <h3 className="text-xl font-semibold mb-4">Educational Information</h3>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Elementary School Information */}
+                        <div className="bg-white p-4 rounded-lg shadow-md">
+                          <p className="mb-2 text-gray-700"><strong>Elementary School Name:</strong> {educationalInfo.elementarySchoolName || "Not provided"}</p>
+                          <p className="mb-2 text-gray-700"><strong>Elementary School Address:</strong> {educationalInfo.elementarySchoolAddress || "Not provided"}</p>
+                          <p className="mb-2 text-gray-700"><strong>Elementary School Year Graduated:</strong> {educationalInfo.elementarySchoolYearGraduated || "Not provided"}</p>
+                        </div>
+
+                        {/* High School Information */}
+                        <div className="bg-white p-4 rounded-lg shadow-md">
+                          <p className="mb-2 text-gray-700"><strong>High School Name:</strong> {educationalInfo.highSchoolName || "Not provided"}</p>
+                          <p className="mb-2 text-gray-700"><strong>High School Address:</strong> {educationalInfo.highSchoolAddress || "Not provided"}</p>
+                          <p className="mb-2 text-gray-700"><strong>High School Year Graduated:</strong> {educationalInfo.highSchoolYearGraduated || "Not provided"}</p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                        {/* Senior High School Information */}
+                        <div className="bg-white p-4 rounded-lg shadow-md">
+                          <p className="mb-2 text-gray-700"><strong>Senior High School Name:</strong> {educationalInfo.seniorHighSchoolName || "Not provided"}</p>
+                          <p className="mb-2 text-gray-700"><strong>Senior High School Address:</strong> {educationalInfo.seniorHighSchoolAddress || "Not provided"}</p>
+                          <p className="mb-2 text-gray-700"><strong>Senior High School Year Graduated:</strong> {educationalInfo.seniorHighSchoolYearGraduated || "Not provided"}</p>
+                        </div>
+
+                        {/* College Information */}
+                        <div className="bg-white p-4 rounded-lg shadow-md">
+                          <p className="mb-2 text-gray-700"><strong>College Name:</strong> {educationalInfo.collegeName || "Not provided"}</p>
+                          <p className="mb-2 text-gray-700"><strong>College Address:</strong> {educationalInfo.collegeAddress || "Not provided"}</p>
+                          <p className="mb-2 text-gray-700"><strong>College Year Graduated:</strong> {educationalInfo.collegeYearGraduated || "Not provided"}</p>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    activeTab === 'Educational' && <p className="text-gray-500">Loading educational information...</p>
+                  )}
+
+
+
+                {activeTab === 'Documents' && (
+                  <>
+                    <h3 className="text-xl font-semibold mb-4">Additional Information</h3>
+                    <p className="mb-2 text-gray-500 italic">This section can contain custom data about the student, such as academic achievements, extracurricular activities, or disciplinary actions.</p>
+                  </>
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="bg-gray-100 p-4 border-t flex justify-end">
+                <button
+                  className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                  onClick={() => {
+                    setSelectedStudent(null);
+                    setPersonalInfo(null);
+                  }}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+
       </div>
     </div>
   );

@@ -62,6 +62,51 @@ const testDatabaseConnection = async () => {
 };
 
 testDatabaseConnection();
+
+
+// Define the endpoint to get enrollment info by enrollment_id
+app.get('/api/getEnrollmentInfo', async (req, res) => {
+  const { enrollment_id } = req.query;
+
+  // Validate required field
+  if (!enrollment_id) {
+    return res.status(400).json({ error: 'Enrollment ID is required' });
+  }
+
+  try {
+    // SQL query to fetch enrollment information
+    const query = `
+      SELECT 
+        id,
+        email, 
+        enrollment_id, 
+        applicant_type, 
+        preferred_program, 
+        strand, 
+        senior_high_track, 
+        created_at
+      FROM enrollments
+      WHERE enrollment_id = ?;
+    `;
+
+    // Execute query and get results
+    const [rows] = await db.execute(query, [enrollment_id]);
+
+    // Handle case where no records are found
+    if (rows.length === 0) {
+      console.log(`No enrollment info found for enrollment_id: ${enrollment_id}`);
+      return res.status(404).json({ error: 'Enrollment info not found' });
+    }
+
+    // Respond with the fetched data
+    res.json(rows[0]);
+  } catch (err) {
+    console.error('Database error:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
+
 app.post('/api/update-student-semester', async (req, res) => {
   const { student_id } = req.body;  // Only student_id is required from the frontend
 

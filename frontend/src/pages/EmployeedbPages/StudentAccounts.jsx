@@ -186,8 +186,8 @@ const getSemesterLabel = (semesterValue) => {
     payload.dob = formattedDob;
   
     const url = isEditing
-      ? `http://localhost:5005/api/students/${formData.student_id}` // Use student ID for update
-      : 'http://localhost:5005/api/students'; // Use POST for new students
+      ? `https://cvsu-backend-system.vercel.app/api/students/${formData.student_id}` // Use student ID for update
+      : 'https://cvsu-backend-system.vercel.app/api/students'; // Use POST for new students
     const method = isEditing ? 'PUT' : 'POST'; // Use PUT for updates, POST for new student
   
     try {

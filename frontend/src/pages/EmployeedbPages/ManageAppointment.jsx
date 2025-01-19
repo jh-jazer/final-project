@@ -23,7 +23,7 @@ const Appointments = () => {
   // Fetch all appointments data from the backend
   const fetchAppointments = async () => {
     try {
-      const response = await fetch('http://localhost:5005/api/appointments');
+      const response = await fetch('https://cvsu-backend-system.vercel.app/api/appointments');
       if (!response.ok) {
         throw new Error('Failed to fetch appointments');
       }

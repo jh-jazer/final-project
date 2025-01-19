@@ -1654,10 +1654,19 @@ app.post('/api/login', async (req, res) => {
 
   try {
     // Check the students table first
-    const [studentResults] = await db.query('SELECT * FROM students inner join enrollments on students.enrollment_id = enrollments.enrollment_id WHERE student_id = ?', [login_id]);
+    const [studentResults] = await db.query(
+      'SELECT * FROM students INNER JOIN enrollments ON students.enrollment_id = enrollments.enrollment_id WHERE student_id = ?',
+      [login_id]
+    );
 
     if (studentResults.length > 0) {
       const student = studentResults[0];
+
+      // Check if account status is "Active"
+      if (student.status !== 'Active') {
+        return res.status(403).json({ message: 'Account is deactivated. Please contact support.' });
+      }
+
       const isPasswordCorrect = await bcrypt.compare(password, student.password);
       if (isPasswordCorrect) {
         return res.status(200).json({
@@ -1677,12 +1686,20 @@ app.post('/api/login', async (req, res) => {
     }
 
     // Check the employees table if not found in students
-    const [employeeResults] = await db.query('SELECT * FROM employees WHERE employee_id = ?', [login_id]);
+    const [employeeResults] = await db.query(
+      'SELECT * FROM employees WHERE employee_id = ?',
+      [login_id]
+    );
 
     if (employeeResults.length > 0) {
       const employee = employeeResults[0];
+
+      // Check if account status is "Active"
+      if (employee.status !== 'Active') {
+        return res.status(403).json({ message: 'Account is deactivated. Please contact support.' });
+      }
+
       const isPasswordCorrect = await bcrypt.compare(password, employee.password);
-      
       if (isPasswordCorrect) {
         return res.status(200).json({
           message: 'Login successful',
@@ -1692,7 +1709,6 @@ app.post('/api/login', async (req, res) => {
             role: 'Employee',
             type: employee.employee_type,
             other: employee.email,
-
           },
         });
       } else {
@@ -1702,12 +1718,12 @@ app.post('/api/login', async (req, res) => {
 
     // If login_id is not found in either table
     return res.status(404).json({ message: 'User not found.' });
-
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 
 // Verify the email server is ready to send emails

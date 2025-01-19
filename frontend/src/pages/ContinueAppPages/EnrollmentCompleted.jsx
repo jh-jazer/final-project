@@ -106,7 +106,7 @@ const EnrollmentCompletion = () => {
         <h1 className="text-4xl font-extrabold text-[#003d1f] px-5">Enrollment Completion</h1>
       
         <button
-          onClick={() => handleFirstClick('/document-submission')}
+          onClick={() => handleFirstClick('/createapplication')}
           className={`absolute right-0 top-1/2 transform -translate-y-1/2 text-[#4f7c4f] hover:text-green-800 transition-all ${
             isNextButtonDisabled ? 'opacity-50 cursor-not-allowed' : ''
           }`}

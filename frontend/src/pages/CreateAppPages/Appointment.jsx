@@ -215,21 +215,19 @@ const Appointment = () => {
   return (
     <div 
     ref={divRef}
-    className="w-full min-h-screen bg-white p-8 pt-12 shadow-xl rounded-lg flex flex-col"
-    >
+    className="w-full h-auto bg-gradient-to-r from-green-50 to-green-100 p-8 pt-12 shadow-xl rounded-lg flex flex-col justify-between"    >
       {successMessage && (
         <div 
-        
         className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
           {successMessage}
         </div>
       )}
 
       {/* Header Section */}
-      <div className="relative text-center my-10">
+      <div className="relative text-center mb-10">
       <button 
             onClick={() => handleSecondClick('/requirements')}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2text-[#345e34] hover:text-green-900">
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 text-green-600 hover:text-green-900">
             <svg 
             xmlns="http://www.w3.org/2000/svg" 
             className="w-8 h-8" 
@@ -239,11 +237,12 @@ const Appointment = () => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-        <h1 className="text-3xl font-extrabold text-[#001800]">Schedule Appointment</h1>
+          <h1 className="text-4xl font-extrabold text-green-800">
+          Schedule Appointment</h1>
         
         <button
           onClick={() => handleFirstClick('/document-verification')}
-          className={`absolute right-0 top-1/2 transform -translate-y-1/2 text-[#345e34] hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+          className={`absolute right-0 top-1/2 transform -translate-y-1/2  text-green-600 hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
           disabled={isNextButtonDisabled}
          >
           <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -252,8 +251,8 @@ const Appointment = () => {
         </button>
           
       </div>
-
-      <div className="appointment-form-container min-h-screen">
+      <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="appointment-form-container">
         <div className="bg-gray-800 text-white px-4 rounded pt-3 pb-6 mb-3">
           <h3 className="text-lg font-bold mb-2">Directions</h3>
           <ul className="list-disc pl-6">
@@ -262,13 +261,16 @@ const Appointment = () => {
           </ul>
         </div>
 
-      <div className="appointment-form-container">
-        {isExistingAppointment ? (
-          <div className="bg-yellow-100 text-yellow-700 px-4 py-3 rounded mb-4">
-          You already have an appointment scheduled for {new Date(formData.scheduled_date).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
+        <div className="appointment-form-container">
+
+  {isExistingAppointment ? (
+    <div className="bg-yellow-100 text-yellow-700 px-6 py-4 rounded-lg shadow-md border border-yellow-300 mb-6 flex flex-col items-center">
+      <h2 className="text-xl font-bold mb-2 text-center">Appointment Scheduled</h2>
+        You already have an appointment scheduled for{" "}
+          {new Date(formData.scheduled_date).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
           })} at {formData.time_period}. Please contact support to make changes.
         </div>
         
@@ -329,7 +331,10 @@ const Appointment = () => {
             
           </form>
           
+          
         )}
+              </div>
+
       </div>
       </div>
 

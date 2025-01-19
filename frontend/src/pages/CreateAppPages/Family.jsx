@@ -257,7 +257,7 @@ const Family = () => {
   return (
     <div 
     ref={divRef}
-    className="w-full min-h-screen bg-white p-8 pt-12 shadow-xl rounded-lg flex flex-col"
+    className="w-full min-h-screen bg-gradient-to-r from-green-50 to-green-100 p-8 pt-12 shadow-xl rounded-lg flex flex-col justify-between"
     >
       {successMessage && (
         <div 
@@ -268,21 +268,22 @@ const Family = () => {
       )}
 
       {/* Header Section */}
-      <div className="relative text-center my-10">
+      <div className="relative text-center mb-10">
           <button 
             onClick={() => handleSecondClick('/personal')}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 text-[#345e34] hover:text-green-900">
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 text-green-600 hover:text-green-900">
             <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
         
-        <h1 className="text-3xl font-extrabold text-[#001800]">Family Information</h1>
+        <h1 className="text-4xl font-extrabold text-green-800">
+          Family Information</h1>
         
         <button
            onClick={() => handleFirstClick('/education')}
-          className={`absolute right-0 top-1/2 transform -translate-y-1/2 text-[#345e34] hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
-          disabled={isNextButtonDisabled}
+           className={`absolute right-0 top-1/2 transform -translate-y-1/2  text-green-600 hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+           disabled={isNextButtonDisabled}
          >
           <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -293,16 +294,11 @@ const Family = () => {
 
 
       {/* Form Section */}
-      <div>
-             <h5 className="text-2xl font-extrabold text-[#001800] mb-6 text-left pl-11 pb-5">
-             Father's Information
-             </h5>
-          </div>
-        {/* Father's Information */}
-        <div>
-
-        <div className="mx-11 mb-6">
-            <label htmlFor="isFatherNotApplicable" className="flex items-center text-lg cursor-pointer">
+      <div className="bg-white rounded-lg shadow-lg p-6">
+      <h5 className="text-3xl font-extrabold text-[#001800] mb-3 text-left pb-5">
+      Father's Information
+        <label htmlFor="isFatherNotApplicable"
+            className="flex items-center text-lg cursor-pointer">
               <input
                 type="checkbox"
                 id="isFatherNotApplicable"
@@ -313,6 +309,8 @@ const Family = () => {
               />
               Not Applicable
             </label>
+             </h5>     
+           
           <div className="form-group text-lg font-sans text-gray-600">
             <label htmlFor="fatherName" className='text-gray-600 text-lg font-semibold'>Father's Name*</label>
             <input
@@ -355,13 +353,16 @@ const Family = () => {
             />
             {errors.fatherContact && <p className="text-red-500 text-sm">{errors.fatherContact}</p>}
           </div>
+        
         </div>
+        <hr className="my-11 border-t-2 border-gray-700" />
 
+        <div className="bg-white rounded-lg shadow-lg p-6">
         {/* Mother's Information */}
-        <div className="mx-11 mb-6">
-          <h5 className="text-2xl font-extrabold text-[#001800] mb-6 text-left pt-7">
-            Mother's Information
-            <label htmlFor="isMotherNotApplicable" className="flex items-center text-lg cursor-pointer">
+        <h5 className="text-3xl font-extrabold text-[#001800] mb-3 text-left pb-5">
+        Mother's Information
+            <label htmlFor="isMotherNotApplicable" 
+            className="flex items-center text-lg cursor-pointer">
               <input
                 type="checkbox"
                 id="isMotherNotApplicable"
@@ -416,10 +417,14 @@ const Family = () => {
             {errors.motherContact && <p className="text-red-500 text-sm">{errors.motherContact}</p>}
           </div>
         </div>
+      
+        <hr className="my-11 border-t-2 border-gray-700" />
+
+        <div className="bg-white rounded-lg shadow-lg p-6">
 
         {/* Guardian's Information */}
-        <div className="mx-11 mb-6">
-          <h5 className="text-2xl font-extrabold text-[#001800] mb-6 text-left pt-7">Guardian's Information</h5>
+        <h5 className="text-3xl font-extrabold text-[#001800] mb-3 text-left pb-5">
+        Guardian's Information</h5>
           <div className="form-group text-lg font-sans text-gray-600">
             <label htmlFor="guardianName" className="text-gray-600 text-lg font-semibold">Guardian's Name*</label>
             <input
@@ -458,11 +463,17 @@ const Family = () => {
               className="w-full mt-2 p-3 border border-gray-300 rounded-lg"
             />
             {errors.guardianContact && <p className="text-red-500 text-sm">{errors.guardianContact}</p>}
-          </div>
+        </div>
         </div>
 
+        <hr className="my-11 border-t-2 border-gray-700" />
+
+
         {/* Sibling and Family Income */}
-        <div className="mx-11 mb-6">
+        <div className="bg-white rounded-lg shadow-lg p-6"> 
+        <h5 className="text-3xl font-extrabold text-[#001800] mb-3 text-left pb-5">
+        Family Information</h5>
+
           <div className="form-group text-lg font-sans text-gray-600">
             <label htmlFor="numberOfSiblings" className='text-gray-600 text-lg font-semibold'>Number of Siblings*</label>
             <input
@@ -498,11 +509,12 @@ const Family = () => {
             {errors.familyIncome && <p className="text-red-500 text-sm">{errors.familyIncome}</p>}
           </div>
           </div>
-          </div>
+          
+
               {/* Action Buttons */}
           
-          <div className="flex justify-end gap-5 mb-5 mx-5">
-          <div className="text-left">
+              <div className="flex justify-end gap-5 mt-8">
+              <div className="text-left">
         <button
           className="px-6 py-2 bg-green-500 text-white font-bold rounded-lg hover:bg-red-700 focus:outline-none"
           onClick={(e) => {

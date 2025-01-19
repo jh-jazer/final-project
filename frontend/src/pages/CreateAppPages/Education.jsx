@@ -276,7 +276,7 @@ const Education = () => {
   return (
     <div 
     ref={divRef}
-    className="w-full min-h-screen bg-white p-8 pt-12 shadow-xl rounded-lg flex flex-col"
+    className="w-full min-h-screen bg-gradient-to-r from-green-50 to-green-100 p-8 pt-12 shadow-xl rounded-lg flex flex-col justify-between"
     >
       {successMessage && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
@@ -285,18 +285,20 @@ const Education = () => {
       )}
 
       {/* Header Section */}
-      <div className="relative text-center my-10">
+      <div className="relative text-center mb-10">
       <button 
             onClick={() => handleSecondClick('/family')}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 text-[#345e34] hover:text-green-900">
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 text-green-600 hover:text-green-900">
             <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-        <h1 className="text-3xl font-extrabold text-[#001800]">Educational Info</h1>
+          <h1 className="text-4xl font-extrabold text-green-800">
+          Educational Info</h1>
+
         <button
           onClick={() => handleFirstClick('/requirements')}
-          className={`absolute right-0 top-1/2 transform -translate-y-1/2 text-[#345e34] hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+          className={`absolute right-0 top-1/2 transform -translate-y-1/2  text-green-600 hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
           disabled={isNextButtonDisabled}
          >
           <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -307,8 +309,9 @@ const Education = () => {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Elementary School Section */}
-        <fieldset className="mx-5">
-          <legend className="text-2xl font-extrabold text-[#001800] mb-6 text-left">Elementary School</legend>
+        <fieldset>
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <legend className="text-3xl font-extrabold text-[#001800] mb-3 text-left pb-5">Elementary School</legend>
           <div className="form-group mb-4">
             <label htmlFor="elementarySchoolName" className="block text-lg font-semibold text-gray-600">Elementary School Name</label>
             <input
@@ -348,11 +351,16 @@ const Education = () => {
               />
             {errors.elementarySchoolYearGraduated && <p className="text-red-500 text-sm">{errors.elementarySchoolYearGraduated}</p>}
           </div>
+          </div>
         </fieldset>
 
+        <hr className="my-11 border-t-2 border-gray-700" />
+
         {/* High School Section */}
-        <fieldset className="mx-5">
-          <legend className="text-2xl font-extrabold text-[#001800] mb-6 text-left">High School</legend>
+        <fieldset>
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <legend className="text-3xl font-extrabold text-[#001800] mb-3 text-left pb-5">
+            High School</legend>
           <div className="form-group mb-4">
             <label htmlFor="highSchoolName" className="block text-lg font-semibold text-gray-600">High School Name</label>
             <input
@@ -393,12 +401,20 @@ const Education = () => {
               />
             {errors.highSchoolYearGraduated && <p className="text-red-500 text-sm">{errors.highSchoolYearGraduated}</p>}
           </div>
+          </div>
+
         </fieldset>
+
+        <hr className="my-11 border-t-2 border-gray-700" />
+
 
         {/* Senior High School Section */}
         
-          <fieldset className="mx-5">
-            <legend className="text-2xl font-extrabold text-[#001800] mb-6 text-left">Senior High School</legend>
+          <fieldset>
+          <div className="bg-white rounded-lg shadow-lg p-6">
+
+            <legend className="text-3xl font-extrabold text-[#001800] mb-3 text-left pb-5">
+              Senior High School</legend>
             <div className="form-group mb-4">
               <label htmlFor="seniorHighSchoolName" className="block text-lg font-semibold text-gray-600">Senior High School Name</label>
               <input
@@ -425,9 +441,10 @@ const Education = () => {
               />
               {errors.seniorHighSchoolAddress &&  <p className="text-red-500 text-sm">{errors.seniorHighSchoolAddress}</p>}
             </div>
-            </fieldset>
+           
+
             {showSeniorHighYearField && (
-          <fieldset className="mx-5">
+          <fieldset>
             <div className="form-group mb-4">
               <label htmlFor="seniorHighSchoolYearGraduated" className="block text-lg font-semibold text-gray-600">Senior High Year Graduated</label>
               <input
@@ -441,13 +458,24 @@ const Education = () => {
                 />
               {errors.seniorHighSchoolYearGraduated &&  <p className="text-red-500 text-sm">{errors.seniorHighSchoolYearGraduated}</p>}
             </div>
+            
           </fieldset>
           
         )}
+
+</div>
+</fieldset>
+
          {/* College Section (conditionally rendered) */}
         {showCollegeFields && (
-          <fieldset className="mx-5">
-            <legend className="text-3xl font-bold text-gray-800 mb-2">College</legend>
+          
+          <fieldset>
+                    <hr className="my-11 border-t-2 border-gray-700" />
+
+                    <div className="bg-white rounded-lg shadow-lg p-6">
+
+            <legend className="text-3xl font-extrabold text-[#001800] mb-3 text-left pb-5">
+              College</legend>
             <div className="form-group mb-4">
               <label htmlFor="collegeName" className="block text-lg font-semibold text-gray-600">College Name</label>
               <input
@@ -474,6 +502,8 @@ const Education = () => {
               />
               {errors.collegeAddress && <p className="text-red-500 text-sm">{errors.collegeAddress}</p>}
             </div>
+            </div>
+
           </fieldset>
           )}
 
@@ -484,10 +514,8 @@ const Education = () => {
           className="px-6 py-2 bg-green-500 text-white font-bold rounded-lg hover:bg-red-700 focus:outline-none"
           onClick={(e) => {
             // You can call the handleSubmit function or directly trigger scroll-to-top here.
-            handleSubmit(e,'/education'); // If you want to run the handleSubmit logic
-            
+            handleSubmit(e,'/requirements'); // If you want to run the handleSubmit logic
           }}
-        
           >
           Update Application
         </button>

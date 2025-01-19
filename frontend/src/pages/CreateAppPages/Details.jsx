@@ -33,13 +33,11 @@ const Details = () => {
     cs: "Bachelor of Science in Computer Science",
   };
 
-  // Handle button click to navigate and set active item
   const handleButtonClick = (item) => {
     navigate("/createapplication/personal"); // Navigate to personal section
     setActiveItem(item); // Set the active item in context
   };
 
-  // Check if the form is complete and enable the button
   useEffect(() => {
     const isFormComplete =
       userDetails?.applicant_type &&
@@ -48,18 +46,17 @@ const Details = () => {
     setIsButtonDisabled(!isFormComplete);
   }, [userDetails]);
 
-  // Function to render detail sections dynamically
   const renderDetail = (label, value) => (
-    <div className="mb-6 mx-11">
-      <p className="text-gray-600 text-lg font-semibold mb-2">{label}:</p>
-      <p className="text-[#081708] text-lg">{value || "Not provided"}</p>
+    <div className="mb-6">
+      <p className="text-gray-600 text-lg font-semibold">{label}:</p>
+      <p className="text-[#081708] text-lg bg-gray-100 rounded-lg px-4 py-2 shadow-md">
+        {value || "Not provided"}
+      </p>
     </div>
   );
 
-  // Confirm cancellation
   const handleConfirmCancel = async () => {
     try {
-      // Simulate API call to delete enrollment
       await fetch(`https://cvsu-backend-system.vercel.app/api/enrollments_delete/${userDetails.id}`, {
         method: "DELETE",
       });
@@ -76,13 +73,13 @@ const Details = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-white p-8 pt-12 shadow-xl rounded-lg flex flex-col justify-between">
-      {/* Header and Navigation Button */}
-      <div className="relative text-center my-10">
-        <h1 className="text-3xl font-extrabold text-[#001800]">Application Details</h1>
+    <div className="w-full min-h-screen bg-gradient-to-r from-green-50 to-green-100 p-8 pt-12 shadow-xl rounded-lg flex flex-col justify-between">
+      {/* Header Section */}
+      <div className="relative text-center mb-10">
+        <h1 className="text-4xl font-extrabold text-green-800">Application Details</h1>
         <button
           onClick={() => handleButtonClick("/personal")}
-          className="absolute right-0 top-1/2 transform -translate-y-1/2 text-[#345e34] hover:text-green-900"
+          className="absolute right-0 top-1/2 transform -translate-y-1/2 text-green-600 hover:text-green-900"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -102,21 +99,25 @@ const Details = () => {
       </div>
 
       {/* Applicant Details */}
-      {renderDetail("Applicant Type", fullNames[userDetails?.applicant_type] || userDetails?.applicant_type)}
-      {userDetails?.senior_high_track &&
-        renderDetail(
-          "Senior High Track",
-          fullNames[userDetails?.senior_high_track] || userDetails?.senior_high_track
-        )}
-      {userDetails?.strand &&
-        renderDetail("Strand", fullNames[userDetails?.strand] || userDetails?.strand)}
-      {renderDetail("Preferred Program", userDetails?.preferred_program || "Not provided")}
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        {renderDetail("Applicant Type", fullNames[userDetails?.applicant_type] || userDetails?.applicant_type)}
+        {userDetails?.senior_high_track &&
+          renderDetail(
+            "Senior High Track",
+            fullNames[userDetails?.senior_high_track] || userDetails?.senior_high_track
+          )}
+        {userDetails?.strand &&
+          renderDetail("Strand", fullNames[userDetails?.strand] || userDetails?.strand)}
+        {renderDetail("Preferred Program", userDetails?.preferred_program || "Not provided")}
+      </div>
 
       {/* Cancel Application Button */}
-      <div className="flex justify-end gap-5 my-11 mx-7">
+      <div className="flex justify-end gap-5 mt-8">
         <button
           onClick={() => setIsModalOpen(true)}
-          className="px-6 py-2 bg-red-500 text-white font-bold rounded-lg hover:bg-red-700 focus:outline-none"
+          className={`px-6 py-3 bg-red-500 text-white font-bold rounded-lg shadow-lg hover:bg-red-700 focus:outline-none ${
+            isButtonDisabled ? "opacity-50 cursor-not-allowed" : ""
+          }`}
           disabled={isButtonDisabled}
         >
           Cancel Application
@@ -127,7 +128,7 @@ const Details = () => {
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-            <h2 className="text-2xl font-bold mb-4">Are you sure?</h2>
+            <h2 className="text-2xl font-bold mb-4 text-red-600">Are you sure?</h2>
             <p className="text-gray-600 mb-6">This action will reset your application.</p>
             <div className="flex justify-center gap-4">
               <button

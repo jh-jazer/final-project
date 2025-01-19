@@ -52,13 +52,18 @@ const Requirement = () => {
   
           if (data.exists) {
             setSuccessMessage("Enrollment ID is already in use.");
+            setTimeout(() => setSuccessMessage(""), 5000);
+
             setIsExistingAppointment(true);
 
           } else {
             setSuccessMessage("Enrollment ID is available.");
+            setTimeout(() => setSuccessMessage(""), 5000);
+
           }
         } catch (error) {
           setErrorMessage("Error checking enrollment ID.");
+          
         }
       };
   
@@ -210,7 +215,10 @@ const Requirement = () => {
   };
 
   return (
-    <div ref={divRef} className="w-full min-h-screen bg-white p-8 pt-12 shadow-xl rounded-lg flex flex-col">
+    <div
+     ref={divRef} 
+     className="w-full min-h-screen bg-gradient-to-r from-green-50 to-green-100 p-8 pt-12 shadow-xl rounded-lg flex flex-col justify-between"
+     >
       {/* Render success and error messages */}
       {successMessage && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
@@ -224,20 +232,20 @@ const Requirement = () => {
       )}
 
       {/* Render form elements for requirements */}
-      <div className="relative text-center my-10">
+      <div className="relative text-center mb-10">
         <button
           onClick={() => handleSecondClick('/education')}
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 text-[#345e34] hover:text-green-900"
-        >
+          className="absolute left-0 top-1/2 transform -translate-y-1/2 text-green-600 hover:text-green-900">
           <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h1 className="text-3xl font-extrabold text-[#001800]">Upload Requirements</h1>
+        <h1 className="text-4xl font-extrabold text-green-800">
+          Upload Requirements</h1>
         
         <button
           onClick={() => handleFirstClick('/appointment')}
-          className={`absolute right-0 top-1/2 transform -translate-y-1/2 text-[#345e34] hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+          className={`absolute right-0 top-1/2 transform -translate-y-1/2  text-green-600 hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
           disabled={isNextButtonDisabled}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -247,6 +255,7 @@ const Requirement = () => {
       </div>
 
       {/* Directions */}
+      <div className="bg-white rounded-lg shadow-lg p-6">
       <div className="bg-gray-800 text-white px-4 rounded p-6 mb-3">
         <h3 className="text-lg text-white font-bold mb-2">Directions</h3>
         <ul className="list-disc pl-6">
@@ -295,6 +304,7 @@ const Requirement = () => {
           ))}
         </ul>
         <div className="flex justify-end gap-5 mt-5">
+          
         <button
           type="submit"
           className={`px-6 py-2 ${isLoading ? "bg-gray-400" : "bg-green-500"} text-white font-bold rounded-lg`}
@@ -305,6 +315,8 @@ const Requirement = () => {
 
         </div>
       </form>
+      </div>
+
     </div>
   );
 };

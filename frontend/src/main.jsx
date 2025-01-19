@@ -33,6 +33,10 @@ import ManageAppointment from "./pages/EmployeedbPages/ManageAppointment.jsx";
 import ManageSections from "./pages/EmployeedbPages/ManageSections.jsx";
 import EmployeeAccounts from "./pages/EmployeedbPages/EmployeeAccounts.jsx";
 import StudentAccounts from "./pages/EmployeedbPages/StudentAccounts.jsx";
+import AdviserManageApplication from "./pages/EmployeedbPages/AdviserManageApplication.jsx";
+import AdviserManageEnrollment from "./pages/EmployeedbPages/AdviserManageEnrollment.jsx";
+import SocietyManageApplication from "./pages/EmployeedbPages/SocietyManageApplication.jsx";
+import SocietyManageEnrollment from "./pages/EmployeedbPages/SocietyManageEnrollment.jsx";
 
 
 
@@ -283,6 +287,22 @@ const router = createBrowserRouter([
       {
         path: "student-accounts",
         element: <StudentAccounts />, // Component to render when /studentdb/courses is visited
+      },
+      {
+        path: "adviser-applications",
+        element: <AdviserManageApplication />, // Component to render when /studentdb/courses is visited
+      },
+      {
+        path: "adviser-enrollments",
+        element: <AdviserManageEnrollment />, // Component to render when /studentdb/courses is visited
+      },
+      {
+        path: "society-applications",
+        element: <SocietyManageApplication />, // Component to render when /studentdb/courses is visited
+      },
+      {
+        path: "society-enrollments",
+        element: <SocietyManageEnrollment />, // Component to render when /studentdb/courses is visited
       },
     ],
   },

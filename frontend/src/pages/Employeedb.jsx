@@ -155,17 +155,29 @@ const EmployeeDashboard = () => {
                 {isSocietyDropdownOpen && (
                   <ul className="mt-2 space-y-2 pl-4">
                         {/* Enroll - Use the handler here */}
-                    <li>
-                      <button
-                        onClick={handleNavigateToPayment} 
-                        className={`px-4 py-2  w-full flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer ${
-                          isSidebarMinimized ? "justify-center" : ""
-                        }`}
-                      >
-                        <FaClipboardList />
-                        {!isSidebarMinimized && <span>Payment Records</span>}
-                      </button>
-                    </li>
+                   
+                     
+                      <li>
+              <Link
+                to="society-applications"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaClipboardList />
+                {!isSidebarMinimized && <span>Applicant  Payments </span>}
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="society-enrollments"
+                className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <FaClipboardList />
+                {!isSidebarMinimized && <span>Enrollee Payments </span>}
+              </Link>
+            </li>
+                   
                   </ul>
                 )}
               </li>
@@ -195,7 +207,7 @@ const EmployeeDashboard = () => {
                 >
                   <div className="flex items-center space-x-3">
                     {isApplicationDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
-                    {!isSidebarMinimized && <span>Manage Registration</span>}
+                    {!isSidebarMinimized && <span>Manage Advising</span>}
                   </div>
                 </button>
 
@@ -205,24 +217,24 @@ const EmployeeDashboard = () => {
 
               <li>
               <Link
-                to="manage-applications"
+                to="adviser-applications"
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <FaClipboardList />
-                {!isSidebarMinimized && <span>Manage Applications</span>}
+                {!isSidebarMinimized && <span>Advising Applicants</span>}
               </Link>
             </li>
              
             {/* Manage Enrollment Section */}
             <li>
               <Link
-                to="manage-enrollment"
+                to="adviser-enrollments"
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <FaClipboardList />
-                {!isSidebarMinimized && <span>Manage Enrollment</span>}
+                {!isSidebarMinimized && <span>Advising Enrollees</span>}
               </Link>
             </li>
 

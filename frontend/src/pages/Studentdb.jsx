@@ -78,7 +78,7 @@ const StudentDashboard = () => {
                 {user.id || "Unknown ID"}
               </Link>
               <p className="text-sm text-gray-400">
-              {user.program === "Bachelor of Science in Computer Science" ? "BSCS" : user.program === "Bachelor of Science in Information Technology" ? "BSIT" : "Unknown Program"} |{" "}
+              {user.program === 1 ? "BSCS" : user.program === 2 ? "BSIT" : "Unknown Program"} |{" "}
               {user.type || "Unknown Student Type"} |{" "}
               {user.role || "Unknown Role"}
             </p>

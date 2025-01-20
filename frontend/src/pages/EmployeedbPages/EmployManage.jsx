@@ -43,7 +43,6 @@ const ManageApplication = () => {
       program_id: '', // Change to program_id
       email: '',
       semester: '',
-      dob: '',
       class_section: '',
       status: '',
       password: '',
@@ -101,14 +100,8 @@ const getFullName = (Value) => {
       }
   
       const data = await response.json();
-  
-      // Format date fields if present
-      const formattedData = {
-        ...data,
-        dob: data.dob ? formatDateForInput(data.dob) : "",
-      };
-  
-      setPersonalInfo(formattedData);
+ 
+      setPersonalInfo(data);
     } catch (error) {
       console.error("Error fetching personal data:", error);
       setPersonalInfo(null); // Clear previous data on error
@@ -219,7 +212,6 @@ const getFullName = (Value) => {
       program_id: '', // Set program_id to an empty string
       email: '',
       semester: '',
-      dob: '',
       class_section: '',
       status: '',
       password: '',
@@ -349,9 +341,6 @@ const getFullName = (Value) => {
       delete payload.password; // Remove password field if it's empty
     }
   
-    // Ensure the date of birth is properly formatted
-    const formattedDob = new Date(formData.dob).toISOString().slice(0, 10);
-    payload.dob = formattedDob;
   
     const url = 'https://cvsu-backend-system.vercel.app/api/students'; // URL for creating a new student
     const method = 'POST'; // Use POST for new student creation
@@ -593,13 +582,6 @@ const getFullName = (Value) => {
                     ))}
                   </select>
                   <input
-                    type="date"
-                    className="w-full px-4 py-2 mb-2 border"
-                    value={formData.dob}
-                    onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
-                    required
-                  />
-                  <input
                     type="text"
                     placeholder="Class Section"
                     className="w-full px-4 py-2 mb-2 border"
@@ -767,7 +749,6 @@ const getFullName = (Value) => {
                      <p className="mb-2 text-gray-700"><strong>Full Name:</strong> {personalInfo.familyName}, {personalInfo.givenName} {personalInfo.middleName}</p>
                      <p className="mb-2 text-gray-700"><strong>LRN:</strong> {personalInfo.lrn}</p>
                      <p className="mb-2 text-gray-700"><strong>Sex</strong> {personalInfo.sex}</p>
-                     <p className="mb-2 text-gray-700"><strong>Birthday:</strong> {personalInfo.dob}</p>
                      <p className="mb-2 text-gray-700"><strong>Civil Status:</strong> {personalInfo.civilStatus}</p>
                      <p className="mb-2 text-gray-700"><strong>Religion:</strong> {personalInfo.religion}</p>
                      <p className="mb-2 text-gray-700"><strong>Contact Number:</strong> {personalInfo.contactNumber}</p>

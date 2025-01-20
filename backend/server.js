@@ -1536,7 +1536,7 @@ app.get('/api/students', async (req, res) => {
 
 // Add a new Student
 app.post('/api/students', async (req, res) => {
-  const { student_id, full_name, student_type, program_id, email, semester, dob, class_section, status, password, enrollment_id } = req.body;
+  const { student_id, full_name, student_type, program_id, email, semester, class_section, status, password, enrollment_id } = req.body;
   
   // Check for required fields
   if (!full_name || !student_type || !program_id || !email) {
@@ -1558,8 +1558,8 @@ app.post('/api/students', async (req, res) => {
 
     // Insert the student if the program exists
     const [result] = await db.query(
-      'INSERT INTO students (student_id, full_name, student_type, program_id, email, semester, dob, class_section, status, password, enrollment_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [student_id, full_name, student_type, program_id, email, semester, dob, class_section, status, password, enrollment_id]
+      'INSERT INTO students (student_id, full_name, student_type, program_id, email, semester, class_section, status, password, enrollment_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [student_id, full_name, student_type, program_id, email, semester, class_section, status, password, enrollment_id]
     );
 
     if (result.affectedRows === 0) {
@@ -1576,7 +1576,7 @@ app.post('/api/students', async (req, res) => {
 // Update a student's details
 app.put('/api/students/:student_id', async (req, res) => {
   const { student_id } = req.params;
-  const { full_name, student_type, program_id, email, semester, dob, class_section, status, enrollment_id } = req.body;
+  const { full_name, student_type, program_id, email, semester, class_section, status, enrollment_id } = req.body;
 
   // Basic field validation
   if (!full_name || !student_type || !email) {
@@ -1598,8 +1598,8 @@ app.put('/api/students/:student_id', async (req, res) => {
 
     // Update student details in the database
     const [result] = await db.query(
-      'UPDATE students SET full_name = ?, student_type = ?, program_id = ?, email = ?, semester = ?, dob = ?, class_section = ?, status = ?, enrollment_id = ? WHERE student_id = ?',
-      [full_name, student_type, program_id, email, semester, dob, class_section, status, enrollment_id, student_id]
+      'UPDATE students SET full_name = ?, student_type = ?, program_id = ?, email = ?, semester = ?, class_section = ?, status = ?, enrollment_id = ? WHERE student_id = ?',
+      [full_name, student_type, program_id, email, semester, class_section, status, enrollment_id, student_id]
     );
 
     // Check if the student exists and was updated
@@ -1656,7 +1656,7 @@ app.post('/api/login', async (req, res) => {
   try {
     // Check the students table first
     const [studentResults] = await db.query(
-      'SELECT * FROM students INNER JOIN enrollments ON students.enrollment_id = enrollments.enrollment_id WHERE student_id = ?',
+      'SELECT * FROM students WHERE student_id = ?',
       [login_id]
     );
 
@@ -1677,7 +1677,7 @@ app.post('/api/login', async (req, res) => {
             full_name: student.full_name,
             role: 'Student',
             type: student.student_type,
-            program: student.preferred_program,
+            program: student.program_id,
             enrollment_id: student.enrollment_id,
           },
         });

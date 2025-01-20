@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaUser, FaClipboardList, FaBook } from "react-icons/fa";
-import { useLocation, useNavigate} from 'react-router-dom';
+import {  Link, useLocation, useNavigate} from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Outlet } from "react-router-dom";
 
@@ -38,7 +38,8 @@ const StudentDashboardHome = () => {
       {/* Quick Actions Section */}
       <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Profile Panel */}
-        <div className="bg-white shadow-md rounded-lg p-6 flex items-center space-x-4">
+        <Link
+          to="profile"  className="bg-white shadow-md rounded-lg p-6 flex items-center space-x-4">
           <div className="text-green-600 text-3xl">
             <FaUser />
           </div>
@@ -46,10 +47,12 @@ const StudentDashboardHome = () => {
             <h2 className="text-xl font-semibold">Profile</h2>
             <p className="text-sm text-gray-500">View and edit your profile.</p>
           </div>
-        </div>
+          </Link>
 
         {/* Checklist Panel */}
-        <div className="bg-white shadow-md rounded-lg p-6 flex items-center space-x-4">
+        <Link
+          to="checklist" 
+          className="bg-white shadow-md rounded-lg p-6 flex items-center space-x-4">
           <div className="text-green-600 text-3xl">
             <FaClipboardList />
           </div>
@@ -57,10 +60,12 @@ const StudentDashboardHome = () => {
             <h2 className="text-xl font-semibold">Checklist</h2>
             <p className="text-sm text-gray-500">Track your graduation progress.</p>
           </div>
-        </div>
+          </Link>
 
         {/* Enroll Panel */}
-        <div className="bg-white shadow-md rounded-lg p-6 flex items-center space-x-4">
+        <Link
+        to="enroll"
+                 className="bg-white shadow-md rounded-lg p-6 flex items-center space-x-4">
           <div className="text-green-600 text-3xl">
             <FaBook />
           </div>
@@ -68,7 +73,8 @@ const StudentDashboardHome = () => {
             <h2 className="text-xl font-semibold">Enroll</h2>
             <p className="text-sm text-gray-500">Start or continue your enrollment.</p>
           </div>
-        </div>
+          </Link>
+
         <Outlet context={{ user }} /> 
       </div>
 

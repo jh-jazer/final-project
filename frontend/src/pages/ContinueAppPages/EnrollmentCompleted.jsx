@@ -16,7 +16,7 @@ const EnrollmentCompletion = () => {
   useEffect(() => {
     const fetchEnrollmentStatus = async () => {
       try {
-        const response = await axios.get(`http://localhost:5005/api/getApplicantProgress?enrollment_id=${enrollment_id}`);
+        const response = await axios.get(`https://cvsu-backend-system.vercel.app/api/getApplicantProgress?enrollment_id=${enrollment_id}`);
 
         if (response.data) {
           const { student_enrollment, appointment_date } = response.data;
@@ -71,7 +71,7 @@ const EnrollmentCompletion = () => {
 
   const handleFirstClick = (item) => {
     if (!isNextButtonDisabled) {
-      navigate('/createapplication/enrollment-completed');
+      navigate('/login');
       setActiveItem(item);
     }
   };
@@ -80,6 +80,15 @@ const EnrollmentCompletion = () => {
     navigate('/createapplication/applicant-society-payment');
     setActiveItem(item);
   };
+
+  useEffect(() => {
+                // Check if the personal form is completed by checking localStorage
+                const paymentComplete = localStorage.getItem('paymentComplete');
+                if (!paymentComplete) {
+                  // Redirect to the personal form if it's not completed
+                  navigate('/createapplication');
+                }
+              }, [navigate]);
 
   return (
     <div ref={divRef} className="w-full min-h-screen bg-gradient-to-br from-green-100 to-white p-8 pt-12 shadow-lg rounded-lg flex flex-col">
@@ -95,6 +104,18 @@ const EnrollmentCompletion = () => {
         </button>
 
         <h1 className="text-4xl font-extrabold text-[#003d1f] px-5">Enrollment Completion</h1>
+      
+        <button
+          onClick={() => handleFirstClick('/createapplication')}
+          className={`absolute right-0 top-1/2 transform -translate-y-1/2 text-[#4f7c4f] hover:text-green-800 transition-all ${
+            isNextButtonDisabled ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+          disabled={isNextButtonDisabled}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
 
       </div>
 

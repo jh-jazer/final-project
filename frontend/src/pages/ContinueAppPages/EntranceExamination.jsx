@@ -15,7 +15,7 @@ const EntranceExamination = () => {
   useEffect(() => {
     const fetchApplicantProgress = async () => {
       try {
-        const response = await fetch(`http://localhost:5005/api/getApplicantProgress?enrollment_id=${enrollment_id}`);
+        const response = await fetch(`https://cvsu-backend-system.vercel.app/api/getApplicantProgress?enrollment_id=${enrollment_id}`);
         
         if (!response.ok) {
           throw new Error(`Failed to fetch: ${response.status}`);
@@ -48,6 +48,7 @@ const EntranceExamination = () => {
   
   const handleFirstClick = (item) => {
     if (!isNextButtonDisabled) {
+      localStorage.setItem('evaluationComplete', 'true');
       navigate('/createapplication/document-submission');
       setActiveItem(item);
     }
@@ -57,6 +58,16 @@ const EntranceExamination = () => {
     navigate('/createapplication/document-verification');
     setActiveItem(item);
   };
+
+  
+     useEffect(() => {
+              // Check if the personal form is completed by checking localStorage
+              const verificationComplete = localStorage.getItem('verificationComplete');
+              if (!verificationComplete) {
+                // Redirect to the personal form if it's not completed
+                navigate('/createapplication');
+              }
+            }, [navigate]);
 
   return (
     <div ref={divRef} className="w-full min-h-screen bg-gradient-to-br from-green-100 to-white p-8 pt-12 shadow-lg rounded-lg flex flex-col">
@@ -120,7 +131,7 @@ const EntranceExamination = () => {
               <li>For irregulars, you must take an evaluation to continue.</li>
               <li>
                 For more information about the admission procedures,{' '}
-                <a href="https://www.your-website-link.com/admissionprocedures" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">
+                <a href="https://cvsu-system.vercel.app/procedures" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">
                   click here.
                 </a>
               </li>

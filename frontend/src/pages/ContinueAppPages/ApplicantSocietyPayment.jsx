@@ -20,7 +20,7 @@ const SocietyPayment = () => {
 
   const fetchPaymentDetails = async (enrollmentId) => {
     try {
-      const response = await fetch(`http://localhost:5005/api/getApplicantProgress?enrollment_id=${enrollmentId}`);
+      const response = await fetch(`https://cvsu-backend-system.vercel.app/api/getApplicantProgress?enrollment_id=${enrollmentId}`);
       if (!response.ok) throw new Error(`Failed to fetch data: ${response.status}`);
 
       const { society_payment } = await response.json();
@@ -37,10 +37,22 @@ const SocietyPayment = () => {
 
   const handleNavigation = (path, item) => {
     if (!isNextButtonDisabled || path !== '/createapplication/enrollment-completed') {
+      localStorage.setItem('paymentComplete', 'true');
       navigate(path);
       setActiveItem(item);
     }
   };
+
+  useEffect(() => {
+                  // Check if the personal form is completed by checking localStorage
+                  const submissionComplete = localStorage.getItem('submissionComplete');
+                  if (!submissionComplete) {
+                    // Redirect to the personal form if it's not completed
+                    navigate('/createapplication');
+                  }
+                }, [navigate]);
+  
+  
 
   return (
     <div ref={divRef} className="w-full min-h-screen bg-gradient-to-br from-green-100 to-white p-8 pt-12 shadow-lg rounded-lg flex flex-col">
@@ -105,7 +117,7 @@ const SocietyPayment = () => {
               <li>Contact Student Affairs for further assistance or inquiries.</li>
               <li>
                 For more details,{' '}
-                <a href="https://www.your-website-link.com/paymentprocedures" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">
+                <a href="https://cvsu-system.vercel.app/procedures" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">
                   click here.
                 </a>
               </li>

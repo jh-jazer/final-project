@@ -18,7 +18,7 @@ const apiRequest = async (url, method, body = null) => {
   }
 };
 
-const ManageApplication = () => {
+const AdviserManageApplication = () => {
   const [applications, setApplications] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
@@ -424,16 +424,7 @@ const getFullName = (Value) => {
                 Enrollment<br />ID
               </th>
               <th className="px-4 py-2 text-left border border-gray-300">
-                Docs<br />Verification
-              </th>
-              <th className="px-4 py-2 text-left border border-gray-300">
                 Evaluation<br />Assessment
-              </th>
-              <th className="px-4 py-2 text-left border border-gray-300">
-                Docs<br />Submission
-              </th>
-              <th className="px-4 py-2 text-left border border-gray-300">
-                Society<br />Payment
               </th>
               <th className="px-4 py-2 text-left border border-gray-300">
                 Actions
@@ -447,7 +438,7 @@ const getFullName = (Value) => {
                 onClick={() => handleRowClick(application)}
                 >
                   <td className="px-4 py-2 border border-gray-300">{application.enrollment_id}</td>
-                  {['docs_verification', 'eval_assessment', 'docs_submission', 'society_payment'].map(
+                  {['eval_assessment'].map(
                     (field) => (
                       <td key={field} className="px-4 py-2 border border-gray-300">
                         {editingId === application.id ? (
@@ -488,28 +479,7 @@ const getFullName = (Value) => {
       Edit
     </button>
   )}
-  <button
-    onClick={(e) => {
-      e.stopPropagation(); // Prevent the row's onClick
-      openModal(application.enrollment_id);
-    }}
-    disabled={
-      application.docs_verification !== 'approved' ||
-      application.eval_assessment !== 'approved' ||
-      application.docs_submission !== 'approved' ||
-      application.society_payment !== 'approved'
-    }
-    className={`ml-2 px-4 py-1 rounded-md ${
-      application.docs_verification === 'approved' &&
-      application.eval_assessment === 'approved' &&
-      application.docs_submission === 'approved' &&
-      application.society_payment === 'approved'
-        ? 'bg-green-500 text-white'
-        : 'bg-gray-400 text-gray-700 cursor-not-allowed'
-    }`}
-  >
-    Enroll
-  </button>
+ 
 </td>
 
                 </tr>
@@ -725,7 +695,7 @@ const getFullName = (Value) => {
 
               {/* Tab Navigation */}
               <div className="flex justify-between bg-gray-100 px-6 py-3 border-b">
-                {['General', 'Personal', 'Family', 'Educational', 'Documents'].map((tab, index) => (
+                {['General'].map((tab, index) => (
                   <button
                     key={index}
                     className={`px-4 py-2 rounded-t-md ${activeTab === tab ? 'bg-white border-t-2 border-blue-500 text-blue-500 font-bold' : 'text-gray-500'}`}
@@ -739,12 +709,13 @@ const getFullName = (Value) => {
               {/* Tab Content */}
               <div className="p-6 overflow-y-auto h-[calc(100%-150px)]">
 
-                {activeTab === 'General' && enrollmentInfo ? (
+                {activeTab === 'General' && enrollmentInfo ? ( personalInfo ?  (
 
                   <>
                   <h3 className="text-2xl font-semibold text-gray-800 text-center mb-6">General Information</h3>
                   <div className="grid grid-cols-1 text-center gap-6">
                     <div className="bg-white p-4 rounded-lg shadow-md">
+                    <p className="mb-2 text-gray-700"><strong>Full Name:</strong> {personalInfo.familyName}, {personalInfo.givenName} {personalInfo.middleName}</p>
                       <p className="mb-2 text-gray-700"><strong>Enrollment ID:</strong> {enrollmentInfo.enrollment_id}</p>
                       <p className="mb-2 text-gray-700"><strong>Applicant Type:</strong> {getFullName(enrollmentInfo.applicant_type)}</p>
                       <p className="mb-2 text-gray-700"><strong>Email:</strong> {enrollmentInfo.email}</p>
@@ -754,6 +725,9 @@ const getFullName = (Value) => {
                     </div>
                   </div>
                 </>
+                  ) : (
+                    <p className="text-gray-500">Loading personal information...</p>
+                  )
                 
               ) : (
                 activeTab === 'General' && <p className="text-gray-500">Loading personal information...</p>
@@ -899,4 +873,4 @@ const getFullName = (Value) => {
   );
 };
 
-export default ManageApplication;
+export default AdviserManageApplication;

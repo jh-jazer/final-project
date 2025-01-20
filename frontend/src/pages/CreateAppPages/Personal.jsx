@@ -38,6 +38,7 @@ const Personal = () => {
     // Handle button click to set the active item
   const handleFirstClick = (item) => {
     if (!isNextButtonDisabled) {
+      localStorage.setItem('personalFormComplete', 'true');
       navigate('/createapplication/family');// Navigate to the desired route
       setActiveItem(item);
     } 
@@ -87,8 +88,6 @@ const Personal = () => {
     return date.toISOString().split('T')[0]; // Extracts the "yyyy-MM-dd" format
   };
   
-
-
 
   // Effect to enable or disable the button based on form completion
   useEffect(() => {
@@ -172,6 +171,7 @@ const Personal = () => {
           // Set a timeout before navigating to give the user time to see the message
           setTimeout(() => {
             // Navigate to the desired route after 2 seconds
+            localStorage.setItem('personalFormComplete', 'true');
             navigate("/createapplication/family");  // Use item (which is '/family' in this case)
             setActiveItem(item); // Set active item (pass '/family')
           }, 2000); // Delay of 2 seconds
@@ -198,8 +198,9 @@ const Personal = () => {
   return (
     <div 
     ref={divRef}
-    className="w-full min-h-screen bg-white p-8 pt-12 shadow-xl rounded-lg flex flex-col"
+    className="w-full min-h-screen bg-gradient-to-r from-green-50 to-green-100 p-8 pt-12 shadow-xl rounded-lg flex flex-col justify-between"
     >
+      {/* Header Section */}
       {successMessage && (
         <div 
         
@@ -209,10 +210,10 @@ const Personal = () => {
       )}
 
       {/* Header Section */}
-      <div className="relative text-center my-10">
+      <div className="relative text-center mb-10">
       <button 
             onClick={() => handleSecondClick('/createapplication')}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 text-[#345e34] hover:text-green-900">
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 text-green-600 hover:text-green-900">
             <svg 
             xmlns="http://www.w3.org/2000/svg" 
             className="w-8 h-8" 
@@ -222,11 +223,11 @@ const Personal = () => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-        <h1 className="text-3xl font-extrabold text-[#001800]">Personal Information</h1>
+        <h1 className="text-4xl font-extrabold text-green-800">Personal Information</h1>
         
         <button
           onClick={() => handleFirstClick('/family')}
-          className={`absolute right-0 top-1/2 transform -translate-y-1/2 text-[#345e34] hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+          className={`absolute right-0 top-1/2 transform -translate-y-1/2  text-green-600 hover:text-green-900 ${isNextButtonDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
           disabled={isNextButtonDisabled}
          >
           <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -235,15 +236,17 @@ const Personal = () => {
         </button>
           
       </div>
-          <div>
-             <h5 className="text-2xl font-extrabold text-[#001800] mb-6 text-left pl-11 pb-5">
-            Basic Details
+
+      <div className="bg-white rounded-lg shadow-lg p-6">
+
+          
+      <h5 className="text-3xl font-extrabold text-[#001800] mb-3 text-left pb-5">
+      Basic Details
           </h5>
-          </div>
+          
 
       {/* Personal Information Form */}
-        <div className="mx-11 mb-6">
-        <div className="form-group text-lg font-sans text-gray-600">
+      <div className="form-group text-lg font-sans text-gray-600">
           <label className="text-gray-600 text-lg font-semibold" htmlFor="givenName">
             Given Name*
           </label>
@@ -438,14 +441,15 @@ const Personal = () => {
             onChange={handleChange}
           />
           {errors.contactNumber && <p className="text-red-500 text-sm">{errors.contactNumber}</p>}
-        </div>
-        
+          </div>
+          </div>
+
 
          {/* Thin Horizontal Line */}
          <hr className="my-11 border-t-2 border-gray-700" />
-
+         <div className="bg-white rounded-lg shadow-lg p-6">
          <div>
-             <h5 className="text-2xl font-extrabold text-[#001800] mb-6 text-left pb-5">
+             <h5 className="text-3xl font-extrabold text-[#001800] mb-3 text-left pb-5">
               Address Details 
               </h5>
           </div>
@@ -572,7 +576,7 @@ const Personal = () => {
 
           {/* Action Buttons */}
           
-          <div className="flex justify-end gap-5 mb-5 mx-5">
+          <div className="flex justify-end gap-5 mt-8">
           <div className="text-left">
         <button
           className="px-6 py-2 bg-green-500 text-white font-bold rounded-lg hover:bg-red-700 focus:outline-none"

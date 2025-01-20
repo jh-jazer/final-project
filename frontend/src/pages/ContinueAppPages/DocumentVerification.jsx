@@ -19,6 +19,7 @@ const DocumentVerification = () => {
 
   const handleFirstClick = (item) => {
     if (!isNextButtonDisabled) {
+      localStorage.setItem('verificationComplete', 'true');
       navigate('/createapplication/entrance-examination'); 
       setActiveItem(item); 
     } 
@@ -28,6 +29,17 @@ const DocumentVerification = () => {
     navigate('/createapplication/appointment'); 
     setActiveItem(item); 
   };
+
+  
+   useEffect(() => {
+            // Check if the personal form is completed by checking localStorage
+            const appointmentFormComplete = localStorage.getItem('appointmentFormComplete');
+            if (!appointmentFormComplete) {
+              // Redirect to the personal form if it's not completed
+              navigate('/createapplication');
+            }
+          }, [navigate]);
+  
 
   useEffect(() => {
     if (enrollment_id && enrollment_id !== "No id provided") {
@@ -40,8 +52,8 @@ const DocumentVerification = () => {
     setError(null);
     try {
       const [scheduleResponse, progressResponse] = await Promise.all([
-        fetch(`http://localhost:5005/api/getSchedule?enrollment_id=${enrollment_id}`),
-        fetch(`http://localhost:5005/api/getApplicantProgress?enrollment_id=${enrollment_id}`)
+        fetch(`https://cvsu-backend-system.vercel.app/api/getSchedule?enrollment_id=${enrollment_id}`),
+        fetch(`https://cvsu-backend-system.vercel.app/api/getApplicantProgress?enrollment_id=${enrollment_id}`)
       ]);
   
       if (!scheduleResponse.ok || !progressResponse.ok) {
@@ -163,7 +175,7 @@ const DocumentVerification = () => {
               <li>
                 For more information about the admission procedures, 
                 <a 
-                  href="https://www.your-website-link.com/admissionprocedures" 
+                  href="https://cvsu-system.vercel.app/procedures" 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="text-blue-600 hover:text-blue-800 underline"

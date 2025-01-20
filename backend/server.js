@@ -62,6 +62,51 @@ const testDatabaseConnection = async () => {
 };
 
 testDatabaseConnection();
+
+
+// Define the endpoint to get enrollment info by enrollment_id
+app.get('/api/getEnrollmentInfo', async (req, res) => {
+  const { enrollment_id } = req.query;
+
+  // Validate required field
+  if (!enrollment_id) {
+    return res.status(400).json({ error: 'Enrollment ID is required' });
+  }
+
+  try {
+    // SQL query to fetch enrollment information
+    const query = `
+      SELECT 
+        id,
+        email, 
+        enrollment_id, 
+        applicant_type, 
+        preferred_program, 
+        strand, 
+        senior_high_track, 
+        created_at
+      FROM enrollments
+      WHERE enrollment_id = ?;
+    `;
+
+    // Execute query and get results
+    const [rows] = await db.execute(query, [enrollment_id]);
+
+    // Handle case where no records are found
+    if (rows.length === 0) {
+      console.log(`No enrollment info found for enrollment_id: ${enrollment_id}`);
+      return res.status(404).json({ error: 'Enrollment info not found' });
+    }
+
+    // Respond with the fetched data
+    res.json(rows[0]);
+  } catch (err) {
+    console.error('Database error:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
+
 app.post('/api/update-student-semester', async (req, res) => {
   const { student_id } = req.body;  // Only student_id is required from the frontend
 
@@ -1610,10 +1655,19 @@ app.post('/api/login', async (req, res) => {
 
   try {
     // Check the students table first
-    const [studentResults] = await db.query('SELECT * FROM students inner join enrollments on students.enrollment_id = enrollments.enrollment_id WHERE student_id = ?', [login_id]);
+    const [studentResults] = await db.query(
+      'SELECT * FROM students INNER JOIN enrollments ON students.enrollment_id = enrollments.enrollment_id WHERE student_id = ?',
+      [login_id]
+    );
 
     if (studentResults.length > 0) {
       const student = studentResults[0];
+
+      // Check if account status is "Active"
+      if (student.status !== 'Active') {
+        return res.status(403).json({ message: 'Account is deactivated. Please contact support.' });
+      }
+
       const isPasswordCorrect = await bcrypt.compare(password, student.password);
       if (isPasswordCorrect) {
         return res.status(200).json({
@@ -1633,12 +1687,20 @@ app.post('/api/login', async (req, res) => {
     }
 
     // Check the employees table if not found in students
-    const [employeeResults] = await db.query('SELECT * FROM employees WHERE employee_id = ?', [login_id]);
+    const [employeeResults] = await db.query(
+      'SELECT * FROM employees WHERE employee_id = ?',
+      [login_id]
+    );
 
     if (employeeResults.length > 0) {
       const employee = employeeResults[0];
+
+      // Check if account status is "Active"
+      if (employee.status !== 'Active') {
+        return res.status(403).json({ message: 'Account is deactivated. Please contact support.' });
+      }
+
       const isPasswordCorrect = await bcrypt.compare(password, employee.password);
-      
       if (isPasswordCorrect) {
         return res.status(200).json({
           message: 'Login successful',
@@ -1648,7 +1710,6 @@ app.post('/api/login', async (req, res) => {
             role: 'Employee',
             type: employee.employee_type,
             other: employee.email,
-
           },
         });
       } else {
@@ -1658,12 +1719,12 @@ app.post('/api/login', async (req, res) => {
 
     // If login_id is not found in either table
     return res.status(404).json({ message: 'User not found.' });
-
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 
 // Verify the email server is ready to send emails

@@ -79,7 +79,7 @@ const AcademicRecords = () => {
   };
 
   return (
-    <div className="p-6 bg-green-500 min-h-screen">
+    <div className="p-6 bg-gradient-to-r from-green-800 to-green-500 min-h-screen">
       <div className="bg-white shadow-lg rounded-lg p-6 max-w-6xl mx-auto">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">Academic Records</h2>
 

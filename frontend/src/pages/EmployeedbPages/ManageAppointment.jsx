@@ -23,7 +23,7 @@ const Appointments = () => {
   // Fetch all appointments data from the backend
   const fetchAppointments = async () => {
     try {
-      const response = await fetch('http://localhost:5005/api/appointments');
+      const response = await fetch('https://cvsu-backend-system.vercel.app/api/appointments');
       if (!response.ok) {
         throw new Error('Failed to fetch appointments');
       }
@@ -119,7 +119,7 @@ const Appointments = () => {
   const totalPages = Math.ceil(filteredAppointments.length / appointmentsPerPage);
 
   return (
-    <div className="p-6 bg-green-500 min-h-screen">
+    <div className="p-6 bg-gradient-to-r from-green-800 to-green-500 min-h-screen">
       <div className="bg-white shadow-lg rounded-lg p-6 mx-auto max-w-full sm:max-w-6xl">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4 ">Manage Appointments</h2>
 

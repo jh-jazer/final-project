@@ -47,7 +47,7 @@ const StudentAccountManagement = () => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-  
+
   useEffect(() => {
     if (statusMessage) {
       const timer = setTimeout(() => {
@@ -59,11 +59,33 @@ const StudentAccountManagement = () => {
     }
   }, [statusMessage]);
 
-  const getSemesterLabel = (semesterValue) => {
-    // Use semesterOptions to find the label for the semester value
-    const semesterOption = semesterOptions.find(option => option.value === semesterValue);
-    return semesterOption ? semesterOption.label : 'Unknown Semester';
-  };
+  // Define a mapping for semesters and their labels
+const semesterMapping = {
+  1: 'First Year, First Semester',
+  2: 'First Year, Second Semester',
+  3: 'Second Year, First Semester',
+  4: 'Second Year, Second Semester',
+  5: 'Third Year, First Semester',
+  6: 'Third Year, Second Semester',
+  7: 'Third Year, Mid Year',
+  8: 'Fourth Year, First Semester',
+  9: 'Fourth Year, Second Semester',
+  10: 'First Year, First Semester',
+  11: 'First Year, Second Semester',
+  12: 'Second Year, First Semester',
+  13: 'Second Year, Second Semester',
+  14: 'Second Year, Mid Year',
+  15: 'Third Year, First Semester',
+  16: 'Third Year, Second Semester',
+  17: 'Fourth Year, First Semester',
+  18: 'Fourth Year, Second Semester',
+};
+
+// Rewrite getSemesterLabel to use the semesterMapping
+const getSemesterLabel = (semesterValue) => {
+  return semesterMapping[semesterValue] || 'Unknown Semester';
+};
+
 
   const closeModal = () => {
     setModalOpen(false);
@@ -164,8 +186,8 @@ const StudentAccountManagement = () => {
     payload.dob = formattedDob;
   
     const url = isEditing
-      ? `http://localhost:5005/api/students/${formData.student_id}` // Use student ID for update
-      : 'http://localhost:5005/api/students'; // Use POST for new students
+      ? `https://cvsu-backend-system.vercel.app/api/students/${formData.student_id}` // Use student ID for update
+      : 'https://cvsu-backend-system.vercel.app/api/students'; // Use POST for new students
     const method = isEditing ? 'PUT' : 'POST'; // Use PUT for updates, POST for new student
   
     try {
@@ -214,7 +236,7 @@ const StudentAccountManagement = () => {
   );
 
   return (
-    <div className="p-6 bg-green-500 min-h-screen">
+    <div className="p-6 bg-gradient-to-r from-green-800 to-green-500 min-h-screen">
       <div className="bg-white shadow-lg rounded-lg p-6 mx-auto max-w-7xl">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">Student Accounts</h2>
         {statusMessage && <div className="mb-4 text-center text-red-600">{statusMessage}</div>}
@@ -259,7 +281,6 @@ const StudentAccountManagement = () => {
               <th className="px-4 py-2 text-left">Student Type</th>
               <th className="px-4 py-2 text-left">Program</th>
               <th className="px-4 py-2 text-left">Semester</th>
-              <th className="px-4 py-2 text-left">Status</th>
               <th className="px-4 py-2 text-left">Actions</th>
             </tr>
           </thead>
@@ -274,7 +295,6 @@ const StudentAccountManagement = () => {
                   {student.program_id === 1 ? 'BSCS' : student.program_id === 2 ? 'BSIT' : 'Unknown Program'}
                 </td>
                 <td className="px-4 py-2">{getSemesterLabel(student.semester)}</td>
-                <td className="px-4 py-2">{student.status}</td>
                 <td className="px-4 py-2">
                   <button
                     className="px-4 py-2 bg-yellow-500 text-white rounded-md"

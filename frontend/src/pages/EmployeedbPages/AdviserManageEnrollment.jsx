@@ -18,7 +18,7 @@ const apiRequest = async (url, method, body = null) => {
   }
 };
 
-const ManageEnrollments = () => {
+const AdviserManageEnrollments = () => {
   const [enrollees, setEnrollees] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
@@ -439,7 +439,6 @@ const ManageEnrollments = () => {
               <tr className="bg-gray-200">
                 <th className="px-4 py-2 text-left border border-gray-300">Student ID</th>
                 <th className="px-4 py-2 text-left border border-gray-300">Checklist Verification</th>
-                <th className="px-4 py-2 text-left border border-gray-300">Society Payment</th>
                 <th className="px-4 py-2 text-left border border-gray-300">Advising Requirement</th>
                 <th className="px-4 py-2 text-left border border-gray-300">Actions</th>
               </tr>
@@ -451,7 +450,7 @@ const ManageEnrollments = () => {
                 onClick={() => handleRowClick(enrollees)}
                 >
                   <td className="px-4 py-2 border border-gray-300">{enrollees.student_id}</td>
-                  {['checklist_verification', 'society_payment', 'advising_requirement'].map(
+                  {['checklist_verification', 'advising_requirement'].map(
                     (field) => (
                       <td key={field} className="px-4 py-2 border border-gray-300">
                         {editingId === enrollees.id ? (
@@ -493,26 +492,7 @@ const ManageEnrollments = () => {
                         Edit
                       </button>
                     )}
-                     <button
-                       onClick={(e) => {
-                        e.stopPropagation(); // Prevent the row's onClick
-                        openModal(enrollees.student_id);
-                      }}
-                      disabled={
-                        enrollees.checklist_verification !== 'approved' ||
-                        enrollees.society_payment !== 'approved' ||
-                        enrollees.advising_requirement !== 'approved'
-                      }
-                      className={`ml-2 px-4 py-1 rounded-md ${
-                        enrollees.checklist_verification === 'approved' &&
-                        enrollees.society_payment === 'approved' &&
-                        enrollees.advising_requirement === 'approved'
-                          ? 'bg-green-500 text-white'
-                          : 'bg-gray-400 text-gray-700 cursor-not-allowed'
-                      }`}
-                    >
-                      Enroll
-                    </button>
+                   
 
                   </td>
                 </tr>
@@ -734,7 +714,7 @@ const ManageEnrollments = () => {
 
               {/* Tab Navigation */}
               <div className="flex justify-between bg-gray-100 px-6 py-3 border-b">
-                {['General', 'Personal', 'Family', 'Educational', 'Documents'].map((tab, index) => (
+                {['General'].map((tab, index) => (
                   <button
                     key={index}
                     className={`px-4 py-2 rounded-t-md ${activeTab === tab ? 'bg-white border-t-2 border-blue-500 text-blue-500 font-bold' : 'text-gray-500'}`}
@@ -907,4 +887,4 @@ const ManageEnrollments = () => {
   );
 };
 
-export default ManageEnrollments;
+export default AdviserManageEnrollments;

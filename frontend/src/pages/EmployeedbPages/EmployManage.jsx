@@ -414,10 +414,10 @@ const getFullName = (Value) => {
                 Evaluation<br />Assessment
               </th>
               <th className="px-4 py-2 text-left border border-gray-300">
-                Docs<br />Submission
+                Society<br />Payment
               </th>
               <th className="px-4 py-2 text-left border border-gray-300">
-                Society<br />Payment
+                Docs<br />Submission
               </th>
               <th className="px-4 py-2 text-left border border-gray-300">
                 Actions
@@ -431,7 +431,7 @@ const getFullName = (Value) => {
                 onClick={() => handleRowClick(application)}
                 >
                   <td className="px-4 py-2 border border-gray-300">{application.enrollment_id}</td>
-                  {['docs_verification', 'eval_assessment', 'docs_submission', 'society_payment'].map(
+                  {['docs_verification', 'eval_assessment', 'society_payment', 'docs_submission'].map(
                     (field) => (
                       <td key={field} className="px-4 py-2 border border-gray-300">
                         {editingId === application.id ? (

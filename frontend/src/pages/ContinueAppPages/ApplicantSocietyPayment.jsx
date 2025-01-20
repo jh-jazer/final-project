@@ -36,7 +36,7 @@ const SocietyPayment = () => {
   };
 
   const handleNavigation = (path, item) => {
-    if (!isNextButtonDisabled || path !== '/createapplication/enrollment-completed') {
+    if (!isNextButtonDisabled || path !== '/createapplication/document-submission') {
       localStorage.setItem('paymentComplete', 'true');
       navigate(path);
       setActiveItem(item);
@@ -45,8 +45,8 @@ const SocietyPayment = () => {
 
   useEffect(() => {
                   // Check if the personal form is completed by checking localStorage
-                  const submissionComplete = localStorage.getItem('submissionComplete');
-                  if (!submissionComplete) {
+                  const evaluationComplete = localStorage.getItem('evaluationComplete');
+                  if (!evaluationComplete) {
                     // Redirect to the personal form if it's not completed
                     navigate('/createapplication');
                   }
@@ -59,7 +59,7 @@ const SocietyPayment = () => {
       {/* Header Section */}
       <div className="relative text-center mb-10">
         <button
-          onClick={() => handleNavigation('/createapplication/document-submission', '/document-submission')}
+          onClick={() => handleNavigation('/createapplication/entrance-examination', '/entrance-examination')}
           className="absolute left-0 top-1/2 transform -translate-y-1/2 text-green-700 hover:text-green-800 transition-all"
         >
           {/* Left Navigation Icon */}
@@ -71,7 +71,7 @@ const SocietyPayment = () => {
         <h1 className="text-4xl font-extrabold text-green-900">Society Payment</h1>
 
         <button
-          onClick={() => handleNavigation('/createapplication/enrollment-completed', '/enrollment-completed')}
+          onClick={() => handleNavigation('/createapplication/document-submission', '/document-submission')}
           className={`absolute right-0 top-1/2 transform -translate-y-1/2 text-green-700 hover:text-green-800 transition-all ${
             isNextButtonDisabled ? 'opacity-50 cursor-not-allowed' : ''
           }`}

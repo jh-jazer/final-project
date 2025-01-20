@@ -77,14 +77,14 @@ const EnrollmentCompletion = () => {
   };
 
   const handleSecondClick = (item) => {
-    navigate('/createapplication/applicant-society-payment');
+    navigate('/createapplication/document-submission');
     setActiveItem(item);
   };
 
   useEffect(() => {
                 // Check if the personal form is completed by checking localStorage
-                const paymentComplete = localStorage.getItem('paymentComplete');
-                if (!paymentComplete) {
+                const submissionComplete = localStorage.getItem('submissionComplete');
+                if (!submissionComplete) {
                   // Redirect to the personal form if it's not completed
                   navigate('/createapplication');
                 }
@@ -95,7 +95,7 @@ const EnrollmentCompletion = () => {
       {/* Header Section */}
       <div className="relative text-center mb-10">
         <button
-          onClick={() => handleSecondClick('/applicant-society-payment')}
+          onClick={() => handleSecondClick('/document-submission')}
           className="absolute left-0 top-1/2 transform -translate-y-1/2 text-[#4f7c4f] hover:text-green-800 transition-all"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -120,20 +120,29 @@ const EnrollmentCompletion = () => {
       </div>
 
       {/* Content Section */}
-      <div className="w-full shadow-xl py-[5%] px-6 rounded-lg items-center flex-col lg:grid lg:grid-cols-2 gap-8">
-        {/* Left Column: Status Section */}
-        <div className="lg:col-span-1 flex flex-col items-center space-y-6 my-5">
-          <h5 className="text-2xl font-extrabold text-[#2a2a2a]">Your Enrollment Status</h5>
-          <div className="text-lg font-medium text-[#4f7c4f] p-6 bg-white shadow-md rounded-lg w-full text-center">
-            <p className="mb-2">{`Status: ${status}`}</p>
-          </div>
+<div className="w-full shadow-xl py-[5%] px-6 rounded-lg items-center flex-col lg:grid lg:grid-cols-2 gap-8">
+  {/* Left Column: Status Section */}
+  <div className="lg:col-span-1 flex flex-col items-center space-y-6 my-5">
+    <h5 className="text-2xl font-extrabold text-[#2a2a2a]">Your Enrollment Status</h5>
+    <div className="text-lg font-medium text-[#4f7c4f] p-6 bg-white shadow-md rounded-lg w-full text-center">
+      {status === "approved" ? (
+        <p className="mb-2">
+          Your Application is approved. Please claim your COR from the registrar.
+        </p>
+      ) : (
+        <p className="mb-2">{`Status: ${status}`}</p>
+      )}
+    </div>
+  
+
+
 
           {/* Status Message */}
           <div>
             {status === 'pending' ? (
               <p className="text-lg mt-3 text-gray-500">Your enrollment is still under review. Please be patient.</p>
             ) : status === 'approved' ? (
-              <p className="text-lg mt-3 text-gray-500">
+              <p className="text-lg mt-3 text-center text-gray-500">
                 Congratulations! Your enrollment has been approved. Welcome to Cavite State University!
               </p>
             ) : (
@@ -147,11 +156,11 @@ const EnrollmentCompletion = () => {
           {status === 'approved' && (
             <>
               <div className="w-full p-6 bg-green-100 border-l-4 border-green-500 text-gray-700 rounded-lg">
-                <h5 className="font-semibold text-lg">Next Steps:</h5>
+                <h5 className="font-semibold text-lg">ATTENTION!!</h5>
                 <ul>
-                  <li>Review your schedule and prepare for your first day of classes.</li>
-                  <li>Explore student resources to make the most of your university experience.</li>
-                  <li>If you need assistance, feel free to contact the Student Affairs Office.</li>
+                  <li className='text-red-800'>TO OPEN YOUR STUDENT PORTAL</li>
+                  <li>ID : Student Number ex.(2025*****)</li>
+                  <li>Password : Last Name ex.(rodriquez)</li>
                 </ul>
               </div>
               <div className="w-full p-6 bg-blue-100 border-l-4 border-blue-500 text-gray-700 rounded-lg">
@@ -165,7 +174,7 @@ const EnrollmentCompletion = () => {
           )}
           {status === 'pending' && (
             <div className="w-full p-6 bg-yellow-100 border-l-4 border-yellow-500 text-gray-700 rounded-lg">
-              <h5 className="font-semibold text-lg">Reminder:</h5>
+              <h5 className="font-semibold  text-lg">Reminder:</h5>
               <p>Your enrollment is being processed. You will be notified once it's approved.</p>
             </div>
           )}

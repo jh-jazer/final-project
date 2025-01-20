@@ -184,7 +184,6 @@ const Appointments = () => {
                 <th className="px-4 py-2 text-left border border-gray-300">Date</th>
                 <th className="px-4 py-2 text-left border border-gray-300">Time Period</th>
                 <th className="px-4 py-2 text-left border border-gray-300">Available Slots</th>
-                <th className="px-4 py-2 text-left border border-gray-300">Max Slots</th>
                 <th className="px-4 py-2 text-left border border-gray-300">Actions</th>
               </tr>
             </thead>
@@ -215,7 +214,6 @@ const Appointments = () => {
                         appointment.available_slots
                       )}
                     </td>
-                    <td className="px-4 py-2 border border-gray-300">{appointment.max_slots}</td>
                     <td className="px-4 py-2 border border-gray-300">
                       {editingSlotId === appointment.id ? (
                         <button

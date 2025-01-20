@@ -43,20 +43,20 @@ const DocumentSubmission = () => {
   const handleFirstClick = (item) => {
     if (!isNextButtonDisabled) {
       localStorage.setItem('submissionComplete', 'true');
-      navigate('/createapplication/applicant-society-payment');
+      navigate('/createapplication/enrollment-completed');
       setActiveItem(item);
     }
   };
 
   const handleSecondClick = (item) => {
-    navigate('/createapplication/entrance-examination');
+    navigate('/createapplication/applicant-society-payment');
     setActiveItem(item);
   };
 
   useEffect(() => {
                 // Check if the personal form is completed by checking localStorage
-                const evaluationComplete = localStorage.getItem('evaluationComplete');
-                if (!evaluationComplete) {
+                const paymentComplete = localStorage.getItem('paymentComplete');
+                if (!paymentComplete) {
                   // Redirect to the personal form if it's not completed
                   navigate('/createapplication');
                 }
@@ -68,7 +68,7 @@ const DocumentSubmission = () => {
     <div ref={divRef} className="w-full min-h-screen bg-gradient-to-br from-green-100 to-white p-8 pt-12 shadow-lg rounded-lg flex flex-col">
       <div className="relative text-center mb-10">
         <button
-          onClick={() => handleSecondClick('/entrance-examination')}
+          onClick={() => handleSecondClick('/applicant-society-payment')}
           className="absolute left-0 top-1/2 transform -translate-y-1/2 text-[#4f7c4f] hover:text-green-800 transition-all"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -79,7 +79,7 @@ const DocumentSubmission = () => {
         <h1 className="text-4xl font-extrabold text-[#003d1f]">Documents Submission</h1>
 
         <button
-          onClick={() => handleFirstClick('/applicant-society-payment')}
+          onClick={() => handleFirstClick('/enrollment-completed')}
           className={`absolute right-0 top-1/2 transform -translate-y-1/2 text-[#4f7c4f] hover:text-green-800 transition-all ${
             isNextButtonDisabled ? 'opacity-50 cursor-not-allowed' : ''
           }`}

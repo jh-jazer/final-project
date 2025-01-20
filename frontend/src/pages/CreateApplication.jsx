@@ -237,24 +237,25 @@ const AdmissionsPage = () => {
                     <span>Student Evaluation</span>
                   </button>
                 </li>
-                <li className={activeItem === '/document-submission' ? 'active' : ''}>
-                  <button
-                    className="px-4 py-2 flex items-center space-x-3  rounded-lg cursor-default
-                     text-white"
-                  >
-                    <span className="text-xl font-semibold">9.</span>
-                    <span>Documents Submission</span>
-                  </button>
-                </li>
                 <li className={activeItem === '/applicant-society-payment' ? 'active' : ''}>
                   <button
                     className="px-4 py-2 flex items-center space-x-3  rounded-lg cursor-default
                      text-white"
                   >
-                    <span className="text-xl font-semibold">10.</span>
+                    <span className="text-xl font-semibold">9.</span>
                     <span>Society Payment</span>
                   </button>
                 </li>
+                <li className={activeItem === '/document-submission' ? 'active' : ''}>
+                  <button
+                    className="px-4 py-2 flex items-center space-x-3  rounded-lg cursor-default
+                     text-white"
+                  >
+                    <span className="text-xl font-semibold">10.</span>
+                    <span>Documents Submission</span>
+                  </button>
+                </li>
+              
                
                 <li className={activeItem === '/enrollment-completed' ? 'active' : ''}>
                   <button

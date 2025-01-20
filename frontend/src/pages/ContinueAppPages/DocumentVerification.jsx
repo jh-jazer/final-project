@@ -65,9 +65,10 @@ const DocumentVerification = () => {
   
       setScheduleDate(scheduleData.scheduled_date || null);
       setScheduleTimePeriod(scheduleData.time_period || null);
+
       setStatus(progressData.docs_verification || 'pending');
 
-      setIsNextButtonDisabled(false);
+      setIsNextButtonDisabled(progressData.docs_verification !== 'approved');
   
     } catch (err) {
       console.error(err);

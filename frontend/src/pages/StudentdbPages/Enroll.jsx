@@ -19,9 +19,9 @@ const Enroll = () => {
     status: user.type,
   };
 
-  const API_URL = 'http://localhost:5005/api/student-progress';
-  const CHECK_PROGRESS_URL = `http://localhost:5005/api/check-progress/${enrollee.id}`;
-  const CHECK_STATUS_URL = `http://localhost:5005/api/check-progress-status/${enrollee.id}`;
+  const API_URL = 'https://cvsu-backend-system.vercel.app/api/student-progress';
+  const CHECK_PROGRESS_URL = `https://cvsu-backend-system.vercel.app/api/check-progress/${enrollee.id}`;
+  const CHECK_STATUS_URL = `https://cvsu-backend-system.vercel.app/api/check-progress-status/${enrollee.id}`;
 
   // Check if student progress exists
   const checkStudentProgress = async () => {
@@ -121,7 +121,7 @@ const Enroll = () => {
   
     try {
       // Update the student's semester in the students table
-      const semesterResponse = await fetch('http://localhost:5005/api/update-student-semester', {
+      const semesterResponse = await fetch('https://cvsu-backend-system.vercel.app/api/update-student-semester', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(studentData),  // Sending the student_id
@@ -129,7 +129,7 @@ const Enroll = () => {
   
       if (semesterResponse.ok) {
         // Then, update the status in student_progress
-        const statusResponse = await fetch('http://localhost:5005/api/update-student-status', {
+        const statusResponse = await fetch('https://cvsu-backend-system.vercel.app/api/update-student-status', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(studentData),  // Sending the student_id

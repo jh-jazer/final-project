@@ -3,7 +3,7 @@ import Logo from '../assets/university-logo.png';
 import StudentImage from '../assets/student.jpg';
 import TopNav from '../components/Topnav';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
-import { useActiveItem } from "../../contexts/CreateAppContext";
+import { useActiveItem } from "../contexts/CreateAppContext";
 import { Link, Navigate } from 'react-router-dom';
 
 const AdmissionPortal = () => {

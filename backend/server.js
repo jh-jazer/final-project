@@ -1482,6 +1482,7 @@ app.get('/api/students', async (req, res) => {
   try {
     const [students] = await db.query('SELECT * FROM students');
     res.status(200).json(students);
+    console.log(students);
   } catch (err) {
     console.error('Error fetching students:', err);
     res.status(500).json({ message: 'Error fetching students' });
@@ -1902,6 +1903,25 @@ app.delete("/api/delete_instructor", async (req, res) => {
   }
 });
 
+app.get('/api/getAverageGrade/:studentId', async (req, res) => {
+  // const studentId = req.params.studentId;
+  const studentId = 201912312;
+  try {
+    const [avgGrade] = await db.query(
+      'SELECT AVG(grade) AS average_grade FROM student_courses WHERE student_id = ?',
+      [studentId]
+    );
+    res.status(200).json(avgGrade);
+    // if (avgGrade.length > 0) {
+    //   res.status(200).json(avgGrade);
+    // } else {
+    //   res.status(404).json({ message: 'No grades found for this enrollment ID and course code.' });
+    // }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'An error occurred while fetching grades.' });
+  }
+});
 
 app.get('/api/getGrades/:enrollmentId/:courseCode', async (req, res) => {
   const { enrollmentId, courseCode } = req.params;

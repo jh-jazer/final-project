@@ -1,39 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from './GradesModal'; // Import the Modal component
 
 const AcademicRecords = () => {
-  const [students, setStudents] = useState([
-    {
-      id: 1,
-      studentNumber: '202301234', // 9-digit student number
-      name: 'John Doe',
-      program: 'Computer Science',
-      year: 'First Year',
-      section: '1-1',
-      grades: { 'Year 1 Sem 1': 1.5, 'Year 1 Sem 2': 1.25 },
-      status: 'Active',
-    },
-    {
-      id: 2,
-      studentNumber: '202201234',
-      name: 'Jane Smith',
-      program: 'Computer Science',
-      year: 'Second Year',
-      section: '2-3',
-      grades: { 'Year 2 Sem 1': 2.5, 'Year 2 Sem 2': 1.00 },
-      status: 'Active',
-    },
-    {
-      id: 3,
-      studentNumber: '202101234',
-      name: 'Mark Lee',
-      program: 'Information Technology',
-      year: 'Irregular',
-      section: 'Irregular',
-      grades: { 'Year 3 Sem 1': 1.25, 'Year 3 Sem 2': 2.5 },
-      status: 'Inactive',
-    },
-  ]);
+  const [students, setStudents] = useState([]);
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        
+        const response = await fetch('https://cvsu-backend-system.vercel.app/api/students'); // Replace with your API endpoint
+        const data = await response.json();
+
+        const getAverageGrade = async (student_id) => {
+          const avgGradeResponse = await fetch(`https://cvsu-backend-system.vercel.app/api/getAverageGrade/${student_id}`); // Corrected string interpolation
+          const avgGrade = await avgGradeResponse.json();  // Use avgGradeResponse here
+          if (avgGrade){
+            return avgGrade;
+          }
+          else{
+            return "Nothing here"
+          };
+      };
+      
+
+      const transformedData = await Promise.all(data.map(async (student, index) => {
+        const grades = await getAverageGrade(student.student_id); // Wait for the grade to be fetched
+
+        return {
+          id: student.student_id,
+          studentNumber: student.student_id.toString(),
+          name: student.full_name,
+          program: student.program_id === 1 ? 'Computer Science' : 'Unknown Program', // Example mapping
+          year: `${student.year}`, // Example: using semester to define year
+          section: `${student.class_section}`, // Assuming the class_section represents the section
+          grades: grades[0].average_grade, // Set the fetched grades
+          status: student.status,
+        };
+      }));
+      
+        setStudents(transformedData); // Set the fetched students data to state
+        // setFilteredStudents(data); // You can apply any filtering logic here
+      } catch (error) {
+        console.error("Error fetching students data:", error);
+      }
+    };
+
+    fetchStudents();
+  }, []);
 
   const [search, setSearch] = useState('');
 
@@ -104,10 +117,10 @@ const AcademicRecords = () => {
                   <td className="px-4 py-2 border border-gray-300">{student.name}</td>
                   <td className="px-4 py-2 border border-gray-300">{student.program}</td>
                   <td className="px-4 py-2 border border-gray-300">
-                    {`${student.year} & Section ${student.section.split('-')[1]}`}
+                    {`${student.year}-${student.section}`}
                   </td>
                   <td className="px-4 py-2 border border-gray-300">
-                    {calculateAverageGrade(student.grades)}
+                    {student.grades}
                   </td>
                 </tr>
               ))}

@@ -414,7 +414,7 @@ const getGrades = async (enrollmentId, courseCode) => {
   };
 
   return (
-    <div className="pt-8 bg-green-500 min-h-screen">
+    <div className="pt-8 min-h-screen">
       <div className='bg-white shadow-lg rounded-lg p-6 max-w-6xl mx-auto'>
         <h2 className="text-2xl font-semibold mb-4">Student Details</h2>
         <p><strong>Name:</strong> {student.name}</p>
@@ -483,15 +483,7 @@ const getGrades = async (enrollmentId, courseCode) => {
 </div>
 
 
-        {/* Edit/Cancel/Update Buttons */}
-        {isEditing ? (
-          <div className="mt-4">
-            <button onClick={handleUpdateGrades} className="bg-blue-500 text-white px-4 py-2 rounded mr-2">Update Grades</button>
-            <button onClick={handleCancelEdit} className="bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>
-          </div>
-        ) : (
-          <button onClick={handleEditGrades} className="bg-green-500 text-white px-4 py-2 rounded mt-4">Edit Grades</button>
-        )}
+     
       </div>
     </div>
   );

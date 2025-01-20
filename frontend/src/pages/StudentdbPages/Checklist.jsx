@@ -328,7 +328,6 @@ const Checklist = () => {
               <th className="px-4 py-2 border">Course Name</th>
               <th className="px-4 py-2 border">Prerequisite</th>
               <th className="px-4 py-2 border">Grade</th>
-              <th className="px-4 py-2 border">Instructor</th>
             </tr>
           </thead>
           <tbody>
@@ -338,7 +337,6 @@ const Checklist = () => {
                 <td className="px-4 py-2 border">{course.name}</td>
                 <td className="px-4 py-2 border">{course.prerequisite}</td>
                 <td className="px-4 py-2 border">{course.grade}</td>
-                <td className="px-4 py-2 border">{course.instructor}</td>
               </tr>
             ))}
           </tbody>

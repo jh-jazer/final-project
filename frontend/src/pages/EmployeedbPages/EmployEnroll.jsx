@@ -734,7 +734,7 @@ const ManageEnrollments = () => {
 
               {/* Tab Navigation */}
               <div className="flex justify-between bg-gray-100 px-6 py-3 border-b">
-                {['General', 'Personal', 'Family', 'Educational', 'Documents'].map((tab, index) => (
+                {['General', 'Personal', 'Family', 'Educational'].map((tab, index) => (
                   <button
                     key={index}
                     className={`px-4 py-2 rounded-t-md ${activeTab === tab ? 'bg-white border-t-2 border-blue-500 text-blue-500 font-bold' : 'text-gray-500'}`}

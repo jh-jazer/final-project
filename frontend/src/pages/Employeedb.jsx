@@ -369,12 +369,12 @@ const EmployeeDashboard = () => {
                         {/* Enroll - Use the handler here */}
                     <li>
               <Link
-                to="academic-records"
+                to="admin-academics"
                 className="px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <FaUser />
-                {!isSidebarMinimized && <span>Academic Records</span>}
+                {!isSidebarMinimized && <span> Manage Academic Records</span>}
               </Link>
             </li>
             <li>

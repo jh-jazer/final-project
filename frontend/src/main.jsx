@@ -37,6 +37,7 @@ import AdviserManageApplication from "./pages/EmployeedbPages/AdviserManageAppli
 import AdviserManageEnrollment from "./pages/EmployeedbPages/AdviserManageEnrollment.jsx";
 import SocietyManageApplication from "./pages/EmployeedbPages/SocietyManageApplication.jsx";
 import SocietyManageEnrollment from "./pages/EmployeedbPages/SocietyManageEnrollment.jsx";
+import AdminAcademicRecords from "./pages/EmployeedbPages/AdminAcademicRecords.jsx";
 
 
 
@@ -303,6 +304,10 @@ const router = createBrowserRouter([
       {
         path: "society-enrollments",
         element: <SocietyManageEnrollment />, // Component to render when /studentdb/courses is visited
+      },
+      {
+        path: "admin-academics",
+        element: <AdminAcademicRecords />, // Component to render when /studentdb/courses is visited
       },
     ],
   },

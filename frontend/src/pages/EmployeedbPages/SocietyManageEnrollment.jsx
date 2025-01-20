@@ -421,7 +421,7 @@ const SocietyManageEnrollments = () => {
   return (
     <div className="p-6 bg-gradient-to-r from-green-800 to-green-500 min-h-screen">
       <div className="bg-white shadow-lg rounded-lg p-6 mx-auto max-w-full sm:max-w-6xl">
-        <h2 className="text-2xl font-semibold text-gray-700 mb-4">Manage Enrollments</h2>
+        <h2 className="text-2xl font-semibold text-gray-700 mb-4">Enrollee Society Payment</h2>
 
         <div className="mb-6">
           <input

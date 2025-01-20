@@ -402,7 +402,7 @@ const getFullName = (Value) => {
   return (
     <div className="p-6 bg-gradient-to-r from-green-800 to-green-500 min-h-screen">
       <div className="bg-white shadow-lg rounded-lg p-6 mx-auto max-w-full sm:max-w-6xl">
-        <h2 className="text-2xl font-semibold text-gray-700 mb-4">Manage Application</h2>
+        <h2 className="text-2xl font-semibold text-gray-700 mb-4">Applicant Society Payment</h2>
 
         {/* Search */}
         <div className="mb-6">
@@ -424,7 +424,7 @@ const getFullName = (Value) => {
                 Enrollment<br />ID
               </th>
               <th className="px-4 py-2 text-left border border-gray-300">
-                Evaluation<br />Assessment
+                Society<br />Payment
               </th>
               <th className="px-4 py-2 text-left border border-gray-300">
                 Actions
@@ -438,7 +438,7 @@ const getFullName = (Value) => {
                 onClick={() => handleRowClick(application)}
                 >
                   <td className="px-4 py-2 border border-gray-300">{application.enrollment_id}</td>
-                  {['eval_assessment'].map(
+                  {['society_payment'].map(
                     (field) => (
                       <td key={field} className="px-4 py-2 border border-gray-300">
                         {editingId === application.id ? (

@@ -20,6 +20,12 @@ const EmployeeProfile = () => {
       fetchFormData(employee_id);
     }
   }, [employee_id]);
+  const date = new Date(employee.dob);
+  const formattedDate = date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
 
   const fetchFormData = async (employee_id) => {
     try {
@@ -70,8 +76,8 @@ const EmployeeProfile = () => {
               <p className="text-gray-700">{employee.address || 'N/A'}</p>
             </div>
             <div>
-              <p className="font-medium text-gray-600">Date of Birth:</p>
-              <p className="text-gray-700">{formatDate(employee.dob)}</p>
+              <p className="font-semibold text-gray-600">Date of Birth:</p>
+              <p className="text-gray-500">{formattedDate}</p>
             </div>
           </div>
         </div>

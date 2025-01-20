@@ -4,6 +4,7 @@ import {
   FaBars,
   FaTimes,
   FaUser,
+  FaCog,
   FaClipboardList,
   FaBook,
   FaSignOutAlt,
@@ -100,6 +101,20 @@ const StudentDashboard = () => {
               >
                 <FaUser />
                 {!isSidebarMinimized && <span>Profile</span>}
+              </Link>
+            </li>
+
+             {/* Settings */}
+             <li>
+              <Link
+                to="settings"
+                className={`px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer ${
+                  isSidebarMinimized ? "justify-center" : ""
+                }`}
+                onClick={() => setIsSidebarOpen(false)}
+              >
+<FaCog />
+{!isSidebarMinimized && <span>Settings</span>}
               </Link>
             </li>
 

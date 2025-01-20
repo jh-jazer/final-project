@@ -52,7 +52,7 @@ const ForgotPassword = () => {
         <div className="w-full max-w-md p-8 bg-white bg-opacity-95 shadow-lg rounded-lg">
           <div className="flex flex-col items-center">
             <img src={Logo} alt="University Logo" className="w-20 h-20 mb-4" />
-            <h2 className="text-3xl font-extrabold text-[#C61A01]">Forgot Password</h2>
+            <h2 className="text-3xl pb-7 font-extrabold text-[#C61A01]">Change Password</h2>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>

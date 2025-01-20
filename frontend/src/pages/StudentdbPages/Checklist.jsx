@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useOutletContext } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
 
 const Checklist = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { user } = useOutletContext(); // Access the passed data
+  
   const [course, setCourse] = useState('BSCS'); // Add state to determine the course (CS or IT)
-  const location = useLocation();
-  const { user } = location.state || {};  // Safely access user data
   const dataFromParent = useOutletContext();
   const userId = dataFromParent.user.id;
 
-  
+  const enrollee = {
+    id: user.id,
+    name: user.full_name,
+    course: user.program,
+    status: user.type,
+  };
+
   const getGrades = async (enrollmentId, courseCode) => {
     try {
       const response = await fetch(`https://cvsu-backend-system.vercel.app/api/getGrades/${enrollmentId}/${courseCode}`);
@@ -273,11 +279,11 @@ const Checklist = () => {
     fetchGrades(userId);
   }, [userId]);
   
-  const currentSemester = course === 'BSCS' ? csSemesters[currentIndex] : itSemesters[currentIndex];
+  const currentSemester = user.program === 1 ? csSemesters[currentIndex] : itSemesters[currentIndex];
 
   // Function to handle semester navigation
   const goToNextSemester = () => {
-    if (currentIndex < (course === 'BSCS' ? csSemesters.length : itSemesters.length) - 1) {
+    if (currentIndex < (user.program === 1 ? csSemesters.length : itSemesters.length) - 1) {
       setCurrentIndex(currentIndex + 1);
     }
   };
@@ -294,12 +300,19 @@ const Checklist = () => {
       
       {/* Student Basic Information Section */}
       {user && (
-        <div className="student-info" style={{ marginBottom: '20px', padding: '10px', border: '1px solid #ccc', borderRadius: '8px' }}>
-          <h3>Student Information</h3>
-          <p><strong>Name:</strong> {user.full_name}</p>
-          <p><strong>ID:</strong> {user.id}</p>
-          <p><strong>Course:</strong> {user.program}</p>
-        </div>
+       <div className="student-info bg-white shadow-md rounded-lg p-6 mb-6 border border-gray-200">
+       <h3 className="text-lg font-semibold text-gray-800 mb-4">Student Information</h3>
+       <p className="text-gray-700 mb-2">
+         <span className="font-bold">Name:</span> {user.full_name}
+       </p>
+       <p className="text-gray-700 mb-2">
+         <span className="font-bold">ID:</span> {user.id}
+       </p>
+       <p className="text-gray-700">
+         <span className="font-bold">Course:</span> {user.program === 1 ? 'BSCS' : 'BSIT'}
+       </p>
+     </div>
+     
       )}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">{currentSemester.label}</h2>
@@ -313,7 +326,7 @@ const Checklist = () => {
             </button>
             <button
               onClick={goToNextSemester}
-              disabled={currentIndex === (course === 'BSCS' ? csSemesters.length : itSemesters.length) - 1}
+              disabled={currentIndex === (user.program === 1 ? csSemesters.length : itSemesters.length) - 1}
               className="bg-blue-500 text-white px-4 py-2 rounded disabled:bg-gray-300"
             >
               Next

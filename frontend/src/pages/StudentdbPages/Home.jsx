@@ -78,16 +78,7 @@ const StudentDashboardHome = () => {
         <Outlet context={{ user }} /> 
       </div>
 
-      {/* Schedule Section */}
-      <div className="mt-8">
-        <h2 className="text-2xl font-bold text-gray-700">Schedule</h2>
-        <div className="bg-white shadow-md rounded-lg p-6 mt-4">
-          <p className="text-lg font-medium">No upcoming classes at this time.</p>
-          <p className="text-sm text-gray-500 mt-2">
-            Check back later for updates on your class schedule and events.
-          </p>
-        </div>
-      </div>
+   
     </div>
   );
 };

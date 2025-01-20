@@ -138,6 +138,7 @@ const Enroll = () => {
         if (statusResponse.ok) {
           const result = await statusResponse.json();
           console.log('Status updated:', result);
+          setAlreadyEnrolled(true)
           setSuccessMessage('Student enrolled successfully and status updated.');
           setIsModalOpen(false); // Close modal or proceed to next step
         } else {
@@ -247,7 +248,7 @@ const Enroll = () => {
         {/* Action Buttons */}
           <div className="flex justify-center space-x-4">
             {alreadyEnrolled ? (
-              <p className="text-green-600 font-semibold text-lg">You are already enrolled.</p>
+              <p className="text-green-600 font-semibold text-lg">You are already enrolled, Make sure to claim your COR from the registrar.</p>
             ) : (
               enrollee.status === 'Irregular' ? (
                 <button

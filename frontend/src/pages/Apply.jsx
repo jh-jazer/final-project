@@ -3,6 +3,7 @@ import Logo from '../assets/university-logo.png';
 import StudentImage from '../assets/student.jpg';
 import TopNav from '../components/Topnav';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import { useActiveItem } from "../../contexts/CreateAppContext";
 import { Link, Navigate } from 'react-router-dom';
 
 const AdmissionPortal = () => {
@@ -10,6 +11,8 @@ const AdmissionPortal = () => {
   const [redirectToCreate, setRedirectToCreate] = useState(false); // Track redirection to /create
   const [redirectToApplication, setRedirectToApplication] = useState(false); // Track redirection to /createapplication
   const [emailExists, setEmailExists] = useState(false);
+    const { setActiveItem } = useActiveItem();
+  
 
   // Check if user is already logged in by looking for user data in localStorage
   useEffect(() => {
@@ -48,6 +51,7 @@ const AdmissionPortal = () => {
     localStorage.setItem('userData', JSON.stringify(decodedToken));
     setUserData(decodedToken); // Store the decoded data
     checkEmail(decodedToken.email); // Check if the email exists
+    setActiveItem('/createapplication');
   };
 
   const handleLoginFailure = () => {

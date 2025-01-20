@@ -34,7 +34,6 @@ const StudentAccountManagement = () => {
     program_id: '', // Change to program_id
     email: '',
     semester: '',
-    dob: '',
     class_section: '',
     status: '',
     password: '',
@@ -107,10 +106,8 @@ const getSemesterLabel = (semesterValue) => {
   const openModal = (student = null) => {
     if (student) {
       // When editing a student, format the date and reset password to an empty string
-      const formattedDob = new Date(student.dob).toISOString().slice(0, 10);
       setFormData({
         ...student,
-        dob: formattedDob,
         password: '', // Reset password when editing
       });
       setIsEditing(true); // Set the state to editing
@@ -123,7 +120,6 @@ const getSemesterLabel = (semesterValue) => {
         program_id: '', // Set program_id to an empty string
         email: '',
         semester: '',
-        dob: '',
         class_section: '',
         status: '',
         password: '',
@@ -180,10 +176,6 @@ const getSemesterLabel = (semesterValue) => {
     } else {
       delete payload.password; // Remove password field if it's empty
     }
-  
-    // Ensure the date of birth is properly formatted
-    const formattedDob = new Date(formData.dob).toISOString().slice(0, 10);
-    payload.dob = formattedDob;
   
     const url = isEditing
       ? `https://cvsu-backend-system.vercel.app/api/students/${formData.student_id}` // Use student ID for update
@@ -326,9 +318,9 @@ const getSemesterLabel = (semesterValue) => {
         </div>
 
         {/* Modal for adding/editing a student */}
-{modalOpen && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-10">
-    <div className="bg-white p-6 rounded-lg shadow-md max-w-4xl w-full">
+        {modalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-10">
+            <div className="bg-white p-6 rounded-lg shadow-md max-w-4xl  ml-[250px] w-full">
       <h3 className="text-xl mb-4">{isEditing ? 'Edit student' : 'Add New student'}</h3>
       <form onSubmit={handleFormSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
@@ -376,7 +368,10 @@ const getSemesterLabel = (semesterValue) => {
             <option value="1">BSCS</option>
             <option value="2">BSIT</option>
           </select>
-          <input
+          
+        </div>
+        <div>
+        <input
             type="email"
             placeholder="Email"
             className="w-full px-4 py-2 mb-2 border"
@@ -384,8 +379,6 @@ const getSemesterLabel = (semesterValue) => {
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             required
           />
-        </div>
-        <div>
           <select
             className="w-full px-4 py-2 mb-2 border"
             value={formData.semester}
@@ -399,13 +392,8 @@ const getSemesterLabel = (semesterValue) => {
               </option>
             ))}
           </select>
-          <input
-            type="date"
-            className="w-full px-4 py-2 mb-2 border"
-            value={formData.dob}
-            onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
-            required
-          />
+          
+         
           <input
             type="text"
             placeholder="Class Section"

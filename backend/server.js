@@ -1558,7 +1558,7 @@ app.post('/api/students', async (req, res) => {
 
     // Insert the student if the program exists
     const [result] = await db.query(
-      'INSERT INTO students (student_id, full_name, student_type, program_id, email, semester, class_section, status, password, enrollment_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      'INSERT INTO students (student_id, full_name, student_type, program_id, email, semester, class_section, status, password, enrollment_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       [student_id, full_name, student_type, program_id, email, semester, class_section, status, password, enrollment_id]
     );
 

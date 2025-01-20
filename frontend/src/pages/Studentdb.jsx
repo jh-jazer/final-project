@@ -104,19 +104,7 @@ const StudentDashboard = () => {
               </Link>
             </li>
 
-             {/* Settings */}
-             <li>
-              <Link
-                to="settings"
-                className={`px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer ${
-                  isSidebarMinimized ? "justify-center" : ""
-                }`}
-                onClick={() => setIsSidebarOpen(false)}
-              >
-<FaCog />
-{!isSidebarMinimized && <span>Settings</span>}
-              </Link>
-            </li>
+           
 
             {/* Checklist */}
             <li>
@@ -145,6 +133,19 @@ const StudentDashboard = () => {
             </li>
 
             <hr className="border-gray-600 my-4" />
+
+              {/* Settings */}
+              <li>
+             <Link to="/forgotpassword"
+                className={`px-4 py-2 flex items-center space-x-3 hover:bg-gray-700 rounded-lg cursor-pointer ${
+                  isSidebarMinimized ? "justify-center" : ""
+                }`}
+                onClick={() => setIsSidebarOpen(false)}
+              >
+              <FaCog />
+              {!isSidebarMinimized && <span>Change Password</span>}
+             </Link>
+            </li>
 
             {/* Logout */}
             <li>

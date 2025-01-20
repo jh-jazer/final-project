@@ -284,11 +284,6 @@ const getFullName = (Value) => {
         setSemesterOptions([]); // Clear options if no program_id is selected
       }
     }, [formData.program_id]);
-
-    const formatDateForInput = (dateString) => {
-      const date = new Date(dateString);
-      return date.toISOString().split("T")[0]; // Format date as YYYY-MM-DD
-    };
     
 
   const handleSave = async () => {
@@ -558,7 +553,10 @@ const getFullName = (Value) => {
                     <option value="1">BSCS</option>
                     <option value="2">BSIT</option>
                   </select>
-                  <input
+              
+                </div>
+                <div>
+                <input
                     type="email"
                     placeholder="Email"
                     className="w-full px-4 py-2 mb-2 border"
@@ -566,8 +564,7 @@ const getFullName = (Value) => {
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     required
                   />
-                </div>
-                <div>
+                  
                   <select
                     className="w-full px-4 py-2 mb-2 border"
                     value={formData.semester}
